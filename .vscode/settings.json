@@ -1,6 +1,0 @@
-{
-    "azureFunctions.deploySubpath": "Functions/bin/Release/net5.0/publish",
-    "azureFunctions.projectLanguage": "C#",
-    "azureFunctions.projectRuntime": "~3",
-    "azureFunctions.preDeployTask": "publish"
-}
