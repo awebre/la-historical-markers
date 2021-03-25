@@ -20,7 +20,7 @@ With SQL Server installed and an instance running, you can run `Migrations/Initi
 
 Getting Azure Functions setup locally is as simple as adding the [https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions](VS Code Azure Functions extension). With this extension installed, you should have all of the dependencies and tools needed to run the function(s) locally. This extension will also help you deploy the function(s) to your own Azure Subscription (should you want to test in a "prod-like" environment).
 
-In order for the Azure Function to be configured properly, you will need to add a file called `local.settings.json` to the root of the project. It should contain the following contents:
+With the extension installed, open `functions.code-workspace` in VS Code (if prompted to initialize this Azure Function for use in VS Code, accpet). In order for the Azure Function to be configured properly, you will need to add a file called `local.settings.json` to the root of the `Functions` folder. It should contain the following contents:
 
 ```json
 {
@@ -33,7 +33,9 @@ In order for the Azure Function to be configured properly, you will need to add 
 }
 ```
 
-Note that you will likely need to change the connection string (especially the password), to match your SQL Server instance configuration.
+Note: you will likely need to change the connection string (especially the password), to match your SQL Server instance configuration.
+
+Once this file has been added, you should be able to click Run (or F5) and the functions should spin up for you to test locally.
 
 ## React Native
 
