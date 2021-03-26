@@ -1,0 +1,12 @@
+{
+  "name": "client-app",
+  "displayName": "client-app",
+  "expo": {
+    "name": "client-app",
+    "slug": "client-app",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
