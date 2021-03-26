@@ -19,5 +19,7 @@ namespace LaHistoricalMarkers.Data
         public bool IsApproved { get; set; }
 
         public DateTimeOffset CreatedTimestamp { get; set; }
+
+        public decimal Distance { get; set; }
     }
 }

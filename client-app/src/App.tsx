@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Dimensions } from "react-native";
+import { StyleSheet, View, Dimensions, Text } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { useMarkers } from "./markers";
 import { useDebounce } from "./hooks";
 
 export default function App() {
+  //TODO: move this into a component (called something like MarkersGeoSearch)
   const [location, setLocation] = useState({
     latitude: 30.9843,
     longitude: -91.9623,
@@ -20,7 +21,6 @@ export default function App() {
     const setUserLocation = async () => {
       const { status } = await Location.requestPermissionsAsync();
       if (status !== Location.PermissionStatus.GRANTED) {
-        console.log("here!");
         return;
       }
 
@@ -51,6 +51,9 @@ export default function App() {
             />
           ))}
       </MapView>
+      {!isLoading &&
+        !isError &&
+        markers?.map((m) => <Text key={m.Id}>{m.Name}</Text>)}
     </View>
   );
 }
@@ -60,10 +63,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
   },
   map: {
     width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height / 2,
+    height: Dimensions.get("window").height * 0.6,
   },
 });

@@ -1,6 +1,6 @@
 import useSwr from "swr";
 import queryString from "query-string";
-import { url, fetcher } from "../utils";
+import { url, fetcher } from "utils/";
 
 type MarkerDto = {
   Id: number;
@@ -11,6 +11,7 @@ type MarkerDto = {
   ImageUrl?: string;
   IsApproved: boolean;
   CreatedTimestamp: Date;
+  Distance: number;
 };
 
 interface IMarkerRegionSearch {

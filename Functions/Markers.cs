@@ -26,20 +26,24 @@ namespace LaHistoricalMarkers.Functions
             var longitude = query["Longitude"];
 
             //deltas map to 1 degree, which is equivalent to ~110km at the equator
+            //this may require tweaking (and ideally we could stop guessing)
             var longitudeDelta = decimal.Parse(query["LongitudeDelta"]);
             var latitudeDelta = decimal.Parse(query["LatitudeDelta"]);
             var approxMeters = Math.Max(longitudeDelta, latitudeDelta) * 110 * 1000;
 
-            var results = Database.GetConnection().Query<MarkerDto>(
-@"SELECT TOP (10) [Id]
+            var results = Database.GetConnection().Query<MarkerDto>(@"
+SELECT TOP (10) [Id]
       ,[Name]
       ,[Description]
       ,[Location].[Lat] AS [Latitude]
       ,[Location].[Long] AS [Longitude]
       ,[ImageUrl]
       ,[IsApproved]
-      ,[CreatedTimestamp] FROM [LaHistoricalMarkers].[dbo].[Marker]
-WHERE GEOGRAPHY::Point(@latitude, @longitude, 4326).STDistance([Location]) <= @approxMeters", 
+      ,[CreatedTimestamp]
+      ,GEOGRAPHY::Point(@latitude, @longitude, 4326).STDistance([Location]) AS Distance
+FROM [LaHistoricalMarkers].[dbo].[Marker]
+WHERE GEOGRAPHY::Point(@latitude, @longitude, 4326).STDistance([Location]) <= @approxMeters
+ORDER BY Distance", 
 new { latitude, longitude, approxMeters }).AsList();
             
             var json = JsonSerializer.Serialize(results);
