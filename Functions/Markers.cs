@@ -22,14 +22,19 @@ namespace LaHistoricalMarkers.Functions
             var query = HttpUtility.ParseQueryString(req.Url.Query);
 
             //latitude and longitude should be safe as strings?
-            var latitude = query["Latitude"];
-            var longitude = query["Longitude"];
+            var latitude = decimal.Parse(query["Latitude"]);
+            var longitude = decimal.Parse(query["Longitude"]);
 
             //deltas map to 1 degree, which is equivalent to ~110km at the equator
             //this may require tweaking (and ideally we could stop guessing)
             var longitudeDelta = decimal.Parse(query["LongitudeDelta"]);
             var latitudeDelta = decimal.Parse(query["LatitudeDelta"]);
-            var approxMeters = Math.Max(longitudeDelta, latitudeDelta) * 110 * 1000;
+
+            var topLatitude = latitude + latitudeDelta;
+            var bottomLatitude = latitude - latitudeDelta;
+            var leftLong = longitude - longitudeDelta;
+            var rightLong = longitude + longitudeDelta;
+            var approxMeters = Math.Max(longitudeDelta, latitudeDelta) * 75 * 1000;
 
             var results = Database.GetConnection().Query<MarkerDto>(@"
 SELECT TOP (10) [Id]
