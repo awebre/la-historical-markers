@@ -84,6 +84,11 @@ export default function App() {
           onCancel={() => setSelectedMarker(null)}
         />
       )}
+      <View style={styles.addButton}>
+        <Text style={{ color: "white", fontSize: 30, fontWeight: "bold" }}>
+          +
+        </Text>
+      </View>
     </View>
   );
 }
@@ -102,5 +107,17 @@ const styles = StyleSheet.create({
   map: {
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height * 0.6,
+  },
+  addButton: {
+    position: "absolute",
+    top: Dimensions.get("window").height - 100,
+    right: 25,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 75,
+    backgroundColor: "#dab574",
+    height: 75,
+    width: 75,
   },
 });
