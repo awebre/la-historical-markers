@@ -5,8 +5,7 @@
     "name": "client-app",
     "slug": "client-app",
     "version": "1.0.0",
-    "assetBundlePatterns": [
-      "**/*"
-    ]
+    "assetBundlePatterns": ["**/*"],
+    "orientation": "portrait"
   }
 }

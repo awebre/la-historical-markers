@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Dimensions, Text } from "react-native";
+import { StyleSheet, View, Dimensions, Text, FlatList } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
-import { useMarkers } from "./markers";
-import { useDebounce } from "./hooks";
+import {
+  MarkersCard,
+  useMarkers,
+  MarkerDto,
+  UserLocation,
+  ViewMarkerCard,
+} from "markers";
+import { useDebounce } from "hooks";
 
 export default function App() {
   //TODO: move this into a component (called something like MarkersGeoSearch)
@@ -13,10 +19,15 @@ export default function App() {
     latitudeDelta: 5,
     longitudeDelta: 5,
   });
+  //note: debounce user location if you ever subscribe to updates
+  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+
+  const [selectedMarker, setSelectedMarker] = useState<MarkerDto | null>(null);
+  const [openMarker, setOpenMarker] = useState<MarkerDto | null>(null);
   const debouncedRegion = useDebounce(region, 500);
 
   useEffect(() => {
-    const setUserLocation = async () => {
+    const requestAndSetLocation = async () => {
       const { status } = await Location.requestPermissionsAsync();
       if (status !== Location.PermissionStatus.GRANTED) {
         return;
@@ -24,12 +35,13 @@ export default function App() {
 
       const { coords } = await Location.getCurrentPositionAsync({});
       setRegion({ latitudeDelta: 0.1, longitudeDelta: 0.1, ...coords });
+      setUserLocation(coords);
     };
 
-    setUserLocation();
+    requestAndSetLocation();
   }, []);
 
-  const { markers, isLoading, isError } = useMarkers(debouncedRegion);
+  const loadableMarkers = useMarkers({ region: debouncedRegion, userLocation });
   return (
     <View style={styles.container}>
       <MapView
@@ -37,47 +49,41 @@ export default function App() {
         region={region}
         showsUserLocation={true}
         onRegionChange={setRegion}
+        onMarkerSelect={(event) =>
+          setOpenMarker(
+            loadableMarkers?.markers?.find(
+              (x) => x.id.toString() === event.nativeEvent.id
+            ) ?? null
+          )
+        }
+        onMarkerDeselect={() => {
+          setOpenMarker(null);
+        }}
+        onCalloutPress={() => setSelectedMarker(openMarker)}
       >
-        {!isLoading &&
-          !isError &&
-          markers?.map((m) => (
-            <Marker
-              key={m.Id.toString()}
-              coordinate={{ latitude: m.Latitude, longitude: m.Longitude }}
-              title={m.Name}
-              description={m.Description}
-            />
-          ))}
+        {loadableMarkers?.markers?.map((m) => (
+          <Marker
+            key={m.id.toString()}
+            identifier={m.id.toString()}
+            coordinate={{ latitude: m.latitude, longitude: m.longitude }}
+            title={m.name}
+            description={m.description}
+          />
+        ))}
       </MapView>
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardHeaderText}>Nearby Historical Markers</Text>
-        </View>
-        {!isLoading &&
-          !isError &&
-          markers?.map((m, index) => (
-            <View
-              key={m.Id}
-              style={
-                index + 1 < markers.length
-                  ? styles.listItemWithBorder
-                  : styles.listItem
-              }
-            >
-              <Text>{m.Name}</Text>
-            </View>
-          ))}
-        {isLoading && (
-          <View style={styles.listItem}>
-            <Text>Looking for nearby markers...</Text>
-          </View>
-        )}
-        {!isLoading && (!markers || markers.length === 0) && (
-          <View style={styles.listItem}>
-            <Text>No markers found</Text>
-          </View>
-        )}
-      </View>
+      {!selectedMarker && (
+        <MarkersCard
+          style={styles.card}
+          setSelectedMarker={setSelectedMarker}
+          {...loadableMarkers}
+        />
+      )}
+      {selectedMarker && (
+        <ViewMarkerCard
+          marker={selectedMarker}
+          onCancel={() => setSelectedMarker(null)}
+        />
+      )}
     </View>
   );
 }
@@ -90,34 +96,8 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   card: {
-    borderRadius: 5,
-    backgroundColor: "#f9f2ec",
-    alignSelf: "stretch",
-    justifyContent: "space-around",
-    margin: 20,
-    shadowColor: "black",
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    shadowOffset: { width: 1, height: 1 },
-  },
-  cardHeader: {
-    backgroundColor: "#996633",
-    borderTopLeftRadius: 5,
-    borderTopRightRadius: 5,
-    padding: 10,
-  },
-  cardHeaderText: {
-    color: "white",
-    fontSize: 15,
-    fontWeight: "bold",
-  },
-  listItemWithBorder: {
-    borderBottomColor: "#cccccc",
-    borderBottomWidth: 1,
-    padding: 10,
-  },
-  listItem: {
-    padding: 10,
+    marginTop: -5,
+    maxHeight: Dimensions.get("window").height * 0.4 - 20,
   },
   map: {
     width: Dimensions.get("window").width,

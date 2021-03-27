@@ -12,6 +12,11 @@ namespace LaHistoricalMarkers.Functions
 {
     public static class Markers
     {
+        private static JsonSerializerOptions serializerOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        };
+
         [Function("search-markers")]
         public static HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "markers")] HttpRequestData req,
             FunctionContext executionContext)
@@ -21,20 +26,27 @@ namespace LaHistoricalMarkers.Functions
             
             var query = HttpUtility.ParseQueryString(req.Url.Query);
 
-            //latitude and longitude should be safe as strings?
-            var latitude = decimal.Parse(query["Latitude"]);
-            var longitude = decimal.Parse(query["Longitude"]);
+            var region = JsonSerializer.Deserialize<RegionDto>(query["region"], serializerOptions);
+            var latitude = region.Latitude;
+            var longitude = region.Longitude;
 
-            //deltas map to 1 degree, which is equivalent to ~110km at the equator
-            //this may require tweaking (and ideally we could stop guessing)
-            var longitudeDelta = decimal.Parse(query["LongitudeDelta"]);
-            var latitudeDelta = decimal.Parse(query["LatitudeDelta"]);
+            //deltas map to 1 degree and represent the total number of degree from edge to edge
+            //so we can calculate the lat/long of various edges by adding/subtracting half the delta
+            //Note: this is an assumption that SEEMS to work - it may need re-evaluation
+            var longitudeDelta = region.LongitudeDelta;
+            var latitudeDelta = region.LongitudeDelta;
 
-            var topLatitude = latitude + latitudeDelta;
-            var bottomLatitude = latitude - latitudeDelta;
-            var leftLong = longitude - longitudeDelta;
-            var rightLong = longitude + longitudeDelta;
-            var approxMeters = Math.Max(longitudeDelta, latitudeDelta) * 75 * 1000;
+            var topLat = (latitude + (latitudeDelta / 2)).ToString();
+            var bottomLat = (latitude - (latitudeDelta / 2)).ToString();
+            var leftLong = (longitude - (longitudeDelta / 2)).ToString();
+            var rightLong = (longitude + (longitudeDelta / 2)).ToString();
+
+
+            var userLocation = JsonSerializer.Deserialize<UserLocationDto>(query["userLocation"], serializerOptions);
+            //user lat/long are used to calculate distance
+            //if no user lat/long is supplied, we'll use the center of the map
+            var userLatitude = userLocation?.Latitude ?? latitude;
+            var userLongitude = userLocation?.Longitude ?? longitude;
 
             var results = Database.GetConnection().Query<MarkerDto>(@"
 SELECT TOP (10) [Id]
@@ -45,13 +57,13 @@ SELECT TOP (10) [Id]
       ,[ImageUrl]
       ,[IsApproved]
       ,[CreatedTimestamp]
-      ,GEOGRAPHY::Point(@latitude, @longitude, 4326).STDistance([Location]) AS Distance
+      ,GEOGRAPHY::Point(@userLatitude, @userLongitude, 4326).STDistance([Location]) AS Distance
 FROM [LaHistoricalMarkers].[dbo].[Marker]
-WHERE GEOGRAPHY::Point(@latitude, @longitude, 4326).STDistance([Location]) <= @approxMeters
+WHERE GEOGRAPHY::STPolyFromText('Polygon(( ' + @rightLong + ' ' + @bottomLat + ', ' + @rightLong + ' ' + @topLat + ', ' + @leftLong + ' ' + @topLat + ', ' + @leftLong + ' ' + @bottomLat + ', ' + @rightLong + ' ' + @bottomLat + '))', 4326).STIntersects([Location]) = 1
 ORDER BY Distance", 
-new { latitude, longitude, approxMeters }).AsList();
+new { latitude, longitude, topLat, bottomLat, leftLong, rightLong, userLatitude, userLongitude }).AsList();
             
-            var json = JsonSerializer.Serialize(results);
+            var json = JsonSerializer.Serialize(results, serializerOptions);
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "application/json; charset=utf-8");
 
