@@ -74,7 +74,7 @@ export default function App() {
       {!selectedMarker && (
         <MarkersCard
           style={styles.card}
-          setSelectedMarker={setSelectedMarker}
+          setSelectedMarker={setSelectedMarker} //TODO: maybe this should cause the map to focus on the selected markers?
           {...loadableMarkers}
         />
       )}
