@@ -1,8 +1,8 @@
 import React from "react";
 import { Text, ScrollView, View, StyleSheet, Button } from "react-native";
-import { Card } from "components";
+import { Card, headerTextStyle } from "components";
 import { MarkerDto } from "markers";
-import { distanceToMiles } from "utils";
+import { colors, distanceToMiles } from "utils";
 
 interface ViewMarkerCardProps {
   marker: MarkerDto;
@@ -17,16 +17,20 @@ export default function ViewMarkerCard({
     <Card style={styles.card}>
       <Card.Header style={styles.cardHeader}>
         <Text style={styles.cardHeaderText}>{marker.name}</Text>
-        <View style={styles.milesBade}>
+        <View style={styles.milesBadge}>
           <Text style={styles.milesText}>
             {distanceToMiles(marker.distance)} miles
           </Text>
         </View>
       </Card.Header>
-      <ScrollView style={styles.content}>
-        <Text>{marker.description}</Text>
-      </ScrollView>
-      <Button onPress={onCancel} title="Done" color="#dab574" />
+      <Card.Body>
+        <ScrollView>
+          <Text>{marker.description}</Text>
+        </ScrollView>
+      </Card.Body>
+      <Card.Footer>
+        <Button onPress={onCancel} title="Done" color={colors.accent} />
+      </Card.Footer>
     </Card>
   );
 }
@@ -34,33 +38,20 @@ export default function ViewMarkerCard({
 const styles = StyleSheet.create({
   card: {
     marginTop: -5,
-    backgroundColor: "#f9f2ec",
   },
-  cardHeader: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    backgroundColor: "#996633",
-  },
-  cardHeaderText: {
-    color: "white",
-    fontSize: 15,
-    fontWeight: "bold",
-  },
+  cardHeader: {},
+  cardHeaderText: { ...headerTextStyle },
   milesText: {
-    color: "white",
+    color: colors.lightText,
     fontWeight: "bold",
   },
-  milesBade: {
+  milesBadge: {
     display: "flex",
     justifyContent: "center",
-    backgroundColor: "#dab574",
+    backgroundColor: colors.accent,
     borderRadius: 2,
     margin: -5, //ew, negative margins
     paddingLeft: 5,
     paddingRight: 5,
-  },
-  content: {
-    padding: 10,
   },
 });

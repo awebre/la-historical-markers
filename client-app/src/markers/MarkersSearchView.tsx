@@ -1,0 +1,48 @@
+import React from "react";
+import {
+  StyleProp,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Text,
+  ViewStyle,
+} from "react-native";
+import { LoadableMarkers, MarkerDto } from "markers";
+import MarkersCard from "./MarkersCard";
+import ViewMarkerCard from "./ViewMarkerCard";
+
+interface MarkersSearchViewProps {
+  loadableMarkers: LoadableMarkers;
+  selectedMarker: MarkerDto | null;
+  setSelectedMarker: (marker: MarkerDto | null) => void;
+  setIsAdding: () => void;
+  markersCardStyles: StyleProp<ViewStyle>;
+  addButtonStyles: StyleProp<ViewStyle>;
+}
+
+export default function MarkersSearchView({
+  loadableMarkers,
+  selectedMarker,
+  setSelectedMarker,
+  setIsAdding,
+  markersCardStyles,
+}: MarkersSearchViewProps) {
+  return (
+    <>
+      {!selectedMarker && (
+        <MarkersCard
+          style={markersCardStyles}
+          setIsAdding={setIsAdding}
+          setSelectedMarker={setSelectedMarker} //TODO: maybe this should cause the map to focus on the selected markers?
+          {...loadableMarkers}
+        />
+      )}
+      {selectedMarker && (
+        <ViewMarkerCard
+          marker={selectedMarker}
+          onCancel={() => setSelectedMarker(null)}
+        />
+      )}
+    </>
+  );
+}

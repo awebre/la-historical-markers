@@ -3,14 +3,14 @@ import useMarkers, {
   LoadableMarkers,
   UserLocation,
 } from "./useMarkers";
-import MarkersCard from "./MarkersCard";
-import ViewMarkerCard from "./ViewMarkerCard";
+import MarkersSearchView from "./MarkersSearchView";
+import SubmitMarkerView from "./SubmitMarkerView";
 
 export {
   useMarkers,
-  MarkersCard,
-  ViewMarkerCard,
   MarkerDto,
   LoadableMarkers,
   UserLocation,
+  MarkersSearchView,
+  SubmitMarkerView,
 };

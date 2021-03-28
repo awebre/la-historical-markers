@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Dimensions, Text, FlatList } from "react-native";
+import { StyleSheet, View, Dimensions } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import {
-  MarkersCard,
+  MarkersSearchView,
+  SubmitMarkerView,
   useMarkers,
   MarkerDto,
   UserLocation,
-  ViewMarkerCard,
 } from "markers";
 import { useDebounce } from "hooks";
+import { colors } from "utils";
 
 export default function App() {
   //TODO: move this into a component (called something like MarkersGeoSearch)
@@ -21,9 +22,10 @@ export default function App() {
   });
   //note: debounce user location if you ever subscribe to updates
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
-
   const [selectedMarker, setSelectedMarker] = useState<MarkerDto | null>(null);
   const [openMarker, setOpenMarker] = useState<MarkerDto | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
+
   const debouncedRegion = useDebounce(region, 500);
 
   useEffect(() => {
@@ -71,24 +73,25 @@ export default function App() {
           />
         ))}
       </MapView>
-      {!selectedMarker && (
-        <MarkersCard
-          style={styles.card}
-          setSelectedMarker={setSelectedMarker} //TODO: maybe this should cause the map to focus on the selected markers?
-          {...loadableMarkers}
+      {!isAdding && (
+        <MarkersSearchView
+          loadableMarkers={loadableMarkers}
+          selectedMarker={selectedMarker}
+          setSelectedMarker={setSelectedMarker}
+          setIsAdding={() => setIsAdding(true)}
+          markersCardStyles={styles.card}
+          addButtonStyles={styles.addButton}
         />
       )}
-      {selectedMarker && (
-        <ViewMarkerCard
-          marker={selectedMarker}
-          onCancel={() => setSelectedMarker(null)}
+      {isAdding && (
+        <SubmitMarkerView
+          cardStyles={styles.card}
+          cancel={() => {
+            setIsAdding(false);
+          }}
+          submit={(m) => console.log(m)} //TODO: Make this submit to Azure Functions
         />
       )}
-      <View style={styles.addButton}>
-        <Text style={{ color: "white", fontSize: 30, fontWeight: "bold" }}>
-          +
-        </Text>
-      </View>
     </View>
   );
 }
@@ -96,7 +99,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ecd9c6",
+    backgroundColor: colors.mediumBackground,
     alignItems: "center",
     justifyContent: "flex-start",
   },
@@ -112,12 +115,5 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: Dimensions.get("window").height - 100,
     right: 25,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 75,
-    backgroundColor: "#dab574",
-    height: 75,
-    width: 75,
   },
 });
