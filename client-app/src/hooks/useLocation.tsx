@@ -1,0 +1,36 @@
+import { useEffect, useCallback, useState } from "react";
+import * as LocationManager from "expo-location";
+import { Location } from "types";
+
+interface UseLocationProps {
+  autoExecute?: boolean;
+  location: Location | null;
+  setLocation: (location: Location) => void;
+}
+
+export default function useLocation({
+  autoExecute = true,
+  location,
+  setLocation,
+}: UseLocationProps) {
+  const [permissionGranted, setPermissionGranted] = useState(false);
+  const requestAndSetLocation = useCallback(async () => {
+    const { status } = await LocationManager.requestPermissionsAsync();
+    if (status !== LocationManager.PermissionStatus.GRANTED) {
+      setPermissionGranted(false);
+      return;
+    }
+
+    const { coords } = await LocationManager.getCurrentPositionAsync({});
+    setPermissionGranted(true);
+    setLocation(coords);
+  }, [setLocation]);
+
+  useEffect(() => {
+    if (autoExecute && location === null) {
+      requestAndSetLocation();
+    }
+  }, []);
+
+  return { requestLocation: requestAndSetLocation, permissionGranted };
+}

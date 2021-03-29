@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Text.Json;
 using System.Web;
+using System.IO;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
@@ -18,12 +19,12 @@ namespace LaHistoricalMarkers.Functions
         };
 
         [Function("search-markers")]
-        public static HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "markers")] HttpRequestData req,
+        public static HttpResponseData Search([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "markers")] HttpRequestData req,
             FunctionContext executionContext)
         {
             var logger = executionContext.GetLogger("search-markers");
             logger.LogInformation("Request for markers received.");
-            
+
             var query = HttpUtility.ParseQueryString(req.Url.Query);
 
             var region = JsonSerializer.Deserialize<RegionDto>(query["region"], serializerOptions);
@@ -60,9 +61,20 @@ SELECT TOP (10) [Id]
       ,GEOGRAPHY::Point(@userLatitude, @userLongitude, 4326).STDistance([Location]) AS Distance
 FROM [LaHistoricalMarkers].[dbo].[Marker]
 WHERE GEOGRAPHY::STPolyFromText('Polygon(( ' + @rightLong + ' ' + @bottomLat + ', ' + @rightLong + ' ' + @topLat + ', ' + @leftLong + ' ' + @topLat + ', ' + @leftLong + ' ' + @bottomLat + ', ' + @rightLong + ' ' + @bottomLat + '))', 4326).STIntersects([Location]) = 1
-ORDER BY Distance", 
-new { latitude, longitude, topLat, bottomLat, leftLong, rightLong, userLatitude, userLongitude }).AsList();
-            
+AND [IsApproved] = 1
+ORDER BY Distance",
+new
+{
+    latitude,
+    longitude,
+    topLat,
+    bottomLat,
+    leftLong,
+    rightLong,
+    userLatitude,
+    userLongitude
+}).AsList();
+
             var json = JsonSerializer.Serialize(results, serializerOptions);
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "application/json; charset=utf-8");
@@ -70,6 +82,42 @@ new { latitude, longitude, topLat, bottomLat, leftLong, rightLong, userLatitude,
             response.WriteString(json);
 
             return response;
+        }
+
+        [Function("submit-markers")]
+        public static HttpResponseData Submit([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "markers")] HttpRequestData req, FunctionContext context)
+        {
+            using var streamReader = new StreamReader(req.Body);
+            var submission = JsonSerializer.Deserialize<MarkerSubmissionDto>(streamReader.ReadToEnd(), serializerOptions);
+            if (string.IsNullOrEmpty(submission.Name) || string.IsNullOrEmpty(submission.Description))
+            {
+                return req.CreateResponse(HttpStatusCode.BadRequest);
+            }
+
+            Database.GetConnection().Execute(@"
+INSERT INTO [LaHistoricalMarkers].[dbo].[Marker] (
+    [Name], 
+    [Description], 
+    [Location], 
+    [IsApproved], 
+    [CreatedTimestamp]
+)
+VALUES (
+    @name,
+    @description,
+    GEOGRAPHY::Point(@latitude, @longitude, 4326),
+    0,
+    SYSDATETIMEOFFSET()
+)",
+new
+{
+    name = submission.Name,
+    description = submission.Description,
+    latitude = submission.Latitude,
+    longitude = submission.Longitude
+});
+
+            return req.CreateResponse(HttpStatusCode.OK);
         }
     }
 }

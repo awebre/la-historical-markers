@@ -1,27 +1,11 @@
 import useSwr from "swr";
 import queryString from "query-string";
-import { url, fetcher } from "utils/";
-
-export type MarkerDto = {
-  id: number;
-  name: string;
-  description: string;
-  latitude: number;
-  longitude: number;
-  imageUrl?: string;
-  isApproved: boolean;
-  createdTimestamp: Date;
-  distance: number;
-};
-
-export type UserLocation = {
-  latitude: number;
-  longitude: number;
-};
+import { url, fetcher } from "utils";
+import { Location, MarkerDto } from "types";
 
 interface MarkerSearchRequest {
   region: MarkerRegionSearch;
-  userLocation: UserLocation | null;
+  userLocation: Location | null;
 }
 
 interface MarkerRegionSearch {

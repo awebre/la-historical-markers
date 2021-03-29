@@ -1,16 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useRef } from "react";
 import { StyleSheet, View, Dimensions } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import * as Location from "expo-location";
-import {
-  MarkersSearchView,
-  SubmitMarkerView,
-  useMarkers,
-  MarkerDto,
-  UserLocation,
-} from "markers";
-import { useDebounce } from "hooks";
+import { Location, MarkerDto } from "types";
+import { MarkersSearchView, SubmitMarkerView, useMarkers } from "markers";
+import { useDebounce, useLocation } from "hooks";
 import { colors } from "utils";
+import Toast from "react-native-easy-toast";
 
 export default function App() {
   //TODO: move this into a component (called something like MarkersGeoSearch)
@@ -20,28 +15,23 @@ export default function App() {
     latitudeDelta: 5,
     longitudeDelta: 5,
   });
+  const toast = useRef<Toast>(null);
+
   //note: debounce user location if you ever subscribe to updates
-  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const [userLocation, setUserLocation] = useState<Location | null>(null);
   const [selectedMarker, setSelectedMarker] = useState<MarkerDto | null>(null);
   const [openMarker, setOpenMarker] = useState<MarkerDto | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [newMarker, setNewMarker] = useState<MarkerDto | null>(null);
 
   const debouncedRegion = useDebounce(region, 500);
-
-  useEffect(() => {
-    const requestAndSetLocation = async () => {
-      const { status } = await Location.requestPermissionsAsync();
-      if (status !== Location.PermissionStatus.GRANTED) {
-        return;
-      }
-
-      const { coords } = await Location.getCurrentPositionAsync({});
-      setRegion({ latitudeDelta: 0.1, longitudeDelta: 0.1, ...coords });
-      setUserLocation(coords);
-    };
-
-    requestAndSetLocation();
-  }, []);
+  useLocation({
+    location: userLocation,
+    setLocation: (location) => {
+      setRegion({ latitudeDelta: 0.1, longitudeDelta: 0.1, ...location });
+      setUserLocation(location);
+    },
+  });
 
   const loadableMarkers = useMarkers({ region: debouncedRegion, userLocation });
   return (
@@ -50,7 +40,7 @@ export default function App() {
         style={styles.map}
         region={region}
         showsUserLocation={true}
-        onRegionChange={setRegion}
+        onRegionChangeComplete={setRegion}
         onMarkerSelect={(event) =>
           setOpenMarker(
             loadableMarkers?.markers?.find(
@@ -63,15 +53,23 @@ export default function App() {
         }}
         onCalloutPress={() => setSelectedMarker(openMarker)}
       >
-        {loadableMarkers?.markers?.map((m) => (
+        {!isAdding &&
+          loadableMarkers?.markers?.map((m) => (
+            <Marker
+              key={m.id.toString()}
+              identifier={m.id.toString()}
+              coordinate={{ latitude: m.latitude, longitude: m.longitude }}
+              title={m.name}
+              description={m.description}
+            />
+          ))}
+        {isAdding && newMarker && newMarker.latitude && newMarker.longitude && (
           <Marker
-            key={m.id.toString()}
-            identifier={m.id.toString()}
-            coordinate={{ latitude: m.latitude, longitude: m.longitude }}
-            title={m.name}
-            description={m.description}
+            coordinate={{ ...newMarker }}
+            title={newMarker.name}
+            description={newMarker.description}
           />
-        ))}
+        )}
       </MapView>
       {!isAdding && (
         <MarkersSearchView
@@ -88,10 +86,21 @@ export default function App() {
           cardStyles={styles.card}
           cancel={() => {
             setIsAdding(false);
+            setNewMarker(null);
           }}
-          submit={(m) => console.log(m)} //TODO: Make this submit to Azure Functions
+          onSuccess={() => {
+            setIsAdding(false);
+            toast.current?.show(
+              `We received your submission of ${newMarker?.name}`,
+              3000
+            );
+            setNewMarker(null);
+          }}
+          marker={newMarker}
+          setMarker={setNewMarker}
         />
       )}
+      <Toast ref={toast} />
     </View>
   );
 }
@@ -116,4 +125,6 @@ const styles = StyleSheet.create({
     top: Dimensions.get("window").height - 100,
     right: 25,
   },
+  toast: {},
+  toastText: {},
 });

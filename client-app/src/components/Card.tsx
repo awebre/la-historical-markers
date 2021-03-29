@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: colors.primary,
     display: "flex",
+    flex: 0,
     flexDirection: "row",
     justifyContent: "space-between",
     borderTopLeftRadius: 5,
@@ -64,6 +65,8 @@ const styles = StyleSheet.create({
   },
   body: {
     padding: 10,
+    flexGrow: 0,
+    flexShrink: 1,
     backgroundColor: colors.lightBackground,
   },
   footer: {

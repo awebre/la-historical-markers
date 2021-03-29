@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, ScrollView, View, StyleSheet, Button } from "react-native";
 import { Card, headerTextStyle } from "components";
-import { MarkerDto } from "markers";
+import { MarkerDto } from "types";
 import { colors, distanceToMiles } from "utils";
 
 interface ViewMarkerCardProps {

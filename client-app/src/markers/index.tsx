@@ -1,16 +1,5 @@
-import useMarkers, {
-  MarkerDto,
-  LoadableMarkers,
-  UserLocation,
-} from "./useMarkers";
+import useMarkers, { LoadableMarkers } from "./useMarkers";
 import MarkersSearchView from "./MarkersSearchView";
 import SubmitMarkerView from "./SubmitMarkerView";
 
-export {
-  useMarkers,
-  MarkerDto,
-  LoadableMarkers,
-  UserLocation,
-  MarkersSearchView,
-  SubmitMarkerView,
-};
+export { useMarkers, LoadableMarkers, MarkersSearchView, SubmitMarkerView };

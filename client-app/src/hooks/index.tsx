@@ -1,2 +1,3 @@
 import useDebounce from "./useDebounce";
-export { useDebounce };
+import useLocation from "./useLocation";
+export { useDebounce, useLocation };
