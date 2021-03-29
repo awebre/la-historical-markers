@@ -2,7 +2,7 @@ import React from "react";
 import { Text, ScrollView, View, StyleSheet, Button } from "react-native";
 import { Card, headerTextStyle } from "components";
 import { MarkerDto } from "types";
-import { colors, distanceToMiles } from "utils";
+import { colors, humanizedDistance } from "utils";
 
 interface ViewMarkerCardProps {
   marker: MarkerDto;
@@ -19,7 +19,7 @@ export default function ViewMarkerCard({
         <Text style={styles.cardHeaderText}>{marker.name}</Text>
         <View style={styles.milesBadge}>
           <Text style={styles.milesText}>
-            {distanceToMiles(marker.distance)} miles
+            {humanizedDistance(marker.distance)}
           </Text>
         </View>
       </Card.Header>

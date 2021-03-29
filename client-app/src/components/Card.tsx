@@ -50,7 +50,6 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 5,
     alignSelf: "stretch",
-    justifyContent: "space-around",
     margin: 20,
   },
   header: {
@@ -58,10 +57,11 @@ const styles = StyleSheet.create({
     display: "flex",
     flex: 0,
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
     borderTopLeftRadius: 5,
     borderTopRightRadius: 5,
-    padding: 10,
+    padding: 15,
   },
   body: {
     padding: 10,
@@ -70,7 +70,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightBackground,
   },
   footer: {
+    height: 50,
     alignSelf: "stretch",
+    justifyContent: "flex-end",
     backgroundColor: colors.grey,
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5,

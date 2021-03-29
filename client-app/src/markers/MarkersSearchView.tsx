@@ -7,7 +7,8 @@ import {
   Text,
   ViewStyle,
 } from "react-native";
-import { LoadableMarkers, MarkerDto } from "markers";
+import { LoadableMarkers } from "markers";
+import { MarkerDto } from "types";
 import MarkersCard from "./MarkersCard";
 import ViewMarkerCard from "./ViewMarkerCard";
 
@@ -17,7 +18,6 @@ interface MarkersSearchViewProps {
   setSelectedMarker: (marker: MarkerDto | null) => void;
   setIsAdding: () => void;
   markersCardStyles: StyleProp<ViewStyle>;
-  addButtonStyles: StyleProp<ViewStyle>;
 }
 
 export default function MarkersSearchView({

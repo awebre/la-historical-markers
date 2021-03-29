@@ -25,6 +25,7 @@ export default function Alert({ alertText, cancel }: AlertProps) {
 
 const styles = StyleSheet.create({
   alert: {
+    margin: 10,
     borderRadius: 10,
     backgroundColor: colors.alert,
     padding: 10,

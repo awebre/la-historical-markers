@@ -1,5 +1,11 @@
 import React, { useState, useRef } from "react";
-import { StyleSheet, View, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Dimensions,
+  SafeAreaView,
+  KeyboardAvoidingView,
+} from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { Location, MarkerDto } from "types";
 import { MarkersSearchView, SubmitMarkerView, useMarkers } from "markers";
@@ -16,6 +22,7 @@ export default function App() {
     longitudeDelta: 5,
   });
   const toast = useRef<Toast>(null);
+  const map = useRef<MapView>(null);
 
   //note: debounce user location if you ever subscribe to updates
   const [userLocation, setUserLocation] = useState<Location | null>(null);
@@ -28,19 +35,30 @@ export default function App() {
   useLocation({
     location: userLocation,
     setLocation: (location) => {
-      setRegion({ latitudeDelta: 0.1, longitudeDelta: 0.1, ...location });
+      map.current?.animateToRegion({
+        latitudeDelta: 0.1,
+        longitudeDelta: 0.1,
+        ...location,
+      });
       setUserLocation(location);
     },
   });
 
   const loadableMarkers = useMarkers({ region: debouncedRegion, userLocation });
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior="position"
+      enabled={true}
+    >
       <MapView
-        style={styles.map}
-        region={region}
+        ref={map}
+        style={[
+          styles.map,
+          isAdding || selectedMarker ? styles.viewMap : styles.searchMap,
+        ]}
         showsUserLocation={true}
-        onRegionChangeComplete={setRegion}
+        onRegionChange={setRegion}
         onMarkerSelect={(event) =>
           setOpenMarker(
             loadableMarkers?.markers?.find(
@@ -51,7 +69,7 @@ export default function App() {
         onMarkerDeselect={() => {
           setOpenMarker(null);
         }}
-        onCalloutPress={() => setSelectedMarker(openMarker)}
+        onCalloutPress={() => selectMarkerAndNavigate(openMarker)}
       >
         {!isAdding &&
           loadableMarkers?.markers?.map((m) => (
@@ -75,15 +93,17 @@ export default function App() {
         <MarkersSearchView
           loadableMarkers={loadableMarkers}
           selectedMarker={selectedMarker}
-          setSelectedMarker={setSelectedMarker}
+          setSelectedMarker={selectMarkerAndNavigate}
           setIsAdding={() => setIsAdding(true)}
-          markersCardStyles={styles.card}
-          addButtonStyles={styles.addButton}
+          markersCardStyles={[
+            styles.card,
+            selectedMarker ? styles.viewCard : null,
+          ]}
         />
       )}
       {isAdding && (
         <SubmitMarkerView
-          cardStyles={styles.card}
+          cardStyles={styles.viewCard}
           cancel={() => {
             setIsAdding(false);
             setNewMarker(null);
@@ -101,8 +121,27 @@ export default function App() {
         />
       )}
       <Toast ref={toast} />
-    </View>
+    </KeyboardAvoidingView>
   );
+
+  function selectMarkerAndNavigate(marker: MarkerDto | null) {
+    setSelectedMarker(marker);
+    if (marker != null) {
+      const { latitude, longitude } = marker;
+      map.current?.animateToRegion({
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+        latitude,
+        longitude,
+      });
+    } else if (userLocation) {
+      map.current?.animateToRegion({
+        latitudeDelta: 0.1,
+        longitudeDelta: 0.1,
+        ...userLocation,
+      });
+    }
+  }
 }
 
 const styles = StyleSheet.create({
@@ -113,18 +152,22 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   card: {
+    alignSelf: "stretch",
     marginTop: -5,
-    maxHeight: Dimensions.get("window").height * 0.4 - 20,
+  },
+  searchCard: {
+    maxHeight: Dimensions.get("window").height * 0.4 - 125,
+  },
+  viewCard: {
+    maxHeight: Dimensions.get("window").height * 0.6 - 50,
   },
   map: {
     width: Dimensions.get("window").width,
+  },
+  searchMap: {
     height: Dimensions.get("window").height * 0.6,
   },
-  addButton: {
-    position: "absolute",
-    top: Dimensions.get("window").height - 100,
-    right: 25,
-  },
+  viewMap: { height: Dimensions.get("window").height * 0.4 },
   toast: {},
   toastText: {},
 });

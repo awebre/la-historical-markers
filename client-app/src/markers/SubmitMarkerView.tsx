@@ -7,6 +7,8 @@ import {
   Button,
   ScrollView,
   View,
+  KeyboardAvoidingView,
+  SafeAreaView,
 } from "react-native";
 import { Alert, Card, headerTextStyle } from "components";
 import { FormGroup } from "components/forms";
@@ -48,6 +50,7 @@ export default function SubmitMarkerView({
           {!error && (
             <Text
               style={{
+                paddingTop: 5,
                 paddingBottom: 5,
               }}
             >
@@ -132,11 +135,13 @@ export default function SubmitMarkerView({
 const styles = StyleSheet.create({
   headerText: { ...headerTextStyle },
   body: {
+    paddingTop: 0,
     paddingBottom: 0,
   },
   footer: {
     display: "flex",
     flexDirection: "row",
+    alignItems: "flex-end",
     justifyContent: "space-around",
   },
 });

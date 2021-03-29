@@ -10,8 +10,9 @@ import {
 } from "react-native";
 import { Card, headerTextStyle, FlatListItemSeparator } from "components";
 import { colors } from "utils";
-import { LoadableMarkers, MarkerDto } from "./useMarkers";
+import { LoadableMarkers } from "./useMarkers";
 import MarkerListItem from "./MarkerListItem";
+import { MarkerDto } from "types";
 
 interface MarkersCardProps extends LoadableMarkers {
   style: StyleProp<ViewStyle>;
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
   cardHeader: {},
   cardHeaderText: { ...headerTextStyle },
   listItem: {
-    padding: 10,
+    padding: 15,
   },
   body: {
     padding: 0,

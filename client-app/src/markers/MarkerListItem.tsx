@@ -5,8 +5,8 @@ import {
   StyleSheet,
   GestureResponderEvent,
 } from "react-native";
-import { MarkerDto } from "./useMarkers";
-import { distanceToMiles } from "utils";
+import { MarkerDto } from "types";
+import { humanizedDistance } from "utils";
 
 interface MarkerListItemProps {
   marker: MarkerDto;
@@ -20,14 +20,14 @@ export default function MarkerListItem({
   return (
     <TouchableOpacity style={styles.listItem} onPress={onPress}>
       <Text>{marker.name}</Text>
-      <Text>{distanceToMiles(marker.distance)} miles</Text>
+      <Text>{humanizedDistance(marker.distance)}</Text>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   listItem: {
-    padding: 10,
+    padding: 15,
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
