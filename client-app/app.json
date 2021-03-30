@@ -1,11 +1,25 @@
 {
   "name": "client-app",
-  "displayName": "client-app",
+  "displayName": "LA Markers",
   "expo": {
-    "name": "client-app",
-    "slug": "client-app",
+    "name": "LA Historical Markers",
+    "slug": "la-historical-markers",
     "version": "1.0.0",
     "assetBundlePatterns": ["**/*"],
-    "orientation": "portrait"
+    "orientation": "portrait",
+    "icon": "./icon.png",
+    "ios": {
+      "bundleIdentifier": "com.austinwebre.lahistoricalmarkers",
+      "buildNumber": "1.0.0",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app uses your location to search for nearby markers.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app uses your location to search for nearby markers."
+      }
+    },
+    "android": {
+      "package": "com.austinwebre.lahistoricalmarkers",
+      "versionCode": 1,
+      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"]
+    }
   }
 }

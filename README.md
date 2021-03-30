@@ -16,7 +16,7 @@ In an attempt at simplicity, this project uses Dapper to query the SQL Server an
 
 With SQL Server installed and an instance running, you can run `Migrations/InitialMigration.sql` against your current instance. This should create the necessary Database, Table(s), and seed some initial data. For now, additional migrations can be added directly to this file, but long term we will probably need to break this out to multiple files and ensure some kind of order of operations.
 
-## Azure Functions
+## Azure Functions (Back End)
 
 Getting Azure Functions setup locally is as simple as adding the [https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions](VS Code Azure Functions extension). With this extension installed, you should have all of the dependencies and tools needed to run the function(s) locally. This extension will also help you deploy the function(s) to your own Azure Subscription (should you want to test in a "prod-like" environment).
 
@@ -37,6 +37,6 @@ Note: you will likely need to change the connection string (especially the passw
 
 Once this file has been added, you should be able to click Run (or F5) and the functions should spin up for you to test locally.
 
-## React Native
+## Expo (Mobile App)
 
-I honestly haven't gotten here yet. This is the next step.
+The mobile app was created using Expo, so running it is as simple as making sure you have have Expo installed and runing `expo start`.
