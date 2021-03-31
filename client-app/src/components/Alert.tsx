@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, Text, Button } from "react-native";
+import { StyleSheet, View, Text, Button, Platform } from "react-native";
 import { colors } from "utils";
 
 interface AlertProps {
@@ -16,7 +16,11 @@ export default function Alert({ alertText, cancel }: AlertProps) {
       <Text style={styles.text}>{alertText}</Text>
       {cancel && (
         <View>
-          <Button title="Dismiss" onPress={cancel} color={colors.lightText} />
+          <Button
+            title="Dismiss"
+            onPress={cancel}
+            color={Platform.OS === "ios" ? colors.lightText : colors.grey}
+          />
         </View>
       )}
     </View>

@@ -5,6 +5,7 @@ import {
   StyleProp,
   ViewStyle,
   TextStyle,
+  Platform,
 } from "react-native";
 import { colors } from "utils";
 
@@ -76,5 +77,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grey,
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5,
+    paddingBottom: Platform.OS == "android" ? 10 : 0,
   },
 });

@@ -32,7 +32,7 @@ export default function App() {
   const [newMarker, setNewMarker] = useState<MarkerDto | null>(null);
 
   const debouncedRegion = useDebounce(region, 500);
-  useLocation({
+  const { requestLocation } = useLocation({
     location: userLocation,
     setLocation: (location) => {
       map.current?.animateToRegion({
@@ -135,6 +135,7 @@ export default function App() {
         longitude,
       });
     } else if (userLocation) {
+      requestLocation();
       map.current?.animateToRegion({
         latitudeDelta: 0.1,
         longitudeDelta: 0.1,
