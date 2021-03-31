@@ -5,6 +5,7 @@ using System.Web;
 using System.IO;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Dapper;
 using LaHistoricalMarkers.Data;
@@ -85,7 +86,9 @@ new
         }
 
         [Function("submit-markers")]
-        public static HttpResponseData Submit([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "markers")] HttpRequestData req, FunctionContext context)
+        public static HttpResponseData Submit([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "markers")] HttpRequestData req,
+            [Queue("la-hm-approvals"), StorageAccount("AzureWebJobsStorage")] ICollector<string> msg,
+            FunctionContext context)
         {
             using var streamReader = new StreamReader(req.Body);
             var submission = JsonSerializer.Deserialize<MarkerSubmissionDto>(streamReader.ReadToEnd(), serializerOptions);
@@ -94,7 +97,7 @@ new
                 return req.CreateResponse(HttpStatusCode.BadRequest);
             }
 
-            Database.GetConnection().Execute(@"
+            var id = Database.GetConnection().QuerySingle<int>(@"
 INSERT INTO [LaHistoricalMarkers].[dbo].[Marker] (
     [Name], 
     [Description], 
@@ -102,6 +105,7 @@ INSERT INTO [LaHistoricalMarkers].[dbo].[Marker] (
     [IsApproved], 
     [CreatedTimestamp]
 )
+OUTPUT INSERTED.Id
 VALUES (
     @name,
     @description,
@@ -116,6 +120,16 @@ new
     latitude = submission.Latitude,
     longitude = submission.Longitude
 });
+            var pending = new PendingSubmissionDto
+            {
+                Id = id,
+                Name = submission.Name,
+                Description = submission.Description,
+                Latitude = submission.Latitude,
+                Longitude = submission.Longitude,
+            };
+
+            msg.Add(JsonSerializer.Serialize(pending));
 
             return req.CreateResponse(HttpStatusCode.OK);
         }
