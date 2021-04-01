@@ -5,20 +5,15 @@ using System.Web;
 using System.IO;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Dapper;
 using LaHistoricalMarkers.Data;
+using LaHistoricalMarkers.Config;
 
 namespace LaHistoricalMarkers.Functions
 {
     public static class Markers
     {
-        private static JsonSerializerOptions serializerOptions = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        };
-
         [Function("search-markers")]
         public static HttpResponseData Search([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "markers")] HttpRequestData req,
             FunctionContext executionContext)
@@ -28,7 +23,7 @@ namespace LaHistoricalMarkers.Functions
 
             var query = HttpUtility.ParseQueryString(req.Url.Query);
 
-            var region = JsonSerializer.Deserialize<RegionDto>(query["region"], serializerOptions);
+            var region = JsonSerializer.Deserialize<RegionDto>(query["region"], DefaultJsonConfiguration.SerializerOptions);
             var latitude = region.Latitude;
             var longitude = region.Longitude;
 
@@ -44,39 +39,40 @@ namespace LaHistoricalMarkers.Functions
             var rightLong = (longitude + (longitudeDelta / 2)).ToString();
 
 
-            var userLocation = JsonSerializer.Deserialize<UserLocationDto>(query["userLocation"], serializerOptions);
+            var userLocation = JsonSerializer.Deserialize<UserLocationDto>(query["userLocation"], DefaultJsonConfiguration.SerializerOptions);
             //user lat/long are used to calculate distance
             //if no user lat/long is supplied, we'll use the center of the map
             var userLatitude = userLocation?.Latitude ?? latitude;
             var userLongitude = userLocation?.Longitude ?? longitude;
 
-            var results = Database.GetConnection().Query<MarkerDto>(@"
-SELECT TOP (10) [Id]
-      ,[Name]
-      ,[Description]
-      ,[Location].[Lat] AS [Latitude]
-      ,[Location].[Long] AS [Longitude]
-      ,[ImageUrl]
-      ,[IsApproved]
-      ,[CreatedTimestamp]
-      ,GEOGRAPHY::Point(@userLatitude, @userLongitude, 4326).STDistance([Location]) AS Distance
-FROM [LaHistoricalMarkers].[dbo].[Marker]
-WHERE GEOGRAPHY::STPolyFromText('Polygon(( ' + @rightLong + ' ' + @bottomLat + ', ' + @rightLong + ' ' + @topLat + ', ' + @leftLong + ' ' + @topLat + ', ' + @leftLong + ' ' + @bottomLat + ', ' + @rightLong + ' ' + @bottomLat + '))', 4326).STIntersects([Location]) = 1
-AND [IsApproved] = 1
-ORDER BY Distance",
-new
-{
-    latitude,
-    longitude,
-    topLat,
-    bottomLat,
-    leftLong,
-    rightLong,
-    userLatitude,
-    userLongitude
-}).AsList();
+            using var connection = Database.GetConnection();
+            var results = connection.Query<MarkerDto>(@"
+            SELECT TOP (10) [Id]
+                ,[Name]
+                ,[Description]
+                ,[Location].[Lat] AS [Latitude]
+                ,[Location].[Long] AS [Longitude]
+                ,[ImageUrl]
+                ,[IsApproved]
+                ,[CreatedTimestamp]
+                ,GEOGRAPHY::Point(@userLatitude, @userLongitude, 4326).STDistance([Location]) AS Distance
+            FROM [LaHistoricalMarkers].[dbo].[Marker]
+            WHERE GEOGRAPHY::STPolyFromText('Polygon(( ' + @rightLong + ' ' + @bottomLat + ', ' + @rightLong + ' ' + @topLat + ', ' + @leftLong + ' ' + @topLat + ', ' + @leftLong + ' ' + @bottomLat + ', ' + @rightLong + ' ' + @bottomLat + '))', 4326).STIntersects([Location]) = 1
+            AND [IsApproved] = 1
+            ORDER BY Distance",
+            new
+            {
+                latitude,
+                longitude,
+                topLat,
+                bottomLat,
+                leftLong,
+                rightLong,
+                userLatitude,
+                userLongitude
+            }).AsList();
 
-            var json = JsonSerializer.Serialize(results, serializerOptions);
+            var json = JsonSerializer.Serialize(results, DefaultJsonConfiguration.SerializerOptions);
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "application/json; charset=utf-8");
 
@@ -86,40 +82,45 @@ new
         }
 
         [Function("submit-markers")]
-        public static HttpResponseData Submit([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "markers")] HttpRequestData req,
-            [Queue("la-hm-approvals"), StorageAccount("AzureWebJobsStorage")] ICollector<string> msg,
+        public static SubmissionResponse Submit([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "markers")] HttpRequestData req,
             FunctionContext context)
         {
             using var streamReader = new StreamReader(req.Body);
-            var submission = JsonSerializer.Deserialize<MarkerSubmissionDto>(streamReader.ReadToEnd(), serializerOptions);
+            var submission = JsonSerializer.Deserialize<MarkerSubmissionDto>(streamReader.ReadToEnd(), DefaultJsonConfiguration.SerializerOptions);
             if (string.IsNullOrEmpty(submission.Name) || string.IsNullOrEmpty(submission.Description))
             {
-                return req.CreateResponse(HttpStatusCode.BadRequest);
+                return new SubmissionResponse
+                {
+                    Response = req.CreateResponse(HttpStatusCode.BadRequest)
+                };
             }
-
-            var id = Database.GetConnection().QuerySingle<int>(@"
-INSERT INTO [LaHistoricalMarkers].[dbo].[Marker] (
-    [Name], 
-    [Description], 
-    [Location], 
-    [IsApproved], 
-    [CreatedTimestamp]
-)
-OUTPUT INSERTED.Id
-VALUES (
-    @name,
-    @description,
-    GEOGRAPHY::Point(@latitude, @longitude, 4326),
-    0,
-    SYSDATETIMEOFFSET()
-)",
-new
-{
-    name = submission.Name,
-    description = submission.Description,
-    latitude = submission.Latitude,
-    longitude = submission.Longitude
-});
+            using var connection = Database.GetConnection();
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+            var id = connection.QuerySingle<int>(@"
+            INSERT INTO [LaHistoricalMarkers].[dbo].[Marker] (
+                [Name], 
+                [Description], 
+                [Location], 
+                [IsApproved], 
+                [CreatedTimestamp]
+            )
+            OUTPUT INSERTED.Id
+            VALUES (
+                @name,
+                @description,
+                GEOGRAPHY::Point(@latitude, @longitude, 4326),
+                0,
+                SYSDATETIMEOFFSET()
+            )",
+            new
+            {
+                name = submission.Name,
+                description = submission.Description,
+                latitude = submission.Latitude,
+                longitude = submission.Longitude
+            }, transaction);
+            transaction.Commit();
             var pending = new PendingSubmissionDto
             {
                 Id = id,
@@ -129,9 +130,19 @@ new
                 Longitude = submission.Longitude,
             };
 
-            msg.Add(JsonSerializer.Serialize(pending));
+            return new SubmissionResponse
+            {
+                QueueMessage = pending,
+                Response = req.CreateResponse(HttpStatusCode.OK)
+            };
+        }
 
-            return req.CreateResponse(HttpStatusCode.OK);
+        public class SubmissionResponse
+        {
+            [QueueOutput("la-hm-approvals")]
+            public PendingSubmissionDto QueueMessage { get; set; }
+
+            public HttpResponseData Response { get; set; }
         }
     }
 }
