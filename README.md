@@ -6,9 +6,14 @@ For the uninitiated, LA Historical Markers are brown, roadside signs that mark a
 
 # Architecture
 
-In an attempt to minimize cost, this project consists of a SQL Server, Azure Functions, and a React Native client.
+In an attempt to minimize cost, this project consists of a SQL Server, Azure Functions, Azure Storage, and a React Native client.
 
-In an attempt at simplicity, this project uses Dapper to query the SQL Server and map database records to DTOs that can be sent to the client. I'm imagining there to be very little to no "business logic" as this will mostly be submission of (at most) two forms (create and update). The exact mechanism for approval hasn't been decided upon, but current thinking is anywhere from "update the db directly" to "email with a 'click to approve' link" (we are trying to avoide the cost and complexity of adding some kind of "portal").
+In an attempt at simplicity, this project uses Dapper to query the SQL Server and map database records to DTOs that can be sent to the client. I'm imagining there to be very little to no "business logic" as this will mostly be submission of (at most) two forms (create and update).
+
+The general idea is:
+Azure Functions are used to query the SQL Server and take actions such as sending out email notifications to an admin for pending approvals.
+Azure Storage Queues are used for communication between functions (this gives us the ability to retry via data kept in poison queues).
+The React Native (Expo) calls out to the Azure Functions and "things happen."
 
 # Set Up
 
@@ -26,19 +31,26 @@ With the extension installed, open `la-hm-functions.code-workspace` in VS Code (
 {
   "IsEncrypted": false,
   "Values": {
-    "AzureWebJobsStorage": "",
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-    "ConnectionString": "Server=localhost,1433; Database=LaHistoricalMarkers; User=sa; Password=YourPassword;"
+    "ConnectionString": "Server=localhost,1433; Database=LaHistoricalMarkers; User=sa; Password=YourPassword;",
+    "SendGrid": "YOUR_SEND_GRID_API_KEY",
+    "FromEmail": "you@email.net",
+    "ToEmails": "testaccount1@email.net,testaccount2@email.net",
+    "Template": "SEND_GRID_EMAIL_TEMPLATE"
   }
 }
 ```
 
 Note: you will need to change the connection string (especially the password), to match your SQL Server instance configuration.
+Additionally, the last four items are configuration for SendGrid. The API Key and the Template should be created and managed from a SendGrid account.
 
-Once this file has been added, you should be able to click Run (or F5) and the functions should spin up for you to test locally.
+The `AzureWebJobsStorage` key is used to configure the blob and queue storage that is used by this app. The value that is supplied in this example is the configuration for the Azurite Emulator, which allows you to develop using a local version of Azure Storage. In order for this to work, you will want to download and start the [Azurite VS Code Extension](https://marketplace.visualstudio.com/items?itemName=Azurite.azurite).
+
+With these components installed and the settings file added (and updated), you should be able to click Run (or F5) and the functions should spin up for you to test locally.
 
 ## Expo Mobile App
 
 The mobile app was created using Expo, so running it is as simple as making sure you have have Expo installed and runing `expo start`.
 
-Note: A Google Maps Android SDK api key may be required to get the MapView to display on Android. Please see expo documentation [MapView](https://docs.expo.io/versions/latest/sdk/map-view/) (aka react-native-maps).
+Note: A Google Maps Android SDK api key is required to get the MapView to display on Android. Please see expo documentation [MapView](https://docs.expo.io/versions/latest/sdk/map-view/) (aka react-native-maps).

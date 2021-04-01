@@ -10,7 +10,7 @@
     "icon": "./icon.png",
     "ios": {
       "bundleIdentifier": "com.austinwebre.lahistoricalmarkers",
-      "buildNumber": "1.0.1",
+      "buildNumber": "1.0.4",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "This app uses your location to search for nearby markers.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "This app uses your location to search for nearby markers."
@@ -18,7 +18,7 @@
     },
     "android": {
       "package": "com.austinwebre.lahistoricalmarkers",
-      "versionCode": 3,
+      "versionCode": 5,
       "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
       "config": {
         "googleMaps": {
