@@ -335,3 +335,8 @@ buck-out/
 # Expo
 .expo/*
 web-build/
+
+#Azurite Files
+__blobstorage__/
+__queuestorage__/
+__azurite_db*
