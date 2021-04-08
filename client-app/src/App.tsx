@@ -1,11 +1,5 @@
-import React, { useState, useRef } from "react";
-import {
-  StyleSheet,
-  View,
-  Dimensions,
-  SafeAreaView,
-  KeyboardAvoidingView,
-} from "react-native";
+import React, { useState, useRef, useCallback, useEffect } from "react";
+import { StyleSheet, Dimensions, KeyboardAvoidingView } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { Location, MarkerDto } from "types";
 import { MarkersSearchView, SubmitMarkerView, useMarkers } from "markers";
@@ -14,7 +8,6 @@ import { colors } from "utils";
 import Toast from "react-native-easy-toast";
 
 export default function App() {
-  //TODO: move this into a component (called something like MarkersGeoSearch)
   const [region, setRegion] = useState({
     latitude: 30.9843,
     longitude: -91.9623,
@@ -24,27 +17,37 @@ export default function App() {
   const toast = useRef<Toast>(null);
   const map = useRef<MapView>(null);
 
-  //note: debounce user location if you ever subscribe to updates
   const [userLocation, setUserLocation] = useState<Location | null>(null);
   const [selectedMarker, setSelectedMarker] = useState<MarkerDto | null>(null);
   const [openMarker, setOpenMarker] = useState<MarkerDto | null>(null);
+  const [lastRegion, setLastRegion] = useState(region);
   const [isAdding, setIsAdding] = useState(false);
+  const [shouldNavigateToUser, setShouldNavigateToUser] = useState(true);
   const [newMarker, setNewMarker] = useState<MarkerDto | null>(null);
 
+  const debouncedUserLocation = useDebounce(userLocation, 1000);
+
   const debouncedRegion = useDebounce(region, 500);
-  const { requestLocation } = useLocation({
+  useLocation({
     location: userLocation,
-    setLocation: (location) => {
+    setLocation: setUserLocation,
+  });
+
+  useEffect(() => {
+    if (shouldNavigateToUser && userLocation !== null) {
       map.current?.animateToRegion({
         latitudeDelta: 0.1,
         longitudeDelta: 0.1,
-        ...location,
+        ...userLocation,
       });
-      setUserLocation(location);
-    },
-  });
+      setShouldNavigateToUser(false);
+    }
+  }, [shouldNavigateToUser, userLocation]);
 
-  const loadableMarkers = useMarkers({ region: debouncedRegion, userLocation });
+  const loadableMarkers = useMarkers({
+    region: debouncedRegion,
+    userLocation: debouncedUserLocation,
+  });
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -97,7 +100,7 @@ export default function App() {
           setIsAdding={() => setIsAdding(true)}
           markersCardStyles={[
             styles.card,
-            selectedMarker ? styles.viewCard : null,
+            selectedMarker ? styles.viewCard : styles.searchCard,
           ]}
         />
       )}
@@ -127,6 +130,7 @@ export default function App() {
   function selectMarkerAndNavigate(marker: MarkerDto | null) {
     setSelectedMarker(marker);
     if (marker != null) {
+      setLastRegion(region);
       const { latitude, longitude } = marker;
       map.current?.animateToRegion({
         latitudeDelta: 0.01,
@@ -134,13 +138,8 @@ export default function App() {
         latitude,
         longitude,
       });
-    } else if (userLocation) {
-      requestLocation();
-      map.current?.animateToRegion({
-        latitudeDelta: 0.1,
-        longitudeDelta: 0.1,
-        ...userLocation,
-      });
+    } else {
+      map.current?.animateToRegion(lastRegion);
     }
   }
 }
@@ -157,7 +156,7 @@ const styles = StyleSheet.create({
     marginTop: -5,
   },
   searchCard: {
-    maxHeight: Dimensions.get("window").height * 0.4 - 125,
+    maxHeight: Dimensions.get("window").height * 0.4 - 50,
   },
   viewCard: {
     maxHeight: Dimensions.get("window").height * 0.6 - 50,

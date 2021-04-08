@@ -14,23 +14,24 @@ export default function useLocation({
   setLocation,
 }: UseLocationProps) {
   const [permissionGranted, setPermissionGranted] = useState(false);
-  const requestAndSetLocation = useCallback(async () => {
+  const requestAndWatchLocation = useCallback(async () => {
     const { status } = await LocationManager.requestPermissionsAsync();
     if (status !== LocationManager.PermissionStatus.GRANTED) {
       setPermissionGranted(false);
       return;
     }
-
-    const { coords } = await LocationManager.getCurrentPositionAsync({});
     setPermissionGranted(true);
-    setLocation(coords);
+    await LocationManager.watchPositionAsync(
+      { distanceInterval: 500 },
+      ({ coords }) => setLocation(coords)
+    );
   }, [setLocation]);
 
   useEffect(() => {
     if (autoExecute && location === null) {
-      requestAndSetLocation();
+      requestAndWatchLocation();
     }
   }, []);
 
-  return { requestLocation: requestAndSetLocation, permissionGranted };
+  return { requestLocation: requestAndWatchLocation, permissionGranted };
 }

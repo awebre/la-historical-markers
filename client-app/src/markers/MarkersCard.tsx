@@ -34,7 +34,12 @@ export default function MarkersCard({
         <Text style={styles.cardHeaderText}>Nearby Historical Markers</Text>
       </Card.Header>
       <Card.Body style={styles.body}>
-        {!isLoading && !isError && (
+        {isLoading && (
+          <View style={styles.listItem}>
+            <Text>Looking for nearby markers...</Text>
+          </View>
+        )}
+        {markers && markers.length > 0 && !isError && (
           <FlatList
             data={markers}
             renderItem={({ item }) => (
@@ -46,11 +51,6 @@ export default function MarkersCard({
             keyExtractor={(item) => item.id.toString()}
             ItemSeparatorComponent={FlatListItemSeparator}
           />
-        )}
-        {isLoading && (
-          <View style={styles.listItem}>
-            <Text>Looking for nearby markers...</Text>
-          </View>
         )}
         {!isLoading && (!markers || markers.length === 0) && (
           <View style={styles.listItem}>

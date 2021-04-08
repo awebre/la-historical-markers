@@ -56,3 +56,6 @@ IF OBJECT_ID('LaHistoricalMarkers.dbo.MarkerAccess') IS NULL
         FOREIGN KEY ([MarkerId]) REFERENCES [LaHistoricalMarkers].[dbo].[Marker],
         FOREIGN KEY ([OtpId]) REFERENCES [LaHistoricalMarkers].[dbo].[OneTimePassword]
     )
+
+IF COL_LENGTH('LaHistoricalMarkers.dbo.Marker', 'ImageFileName') IS NULL
+    EXEC SP_RENAME 'LaHistoricalMarkers.dbo.Marker.ImageUrl', 'ImageFileName', 'COLUMN'
