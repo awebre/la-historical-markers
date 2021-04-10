@@ -22,10 +22,6 @@ export default function ViewMarkerCard({
   marker,
   onCancel,
 }: ViewMarkerCardProps) {
-  console.log(marker.imageFileName);
-  console.log(
-    `${Constants.manifest.extra.imageBaseUrl}/${marker.imageFileName}`
-  );
   return (
     <Card style={styles.card}>
       <Card.Header style={styles.cardHeader}>
