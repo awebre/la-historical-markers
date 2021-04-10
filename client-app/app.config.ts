@@ -4,13 +4,13 @@ export default {
   expo: {
     name: "LA Historical Markers",
     slug: "la-historical-markers",
-    version: "1.0.0",
+    version: "1.1.0",
     assetBundlePatterns: ["**/*"],
     orientation: "portrait",
     icon: "./icon.png",
     ios: {
       bundleIdentifier: "com.austinwebre.lahistoricalmarkers",
-      buildNumber: "1.0.4",
+      buildNumber: "1.1.0",
       infoPlist: {
         NSLocationWhenInUseUsageDescription:
           "This app uses your location to search for nearby markers.",
@@ -20,7 +20,7 @@ export default {
     },
     android: {
       package: "com.austinwebre.lahistoricalmarkers",
-      versionCode: 5,
+      versionCode: 6,
       permissions: ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
       config: {
         googleMaps: {
