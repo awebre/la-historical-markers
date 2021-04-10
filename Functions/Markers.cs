@@ -101,17 +101,22 @@ namespace LaHistoricalMarkers.Functions
                 };
             }
 
-            var fileGuid = $"{Guid.NewGuid()}.png";
-            var fileBytes = Convert.FromBase64String(submission.Base64Image);
-            using var memoryStream = new MemoryStream(fileBytes);
-            var serviceUri = new Uri(Environment.GetEnvironmentVariable("StorageUri"));
-            var credential = new StorageSharedKeyCredential(Environment.GetEnvironmentVariable("StorageAccount"), Environment.GetEnvironmentVariable("StorageKey"));
-            var blobService = new BlobServiceClient(serviceUri, credential);
-            var containerService = blobService.GetBlobContainerClient(Environment.GetEnvironmentVariable("StorageContainer"));
-            var blobClient = containerService.GetBlobClient(fileGuid);
-            var blobHeaders = new BlobHttpHeaders();
-            blobHeaders.ContentType = "image/png";
-            blobClient.Upload(memoryStream, blobHeaders);
+            string fileGuid = null;
+            if (!string.IsNullOrEmpty(submission.Base64Image))
+            {
+                fileGuid = $"{Guid.NewGuid()}.png";
+                var fileBytes = Convert.FromBase64String(submission.Base64Image);
+                using var memoryStream = new MemoryStream(fileBytes);
+                var serviceUri = new Uri(Environment.GetEnvironmentVariable("StorageUri"));
+                var credential = new StorageSharedKeyCredential(Environment.GetEnvironmentVariable("StorageAccount"), Environment.GetEnvironmentVariable("StorageKey"));
+                var blobService = new BlobServiceClient(serviceUri, credential);
+                var containerService = blobService.GetBlobContainerClient(Environment.GetEnvironmentVariable("StorageContainer"));
+                var blobClient = containerService.GetBlobClient(fileGuid);
+                var blobHeaders = new BlobHttpHeaders();
+                blobHeaders.ContentType = "image/png";
+                blobClient.Upload(memoryStream, blobHeaders);
+            }
+
 
             using var connection = Database.GetConnection();
             connection.Open();
