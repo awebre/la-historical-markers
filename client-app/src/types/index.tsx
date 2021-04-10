@@ -7,7 +7,7 @@ type MarkerDto = {
   id: number;
   name: string;
   description: string;
-  imageUrl?: string;
+  imageFileName?: string;
   isApproved: boolean;
   createdTimestamp: Date;
   distance: number;

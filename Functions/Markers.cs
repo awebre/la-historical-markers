@@ -1,4 +1,9 @@
 using System;
+using Azure.Core;
+using Azure.Storage;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using Azure.Storage.Sas;
 using System.Net;
 using System.Text.Json;
 using System.Web;
@@ -86,7 +91,8 @@ namespace LaHistoricalMarkers.Functions
             FunctionContext context)
         {
             using var streamReader = new StreamReader(req.Body);
-            var submission = JsonSerializer.Deserialize<MarkerSubmissionDto>(streamReader.ReadToEnd(), DefaultJsonConfiguration.SerializerOptions);
+            var str = streamReader.ReadToEnd();
+            var submission = JsonSerializer.Deserialize<MarkerSubmissionDto>(str, DefaultJsonConfiguration.SerializerOptions);
             if (string.IsNullOrEmpty(submission.Name) || string.IsNullOrEmpty(submission.Description))
             {
                 return new SubmissionResponse
@@ -94,6 +100,19 @@ namespace LaHistoricalMarkers.Functions
                     Response = req.CreateResponse(HttpStatusCode.BadRequest)
                 };
             }
+
+            var fileGuid = $"{Guid.NewGuid()}.png";
+            var fileBytes = Convert.FromBase64String(submission.Base64Image);
+            using var memoryStream = new MemoryStream(fileBytes);
+            var serviceUri = new Uri(Environment.GetEnvironmentVariable("StorageUri"));
+            var credential = new StorageSharedKeyCredential(Environment.GetEnvironmentVariable("StorageAccount"), Environment.GetEnvironmentVariable("StorageKey"));
+            var blobService = new BlobServiceClient(serviceUri, credential);
+            var containerService = blobService.GetBlobContainerClient(Environment.GetEnvironmentVariable("StorageContainer"));
+            var blobClient = containerService.GetBlobClient(fileGuid);
+            var blobHeaders = new BlobHttpHeaders();
+            blobHeaders.ContentType = "image/png";
+            blobClient.Upload(memoryStream, blobHeaders);
+
             using var connection = Database.GetConnection();
             connection.Open();
             using var transaction = connection.BeginTransaction();
@@ -103,7 +122,8 @@ namespace LaHistoricalMarkers.Functions
                 [Description], 
                 [Location], 
                 [IsApproved], 
-                [CreatedTimestamp]
+                [CreatedTimestamp],
+                [ImageFileName]
             )
             OUTPUT INSERTED.Id
             VALUES (
@@ -111,14 +131,16 @@ namespace LaHistoricalMarkers.Functions
                 @description,
                 GEOGRAPHY::Point(@latitude, @longitude, 4326),
                 0,
-                SYSDATETIMEOFFSET()
+                SYSDATETIMEOFFSET(),
+                @imageFileName
             )",
             new
             {
                 name = submission.Name,
                 description = submission.Description,
                 latitude = submission.Latitude,
-                longitude = submission.Longitude
+                longitude = submission.Longitude,
+                imageFileName = fileGuid
             }, transaction);
             transaction.Commit();
             var pending = new PendingSubmissionDto
@@ -128,6 +150,7 @@ namespace LaHistoricalMarkers.Functions
                 Description = submission.Description,
                 Latitude = submission.Latitude,
                 Longitude = submission.Longitude,
+                ImageFileName = fileGuid
             };
 
             return new SubmissionResponse

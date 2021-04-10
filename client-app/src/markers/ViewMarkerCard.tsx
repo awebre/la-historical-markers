@@ -1,5 +1,14 @@
 import React from "react";
-import { Text, ScrollView, View, StyleSheet, Button } from "react-native";
+import {
+  Text,
+  ScrollView,
+  View,
+  StyleSheet,
+  Button,
+  Image,
+  Dimensions,
+} from "react-native";
+import Constants from "expo-constants";
 import { Card, headerTextStyle } from "components";
 import { MarkerDto } from "types";
 import { colors, humanizedDistance } from "utils";
@@ -13,6 +22,10 @@ export default function ViewMarkerCard({
   marker,
   onCancel,
 }: ViewMarkerCardProps) {
+  console.log(marker.imageFileName);
+  console.log(
+    `${Constants.manifest.extra.imageBaseUrl}/${marker.imageFileName}`
+  );
   return (
     <Card style={styles.card}>
       <Card.Header style={styles.cardHeader}>
@@ -25,6 +38,19 @@ export default function ViewMarkerCard({
       </Card.Header>
       <Card.Body>
         <ScrollView>
+          {marker.imageFileName && (
+            <Image
+              source={{
+                uri: `${Constants.manifest.extra.imageBaseUrl}/${marker.imageFileName}`,
+              }}
+              style={{
+                width: "100%",
+                aspectRatio: 1,
+                resizeMode: "contain",
+                marginBottom: 10,
+              }}
+            />
+          )}
           <Text>{marker.description}</Text>
         </ScrollView>
       </Card.Body>

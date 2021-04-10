@@ -28,5 +28,8 @@ export default {
         },
       },
     },
+    extra: {
+      imageBaseUrl: "https://lahm-photos.thewebre.com/marker-photos",
+    },
   },
 };

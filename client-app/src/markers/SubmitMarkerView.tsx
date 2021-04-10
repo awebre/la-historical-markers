@@ -11,10 +11,7 @@ import {
   Image,
   Alert as ExpoAlert,
 } from "react-native";
-import { v4 } from "uuid";
-import Constants from "expo-constants";
-//@ts-ignore - eventually we should uplaod directly to the submission function instead
-import { EAzureBlobStorageImage } from "react-native-azure-blob-storage";
+import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import { Alert, Card, headerTextStyle } from "components";
 import { FormGroup } from "components/forms";
@@ -66,12 +63,6 @@ export default function SubmitMarkerView({
       }
     }
   }, [image]);
-
-  useEffect(() => {
-    console.log(Constants.manifest.extra);
-    const { account, container, key } = Constants.manifest.extra;
-    EAzureBlobStorageImage.configure(account, key, container);
-  }, []);
 
   async function pickImage() {
     ExpoAlert.alert("Select Image", "How would you like to select the image?", [
@@ -203,22 +194,25 @@ export default function SubmitMarkerView({
         <Button
           title="Submit"
           onPress={async () => {
-            let name = "";
             if (marker) {
               try {
+                let base64Image;
                 const localUri = image?.uri;
                 if (localUri) {
-                  const guid = v4();
-                  name = await EAzureBlobStorageImage.uploadFile({
-                    filePath: localUri,
-                    contentType: "image/png",
-                    fileName: `${guid}.png`,
-                  });
+                  const {
+                    base64,
+                  } = await ImageManipulator.manipulateAsync(
+                    localUri,
+                    [{ resize: { height: 500 } }],
+                    { format: ImageManipulator.SaveFormat.PNG, base64: true }
+                  );
+
+                  base64Image = base64;
                 }
 
                 const resp = await fetch(`${url}/api/markers`, {
                   method: "post",
-                  body: JSON.stringify({ imageFileName: name, ...marker }),
+                  body: JSON.stringify({ base64Image, ...marker }),
                 });
                 if (resp.ok) {
                   onSuccess();
