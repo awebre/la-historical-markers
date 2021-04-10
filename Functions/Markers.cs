@@ -52,7 +52,7 @@ namespace LaHistoricalMarkers.Functions
                 ,[Description]
                 ,[Location].[Lat] AS [Latitude]
                 ,[Location].[Long] AS [Longitude]
-                ,[ImageUrl]
+                ,[ImageFileName]
                 ,[IsApproved]
                 ,[CreatedTimestamp]
                 ,GEOGRAPHY::Point(@userLatitude, @userLongitude, 4326).STDistance([Location]) AS Distance

@@ -14,6 +14,6 @@ namespace LaHistoricalMarkers.Data
 
         public decimal Longitude { get; set; }
 
-        public string ImageUrl { get; set; }
+        public string ImageFileName { get; set; }
     }
 }

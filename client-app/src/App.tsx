@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     maxHeight: Dimensions.get("window").height * 0.4 - 50,
   },
   viewCard: {
-    maxHeight: Dimensions.get("window").height * 0.6 - 50,
+    maxHeight: Dimensions.get("window").height * 0.75 - 50,
   },
   map: {
     width: Dimensions.get("window").width,
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   searchMap: {
     height: Dimensions.get("window").height * 0.6,
   },
-  viewMap: { height: Dimensions.get("window").height * 0.4 },
+  viewMap: { height: Dimensions.get("window").height * 0.25 },
   toast: {},
   toastText: {},
 });

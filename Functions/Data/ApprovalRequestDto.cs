@@ -11,7 +11,7 @@ namespace LaHistoricalMarkers.Data
             Description = submission.Description;
             Latitude = submission.Latitude;
             Longitude = submission.Longitude;
-            ImageUrl = submission.ImageUrl;
+            ImageFileName = submission.ImageFileName;
         }
         public string Otp { get; set; }
     }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleProp,
   Text,
@@ -7,9 +7,15 @@ import {
   Button,
   ScrollView,
   View,
-  KeyboardAvoidingView,
-  SafeAreaView,
+  Platform,
+  Image,
+  Alert as ExpoAlert,
 } from "react-native";
+import { v4 } from "uuid";
+import Constants from "expo-constants";
+//@ts-ignore - eventually we should uplaod directly to the submission function instead
+import { EAzureBlobStorageImage } from "react-native-azure-blob-storage";
+import * as ImagePicker from "expo-image-picker";
 import { Alert, Card, headerTextStyle } from "components";
 import { FormGroup } from "components/forms";
 import { colors, url } from "utils";
@@ -24,6 +30,13 @@ interface SubmitMarkerViewProps {
   setMarker: (m: MarkerDto) => void;
 }
 
+interface ImageSource {
+  uri: string;
+  height: number;
+  width: number;
+}
+
+const imageHeight = 150;
 export default function SubmitMarkerView({
   cardStyles,
   cancel,
@@ -32,6 +45,9 @@ export default function SubmitMarkerView({
   setMarker,
 }: SubmitMarkerViewProps) {
   const [error, setError] = useState("");
+  const [image, setImage] = useState<ImageSource | null>(null);
+  const [imageWidth, setImageWidth] = useState<number>(0);
+
   const { requestLocation, permissionGranted } = useLocation({
     location: marker,
     setLocation: (location) => {
@@ -40,6 +56,66 @@ export default function SubmitMarkerView({
       );
     },
   });
+
+  useEffect(() => {
+    if (image !== null) {
+      const widthByHeight = image.width / image.height;
+      const newWidth = widthByHeight * imageHeight;
+      if (newWidth !== imageWidth) {
+        setImageWidth(newWidth);
+      }
+    }
+  }, [image]);
+
+  useEffect(() => {
+    console.log(Constants.manifest.extra);
+    const { account, container, key } = Constants.manifest.extra;
+    EAzureBlobStorageImage.configure(account, key, container);
+  }, []);
+
+  async function pickImage() {
+    ExpoAlert.alert("Select Image", "How would you like to select the image?", [
+      {
+        text: "Camera Roll",
+        onPress: async () => {
+          if (Platform.OS !== "web") {
+            const {
+              status,
+            } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== "granted") {
+              alert("Camera roll permissions are required to select an image.");
+            }
+          }
+          const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            exif: false,
+          });
+          if (!result.cancelled) {
+            const { uri, width, height } = result;
+            setImage({ uri, width, height });
+          }
+        },
+      },
+      {
+        text: "Take Photo",
+        onPress: async () => {
+          const { status } = await ImagePicker.requestCameraPermissionsAsync();
+          if (status !== "granted") {
+            alert("Camera permissions are required to take a picture.");
+          }
+          const result = await ImagePicker.launchCameraAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            exif: false,
+          });
+          if (!result.cancelled) {
+            const { uri, width, height } = result;
+            setImage({ uri, width, height });
+          }
+        },
+      },
+    ]);
+  }
+
   return (
     <Card style={cardStyles}>
       <Card.Header>
@@ -68,6 +144,29 @@ export default function SubmitMarkerView({
               onPress={requestLocation}
               color={colors.primary}
             />
+
+            {image && (
+              <View style={styles.thumbnailContainer}>
+                <Image
+                  source={image}
+                  style={{ height: imageHeight, width: imageWidth }}
+                />
+              </View>
+            )}
+            <View style={styles.imageButtonContainer}>
+              <Button
+                title={`${!image ? "Add" : "Update"} Image`}
+                onPress={pickImage}
+                color={colors.accent}
+              />
+              {image && (
+                <Button
+                  title="Clear Image"
+                  onPress={() => setImage(null)}
+                  color={colors.alert}
+                />
+              )}
+            </View>
           </View>
           {permissionGranted && (
             <>
@@ -104,11 +203,22 @@ export default function SubmitMarkerView({
         <Button
           title="Submit"
           onPress={async () => {
+            let name = "";
             if (marker) {
               try {
+                const localUri = image?.uri;
+                if (localUri) {
+                  const guid = v4();
+                  name = await EAzureBlobStorageImage.uploadFile({
+                    filePath: localUri,
+                    contentType: "image/png",
+                    fileName: `${guid}.png`,
+                  });
+                }
+
                 const resp = await fetch(`${url}/api/markers`, {
                   method: "post",
-                  body: JSON.stringify(marker),
+                  body: JSON.stringify({ imageFileName: name, ...marker }),
                 });
                 if (resp.ok) {
                   onSuccess();
@@ -143,5 +253,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-end",
     justifyContent: "space-around",
+  },
+  thumbnailContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-around",
+  },
+  imageButtonContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-evenly",
   },
 });
