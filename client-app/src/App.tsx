@@ -1,5 +1,10 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
-import { StyleSheet, Dimensions, KeyboardAvoidingView } from "react-native";
+import {
+  StyleSheet,
+  Dimensions,
+  KeyboardAvoidingView,
+  View,
+} from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { Location, MarkerDto } from "types";
 import { MarkersSearchView, SubmitMarkerView, useMarkers } from "markers";
@@ -49,11 +54,7 @@ export default function App() {
     userLocation: debouncedUserLocation,
   });
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior="position"
-      enabled={true}
-    >
+    <View style={styles.container}>
       <MapView
         ref={map}
         style={[
@@ -124,7 +125,7 @@ export default function App() {
         />
       )}
       <Toast ref={toast} />
-    </KeyboardAvoidingView>
+    </View>
   );
 
   function selectMarkerAndNavigate(marker: MarkerDto | null) {

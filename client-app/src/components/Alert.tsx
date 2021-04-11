@@ -19,7 +19,7 @@ export default function Alert({ alertText, cancel }: AlertProps) {
           <Button
             title="Dismiss"
             onPress={cancel}
-            color={Platform.OS === "ios" ? colors.lightText : colors.grey}
+            color={Platform.OS === "ios" ? colors.lightText : colors.darkGrey}
           />
         </View>
       )}

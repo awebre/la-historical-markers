@@ -39,6 +39,7 @@ export default function MarkersSearchView({
       )}
       {selectedMarker && (
         <ViewMarkerCard
+          style={markersCardStyles}
           marker={selectedMarker}
           onCancel={() => setSelectedMarker(null)}
         />

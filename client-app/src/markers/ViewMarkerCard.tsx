@@ -6,7 +6,8 @@ import {
   StyleSheet,
   Button,
   Image,
-  Dimensions,
+  StyleProp,
+  ViewStyle,
 } from "react-native";
 import Constants from "expo-constants";
 import { Card, headerTextStyle } from "components";
@@ -14,18 +15,22 @@ import { MarkerDto } from "types";
 import { colors, humanizedDistance } from "utils";
 
 interface ViewMarkerCardProps {
+  style: StyleProp<ViewStyle>;
   marker: MarkerDto;
   onCancel: () => void;
 }
 
 export default function ViewMarkerCard({
+  style,
   marker,
   onCancel,
 }: ViewMarkerCardProps) {
   return (
-    <Card style={styles.card}>
+    <Card style={[styles.card, style]}>
       <Card.Header style={styles.cardHeader}>
-        <Text style={styles.cardHeaderText}>{marker.name}</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.cardHeaderText}>{marker.name}</Text>
+        </View>
         <View style={styles.milesBadge}>
           <Text style={styles.milesText}>
             {humanizedDistance(marker.distance)}
