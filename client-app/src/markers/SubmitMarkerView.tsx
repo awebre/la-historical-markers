@@ -150,11 +150,7 @@ export default function SubmitMarkerView({
   }
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior="position"
-      keyboardVerticalOffset={Platform.OS === "ios" ? -125 : -200}
-    >
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior="position">
       <Card style={cardStyles}>
         <Card.Header>
           <Text style={styles.headerText}>Submit a New Historical Marker</Text>
