@@ -52,7 +52,7 @@ namespace LaHistoricalMarkers.Functions
 
             using var connection = Database.GetConnection();
             var results = connection.Query<MarkerDto>(@"
-            SELECT TOP (10) [Id]
+            SELECT TOP (100) [Id]
                 ,[Name]
                 ,[Description]
                 ,[Location].[Lat] AS [Latitude]
