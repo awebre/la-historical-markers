@@ -10,7 +10,6 @@ import {
   Platform,
   Image,
   Alert as ExpoAlert,
-  KeyboardAvoidingView,
 } from "react-native";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
@@ -150,7 +149,7 @@ export default function SubmitMarkerView({
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior="position">
+    <View>
       <Card style={cardStyles}>
         <Card.Header>
           <Text style={styles.headerText}>Submit a New Historical Marker</Text>
@@ -268,7 +267,7 @@ export default function SubmitMarkerView({
           />
         </Card.Footer>
       </Card>
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 

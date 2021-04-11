@@ -54,7 +54,7 @@ export default function App() {
     userLocation: debouncedUserLocation,
   });
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView style={styles.container} behavior="position">
       <MapView
         ref={map}
         style={[
@@ -125,7 +125,7 @@ export default function App() {
         />
       )}
       <Toast ref={toast} />
-    </View>
+    </KeyboardAvoidingView>
   );
 
   function selectMarkerAndNavigate(marker: MarkerDto | null) {
