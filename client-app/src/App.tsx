@@ -11,6 +11,7 @@ import { MarkersSearchView, SubmitMarkerView, useMarkers } from "markers";
 import { useDebounce, useLocation } from "hooks";
 import { colors } from "utils";
 import Toast from "react-native-easy-toast";
+import TermsAndConditionsModal from "terms/TermsAndConditionsModal";
 
 export default function App() {
   const [region, setRegion] = useState({
@@ -125,6 +126,7 @@ export default function App() {
         />
       )}
       <Toast ref={toast} />
+      <TermsAndConditionsModal />
     </KeyboardAvoidingView>
   );
 

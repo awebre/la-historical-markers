@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Text,
   ScrollView,
@@ -13,6 +13,7 @@ import Constants from "expo-constants";
 import { Card, headerTextStyle } from "components";
 import { MarkerDto } from "types";
 import { colors, humanizedDistance } from "utils";
+import ReportMarkerModal from "./ReportMarkerModal";
 
 interface ViewMarkerCardProps {
   style: StyleProp<ViewStyle>;
@@ -25,6 +26,7 @@ export default function ViewMarkerCard({
   marker,
   onCancel,
 }: ViewMarkerCardProps) {
+  const [reportVisible, setReportVisible] = useState(false);
   return (
     <Card style={[styles.card, style]}>
       <Card.Header style={styles.cardHeader}>
@@ -56,8 +58,18 @@ export default function ViewMarkerCard({
         </ScrollView>
       </Card.Body>
       <Card.Footer>
+        <Button
+          onPress={() => setReportVisible(true)}
+          title="Report"
+          color={colors.alert}
+        />
         <Button onPress={onCancel} title="Done" color={colors.accent} />
       </Card.Footer>
+      <ReportMarkerModal
+        markerId={marker.id}
+        isVisible={reportVisible}
+        close={() => setReportVisible(false)}
+      />
     </Card>
   );
 }

@@ -14,6 +14,9 @@ using Microsoft.Extensions.Logging;
 using Dapper;
 using LaHistoricalMarkers.Data;
 using LaHistoricalMarkers.Config;
+using SendGrid;
+using SendGrid.Helpers.Mail;
+using System.Threading.Tasks;
 
 namespace LaHistoricalMarkers.Functions
 {
@@ -165,12 +168,44 @@ namespace LaHistoricalMarkers.Functions
             };
         }
 
+        [Function("report-marker")]
+        public static async Task<HttpResponseData> Report([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "markers/report")] HttpRequestData req,
+            FunctionContext context)
+        {
+            using var streamReader = new StreamReader(req.Body);
+            var str = streamReader.ReadToEnd();
+            var report = JsonSerializer.Deserialize<ReportDto>(str, DefaultJsonConfiguration.SerializerOptions);
+
+            var apiKey = Environment.GetEnvironmentVariable("SendGrid");
+            var client = new SendGridClient(apiKey);
+            var from = new EmailAddress(Environment.GetEnvironmentVariable("FromEmail"), "LA Historical Markers Alert");
+            var tos = Environment.GetEnvironmentVariable("ToEmails").Split(",");
+            var message = new SendGridMessage();
+            message.Subject = "User Report";
+            message.PlainTextContent = $"The following marker was reported: {report.MarkerId}\n\nThe user reports:\n{report.Report}";
+            message.SetFrom(from);
+            foreach (var to in tos)
+            {
+                message.AddTo(to);
+            }
+
+            await client.SendEmailAsync(message);
+            return req.CreateResponse(HttpStatusCode.OK);
+        }
+
         public class SubmissionResponse
         {
             [QueueOutput("la-hm-approvals")]
             public PendingSubmissionDto QueueMessage { get; set; }
 
             public HttpResponseData Response { get; set; }
+        }
+
+        public class ReportDto
+        {
+            public int MarkerId { get; set; }
+
+            public string Report { get; set; }
         }
     }
 }

@@ -16,6 +16,10 @@ export default {
           "This app uses your location to search for nearby markers.",
         NSLocationAlwaysAndWhenInUseUsageDescription:
           "This app uses your location to search for nearby markers.",
+        NSCameraUsageDescription:
+          "This app uses your camera to submit photos of markers.",
+        NSPhotoLibraryUsageDescription:
+          "This app uses your camera roll to submit photos of markers.",
       },
     },
     android: {

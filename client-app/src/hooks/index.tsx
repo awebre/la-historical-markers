@@ -1,3 +1,4 @@
 import useDebounce from "./useDebounce";
 import useLocation from "./useLocation";
-export { useDebounce, useLocation };
+import useTermsAndConditions from "./useTermsAndConditions";
+export { useDebounce, useLocation, useTermsAndConditions };

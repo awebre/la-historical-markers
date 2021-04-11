@@ -71,9 +71,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightBackground,
   },
   footer: {
+    display: "flex",
+    flexDirection: "row",
     height: 50,
     alignSelf: "stretch",
-    justifyContent: "flex-end",
+    justifyContent: "space-evenly",
     backgroundColor: colors.grey,
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5,

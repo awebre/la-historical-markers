@@ -16,7 +16,7 @@ namespace LaHistoricalMarkers.Functions
     public static class Approvals
     {
         [Function("approval-email")]
-        public static async Task Run([QueueTrigger("la-hm-approvals", Connection = "AzureWebJobsStorage")] PendingSubmissionDto pending,
+        public static async Task ApprovalEmail([QueueTrigger("la-hm-approvals", Connection = "AzureWebJobsStorage")] PendingSubmissionDto pending,
             FunctionContext context)
         {
             var logger = context.GetLogger("Approvals");
@@ -77,7 +77,7 @@ namespace LaHistoricalMarkers.Functions
         }
 
         [Function("marker-approval")]
-        public static HttpResponseData Search(
+        public static HttpResponseData Approval(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "marker/{markerId:int}/approval/{approved:bool}")] HttpRequestData req,
             int markerId,
             bool approved,
