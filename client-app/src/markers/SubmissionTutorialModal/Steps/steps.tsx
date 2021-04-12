@@ -1,10 +1,13 @@
 import React from "react";
-import { Text, Button } from "react-native";
+import { Button } from "react-native";
+import { Marker } from "react-native-maps";
 import { colors } from "utils";
+import DescriptionStepContent from "./DescriptionStepContent";
 import keys from "./keys";
 import LocationStepContent from "./LocationStepContent";
 import StartStepContent from "./StartStepContent";
-import { StepContentProps, NextButtonProps } from "./types";
+import TakePhotoStepContent from "./TakePhotoStepContent";
+import { NextButtonProps } from "./types";
 
 const steps = [
   {
@@ -28,6 +31,27 @@ const steps = [
     Content: LocationStepContent,
     NextButton: ({ goToNextStep }: NextButtonProps) => (
       <Button title="Next" onPress={goToNextStep} color={colors.primary} />
+    ),
+  },
+  {
+    key: keys.image,
+    heading: "Take a Picture",
+    Content: TakePhotoStepContent,
+    NextButton: ({ goToNextStep }: NextButtonProps) => (
+      <Button title="Next" onPress={goToNextStep} color={colors.primary} />
+    ),
+  },
+  {
+    key: keys.description,
+    heading: "Name and Description",
+    Content: DescriptionStepContent,
+    NextButton: ({ close, marker }: NextButtonProps) => (
+      <Button
+        title="Review"
+        onPress={close}
+        color={colors.primary}
+        disabled={!marker?.name && !marker?.description}
+      />
     ),
   },
 ];

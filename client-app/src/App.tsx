@@ -29,7 +29,7 @@ export default function App() {
   const [lastRegion, setLastRegion] = useState(region);
   const [isAdding, setIsAdding] = useState(false);
   const [shouldNavigateToUser, setShouldNavigateToUser] = useState(true);
-  const [newMarker, setNewMarker] = useState<MarkerDto | null>(null);
+  const [newMarker, setNewMarker] = useState<Location | null>(null);
 
   const debouncedUserLocation = useDebounce(userLocation, 1000);
 
@@ -87,11 +87,7 @@ export default function App() {
             />
           ))}
         {isAdding && newMarker && newMarker.latitude && newMarker.longitude && (
-          <Marker
-            coordinate={{ ...newMarker }}
-            title={newMarker.name}
-            description={newMarker.description}
-          />
+          <Marker coordinate={{ ...newMarker }} />
         )}
       </MapView>
       {!isAdding && (
@@ -113,16 +109,12 @@ export default function App() {
             setIsAdding(false);
             setNewMarker(null);
           }}
-          onSuccess={() => {
+          onSuccess={(name) => {
             setIsAdding(false);
-            toast.current?.show(
-              `We received your submission of ${newMarker?.name}`,
-              3000
-            );
+            toast.current?.show(`We received your submission of ${name}`, 3000);
             setNewMarker(null);
           }}
-          marker={newMarker}
-          setMarker={setNewMarker}
+          updateMapMarker={setNewMarker}
         />
       )}
       <Toast ref={toast} />

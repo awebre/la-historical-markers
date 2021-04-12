@@ -13,36 +13,34 @@ import * as ImageManipulator from "expo-image-manipulator";
 import { Alert, Card, headerTextStyle, ImagePreviewPicker } from "components";
 import { colors, confirm, url } from "utils";
 import { useLocation } from "hooks";
-import { MarkerDto, ImageSource } from "types";
+import { MarkerDto, ImageSource, Location } from "types";
 import SubmissionTutorialModal from "./SubmissionTutorialModal/SubmissionTutorialModal";
 import MarkerForm from "./MarkerForm";
 
 interface SubmitMarkerViewProps {
   cardStyles: StyleProp<ViewStyle>;
   cancel: () => void;
-  onSuccess: () => void;
-  marker: MarkerDto | null;
-  setMarker: (m: MarkerDto) => void;
+  onSuccess: (name: string) => void;
+  updateMapMarker: (m: Location | null) => void;
 }
 
 export default function SubmitMarkerView({
   cardStyles,
   cancel,
   onSuccess,
-  marker,
-  setMarker,
+  updateMapMarker,
 }: SubmitMarkerViewProps) {
-  const [tutorialVisible, setTutorialVisiable] = useState(true);
+  const [tutorialVisible, setTutorialVisible] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [image, setImage] = useState<ImageSource | null>(null);
+  const [marker, setMarker] = useState<MarkerDto | null>(null);
 
   const { requestLocation, permissionGranted } = useLocation({
     location: marker,
     setLocation: (location) => {
-      setMarker(
-        marker ? { ...marker, ...location } : ({ ...location } as MarkerDto)
-      );
+      updateMapMarker(location);
+      setMarker(marker ? { ...marker, ...location } : (location as MarkerDto));
     },
   });
 
@@ -68,7 +66,7 @@ export default function SubmitMarkerView({
         });
         if (resp.ok) {
           setIsSubmitting(false);
-          onSuccess();
+          onSuccess(marker?.name);
         } else {
           setError(
             "Your submission was not accepted. Please check that the Name and Description are both entered and that the location of the marker looks correct on the map above."
@@ -94,7 +92,7 @@ export default function SubmitMarkerView({
     <View>
       <Card style={cardStyles}>
         <Card.Header>
-          <Text style={styles.headerText}>Submit a New Historical Marker</Text>
+          <Text style={styles.headerText}>Review Your Submission</Text>
         </Card.Header>
         <Card.Body style={styles.body}>
           <ScrollView style={{ paddingRight: 10 }}>
@@ -103,11 +101,12 @@ export default function SubmitMarkerView({
                 style={{
                   paddingTop: 5,
                   paddingBottom: 5,
+                  textAlign: "center",
                 }}
               >
                 {!permissionGranted
                   ? "You must allow location services in order to submit a new Marker. We use your location to report an approximate location of the marker."
-                  : 'Walk up to the marker and click "Update Marker Location" to set the location of the marker. Your submission will be reviewed for accuracy before it will become available within the app.'}
+                  : "Check that the above location and the information you entered is correct, then hit Submit."}
               </Text>
             )}
             {error !== "" && (
@@ -170,7 +169,7 @@ export default function SubmitMarkerView({
         visible={tutorialVisible}
         requestLocation={requestLocation}
         cancel={onCancel}
-        close={() => setTutorialVisiable(false)}
+        close={() => setTutorialVisible(false)}
         image={image}
         setImage={setImage}
       />

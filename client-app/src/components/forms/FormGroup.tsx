@@ -36,7 +36,6 @@ export default function FormGroup({
 const styles = StyleSheet.create({
   container: {
     display: "flex",
-    flex: 1,
     alignItems: "stretch",
     justifyContent: "center",
     flexDirection: "row",

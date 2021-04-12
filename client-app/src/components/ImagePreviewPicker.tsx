@@ -8,17 +8,19 @@ interface ImagePreviewPickerProps {
   image: ImageSource | null;
   setImage: (image: ImageSource | null) => void;
   disabled?: boolean;
+  imageHeight?: number;
 }
 
-const imageHeight = 150;
 export default function ImagePreviewPicker({
   image,
   setImage,
   disabled = false,
+  imageHeight = 150,
 }: ImagePreviewPickerProps) {
   const [imageWidth, setImageWidth] = useState<number>(0);
 
   useEffect(() => {
+    //TODO: this should also handle a maxWidth
     if (image !== null) {
       const widthByHeight = image.width / image.height;
       const newWidth = widthByHeight * imageHeight;
@@ -26,7 +28,7 @@ export default function ImagePreviewPicker({
         setImageWidth(newWidth);
       }
     }
-  }, [image]);
+  }, [image, imageHeight]);
 
   async function pickImage() {
     Alert.alert("Select Image", "How would you like to select the image?", [

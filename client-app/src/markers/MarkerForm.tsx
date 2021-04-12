@@ -11,7 +11,7 @@ interface MarkerFormProps {
 export default function MarkerForm({
   marker,
   setMarker,
-  editable = false,
+  editable = true,
 }: MarkerFormProps) {
   return (
     <>

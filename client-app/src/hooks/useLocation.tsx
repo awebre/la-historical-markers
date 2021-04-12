@@ -31,7 +31,7 @@ export default function useLocation({
     if (autoExecute && location === null) {
       requestAndWatchLocation();
     }
-  }, []);
+  }, [location]);
 
   return { requestLocation: requestAndWatchLocation, permissionGranted };
 }

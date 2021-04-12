@@ -3,6 +3,7 @@ import FlatListItemSeparator from "./FlatListItemSeparator";
 import Alert from "./Alert";
 import Tutorial from "./Tutorial";
 import ImagePreviewPicker from "./ImagePreviewPicker";
+import DismissKeyboard from "./DismissKeyboard";
 
 export {
   Card,
@@ -11,4 +12,5 @@ export {
   Alert,
   Tutorial,
   ImagePreviewPicker,
+  DismissKeyboard,
 };

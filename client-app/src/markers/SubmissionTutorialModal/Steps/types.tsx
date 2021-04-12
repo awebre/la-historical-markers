@@ -11,6 +11,8 @@ interface StepContentProps {
 interface NextButtonProps {
   requestLocation: () => void;
   goToNextStep: () => void;
+  close: () => void;
+  marker: MarkerDto | null;
 }
 
 export { StepContentProps, NextButtonProps };
