@@ -13,4 +13,10 @@ type MarkerDto = {
   distance: number;
 } & Location;
 
-export { Location, MarkerDto };
+interface ImageSource {
+  uri: string;
+  height: number;
+  width: number;
+}
+
+export { Location, MarkerDto, ImageSource };

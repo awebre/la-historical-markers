@@ -19,8 +19,8 @@ export default function MarkerListItem({
 }: MarkerListItemProps) {
   return (
     <TouchableOpacity style={styles.listItem} onPress={onPress}>
-      <Text>{marker.name}</Text>
-      <Text>{humanizedDistance(marker.distance)}</Text>
+      <Text style={styles.name}>{marker.name}</Text>
+      <Text style={styles.distance}>{humanizedDistance(marker.distance)}</Text>
     </TouchableOpacity>
   );
 }
@@ -31,5 +31,12 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
+  },
+  name: {
+    flex: 3,
+  },
+  distance: {
+    flex: 1,
+    textAlign: "right",
   },
 });

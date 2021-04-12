@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   StyleProp,
   Text,
@@ -7,17 +7,15 @@ import {
   Button,
   ScrollView,
   View,
-  Platform,
-  Image,
-  Alert as ExpoAlert,
+  Alert as RNAlert,
 } from "react-native";
 import * as ImageManipulator from "expo-image-manipulator";
-import * as ImagePicker from "expo-image-picker";
-import { Alert, Card, headerTextStyle } from "components";
-import { FormGroup } from "components/forms";
-import { colors, url } from "utils";
+import { Alert, Card, headerTextStyle, ImagePreviewPicker } from "components";
+import { colors, confirm, url } from "utils";
 import { useLocation } from "hooks";
-import { MarkerDto } from "types";
+import { MarkerDto, ImageSource } from "types";
+import SubmissionTutorialModal from "./SubmissionTutorialModal/SubmissionTutorialModal";
+import MarkerForm from "./MarkerForm";
 
 interface SubmitMarkerViewProps {
   cardStyles: StyleProp<ViewStyle>;
@@ -27,13 +25,6 @@ interface SubmitMarkerViewProps {
   setMarker: (m: MarkerDto) => void;
 }
 
-interface ImageSource {
-  uri: string;
-  height: number;
-  width: number;
-}
-
-const imageHeight = 150;
 export default function SubmitMarkerView({
   cardStyles,
   cancel,
@@ -41,10 +32,10 @@ export default function SubmitMarkerView({
   marker,
   setMarker,
 }: SubmitMarkerViewProps) {
+  const [tutorialVisible, setTutorialVisiable] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [image, setImage] = useState<ImageSource | null>(null);
-  const [imageWidth, setImageWidth] = useState<number>(0);
 
   const { requestLocation, permissionGranted } = useLocation({
     location: marker,
@@ -54,59 +45,6 @@ export default function SubmitMarkerView({
       );
     },
   });
-
-  useEffect(() => {
-    if (image !== null) {
-      const widthByHeight = image.width / image.height;
-      const newWidth = widthByHeight * imageHeight;
-      if (newWidth !== imageWidth) {
-        setImageWidth(newWidth);
-      }
-    }
-  }, [image]);
-
-  async function pickImage() {
-    ExpoAlert.alert("Select Image", "How would you like to select the image?", [
-      {
-        text: "Camera Roll",
-        onPress: async () => {
-          if (Platform.OS !== "web") {
-            const {
-              status,
-            } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-            if (status !== "granted") {
-              alert("Camera roll permissions are required to select an image.");
-            }
-          }
-          const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            exif: false,
-          });
-          if (!result.cancelled) {
-            const { uri, width, height } = result;
-            setImage({ uri, width, height });
-          }
-        },
-      },
-      {
-        text: "Take Photo",
-        onPress: async () => {
-          const { status } = await ImagePicker.requestCameraPermissionsAsync();
-          if (status !== "granted") {
-            alert("Camera permissions are required to take a picture.");
-          }
-          const result = await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            exif: false,
-          });
-          if (!result.cancelled) {
-            const { uri, width, height } = result;
-            setImage({ uri, width, height });
-          }
-        },
-      },
-    ]);
-  }
 
   async function submitMarker() {
     setIsSubmitting(true);
@@ -148,6 +86,10 @@ export default function SubmitMarkerView({
     }
   }
 
+  function onCancel() {
+    confirm("Are you sure you want to cancel this submission?", cancel);
+  }
+
   return (
     <View>
       <Card style={cardStyles}>
@@ -175,65 +117,20 @@ export default function SubmitMarkerView({
               <Button
                 title="Update Marker Location"
                 onPress={requestLocation}
-                color={colors.primary}
                 disabled={isSubmitting}
               />
-
-              <View style={styles.thumbnailContainer}>
-                {image && (
-                  <Image
-                    source={image}
-                    style={{ height: imageHeight, width: imageWidth }}
-                  />
-                )}
-              </View>
-              <View style={styles.imageButtonContainer}>
-                <Button
-                  title={`${!image ? "Add" : "Update"} Image`}
-                  onPress={pickImage}
-                  color={colors.accent}
-                  disabled={isSubmitting}
-                />
-                {image && (
-                  <Button
-                    title="Clear Image"
-                    onPress={() => setImage(null)}
-                    color={colors.alert}
-                    disabled={isSubmitting}
-                  />
-                )}
-              </View>
+              <ImagePreviewPicker
+                image={image}
+                setImage={setImage}
+                disabled={isSubmitting}
+              />
             </View>
             {marker?.latitude && marker?.longitude ? (
-              <>
-                <FormGroup
-                  label="Name:"
-                  value={marker?.name}
-                  onChangeText={(name) =>
-                    setMarker(
-                      marker ? { ...marker, name } : ({ name } as MarkerDto)
-                    )
-                  }
-                  editable={!isSubmitting}
-                  placeholder="Skirmish of Boutte Station"
-                />
-                <FormGroup
-                  label="Description:"
-                  value={marker?.description}
-                  onChangeText={(description) =>
-                    setMarker(
-                      marker
-                        ? { ...marker, description }
-                        : ({ description } as MarkerDto)
-                    )
-                  }
-                  containerStyle={{ flexDirection: "column" }}
-                  placeholder="Union train with sixty men..."
-                  multiline={true}
-                  editable={!isSubmitting}
-                  inputStyle={{ height: 100 }}
-                />
-              </>
+              <MarkerForm
+                marker={marker}
+                setMarker={setMarker}
+                editable={!isSubmitting}
+              />
             ) : (
               <Text>
                 Please update the marker location in order to enter the name and
@@ -255,8 +152,8 @@ export default function SubmitMarkerView({
         <Card.Footer style={styles.footer}>
           <Button
             title="Cancel"
-            onPress={cancel}
-            color={colors.accent}
+            onPress={onCancel}
+            color={colors.alert}
             disabled={isSubmitting}
           />
           <Button
@@ -267,6 +164,16 @@ export default function SubmitMarkerView({
           />
         </Card.Footer>
       </Card>
+      <SubmissionTutorialModal
+        marker={marker}
+        setMarker={setMarker}
+        visible={tutorialVisible}
+        requestLocation={requestLocation}
+        cancel={onCancel}
+        close={() => setTutorialVisiable(false)}
+        image={image}
+        setImage={setImage}
+      />
     </View>
   );
 }
@@ -277,21 +184,5 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     paddingBottom: 0,
   },
-  footer: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "space-around",
-  },
-  thumbnailContainer: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-around",
-    padding: 5,
-  },
-  imageButtonContainer: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-  },
+  footer: {},
 });
