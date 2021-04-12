@@ -63,7 +63,7 @@ export default function ViewMarkerCard({
           title="Report"
           color={colors.alert}
         />
-        <Button onPress={onCancel} title="Done" color={colors.accent} />
+        <Button onPress={onCancel} title="Done" color={colors.primary} />
       </Card.Footer>
       <ReportMarkerModal
         markerId={marker.id}
