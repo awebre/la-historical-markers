@@ -10,7 +10,7 @@ export default {
     icon: "./icon.png",
     ios: {
       bundleIdentifier: "com.austinwebre.lahistoricalmarkers",
-      buildNumber: "1.2.1",
+      buildNumber: "1.2.2",
       infoPlist: {
         NSLocationWhenInUseUsageDescription:
           "This app uses your location to search for nearby markers.",
@@ -24,7 +24,7 @@ export default {
     },
     android: {
       package: "com.austinwebre.lahistoricalmarkers",
-      versionCode: 10,
+      versionCode: 11,
       permissions: ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
       config: {
         googleMaps: {
