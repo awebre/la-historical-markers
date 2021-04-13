@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Modal, Text, View, Button, KeyboardAvoidingView } from "react-native";
-import { Tutorial, DismissKeyboard } from "components";
+import { Tutorial } from "components";
 import { colors } from "utils";
-import steps, { keys, stepHelpers } from "./Steps";
+import steps from "./Steps";
+import * as stepHelpers from "./Steps/helpers";
 import { StepContentProps } from "./Steps/types";
 
 type SubmissionTutorialModalProps = {
@@ -34,21 +35,19 @@ export default function SubmissionTutorialModal({
         <Tutorial>
           <Tutorial.Header text={currentStep.heading} />
           <Tutorial.Content>
-            <DismissKeyboard>
-              <View>
-                <currentStep.Content
-                  requestLocation={requestLocation}
-                  marker={marker}
-                  setMarker={setMarker}
-                  image={image}
-                  setImage={setImage}
-                />
-                <Text style={{ fontSize: 14, paddingTop: 20 }}>
-                  Click Skip to jump to the end and complete the submission
-                  manually.
-                </Text>
-              </View>
-            </DismissKeyboard>
+            <View>
+              <currentStep.Content
+                requestLocation={requestLocation}
+                marker={marker}
+                setMarker={setMarker}
+                image={image}
+                setImage={setImage}
+              />
+              <Text style={{ fontSize: 14, paddingTop: 20 }}>
+                Click Skip to jump to the end and complete the submission
+                manually.
+              </Text>
+            </View>
           </Tutorial.Content>
           <Tutorial.Footer>
             <Button title="Skip" onPress={close} color={colors.accent} />

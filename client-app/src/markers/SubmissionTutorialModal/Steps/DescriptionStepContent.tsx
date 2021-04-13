@@ -1,3 +1,4 @@
+import { DismissKeyboard } from "components";
 import MarkerForm from "markers/MarkerForm";
 import React from "react";
 import { Text, View } from "react-native";
@@ -9,15 +10,17 @@ export default function DescriptionStepContent({
   setMarker,
 }: StepContentProps) {
   return marker ? (
-    <View style={{ maxHeight: 500, backgroundColor: colors.lightBackground }}>
-      <Text style={{ fontSize: 20 }}>
-        Enter the name and description as they appear on the marker.
-      </Text>
-      <Text style={{ fontSize: 16, paddingTop: 10 }}>
-        When you're done, hit Review, to finish up your submission.
-      </Text>
-      <MarkerForm marker={marker} setMarker={setMarker} />
-    </View>
+    <DismissKeyboard>
+      <View style={{ maxHeight: 500, backgroundColor: colors.lightBackground }}>
+        <Text style={{ fontSize: 20 }}>
+          Enter the name and description as they appear on the marker.
+        </Text>
+        <Text style={{ fontSize: 16, paddingTop: 10 }}>
+          When you're done, hit Review, to finish up your submission.
+        </Text>
+        <MarkerForm marker={marker} setMarker={setMarker} />
+      </View>
+    </DismissKeyboard>
   ) : (
     <>
       <Text style={{ fontSize: 20 }}>It looks like something went wrong.</Text>
