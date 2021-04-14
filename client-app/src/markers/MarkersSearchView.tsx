@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  StyleProp,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  Text,
-  ViewStyle,
-} from "react-native";
+import { StyleProp, ViewStyle } from "react-native";
 import { LoadableMarkers } from "markers";
 import { MarkerDto } from "types";
 import MarkersCard from "./MarkersCard";

@@ -13,6 +13,7 @@ import Constants from "expo-constants";
 import { Card, headerTextStyle } from "components";
 import { MarkerDto } from "types";
 import { colors, humanizedDistance } from "utils";
+import { photosUrl } from "utils/urls";
 import ReportMarkerModal from "./ReportMarkerModal";
 
 interface ViewMarkerCardProps {
@@ -44,7 +45,7 @@ export default function ViewMarkerCard({
           {marker.imageFileName && (
             <Image
               source={{
-                uri: `${Constants.manifest.extra.imageBaseUrl}/${marker.imageFileName}`,
+                uri: `${photosUrl}/${marker.imageFileName}`,
               }}
               style={{
                 width: "100%",
