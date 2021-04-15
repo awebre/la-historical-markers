@@ -95,8 +95,9 @@ export default function App() {
         onRegionChangeComplete={setRegion}
         onMarkerSelect={(event) =>
           setOpenMarker(
-            markers?.find((x) => x.id.toString() === event.nativeEvent.id) ??
-              null
+            cachedMarkers?.find(
+              (x) => x.id.toString() === event.nativeEvent.id
+            ) ?? null
           )
         }
         onMarkerDeselect={() => {
@@ -105,7 +106,7 @@ export default function App() {
         onCalloutPress={() => selectMarkerAndNavigate(openMarker)}
       >
         {!isAdding &&
-          markers?.map((m) => (
+          cachedMarkers?.map((m) => (
             <Marker
               key={m.id.toString()}
               identifier={m.id.toString()}

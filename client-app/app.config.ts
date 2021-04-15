@@ -1,3 +1,5 @@
+//increase this for build version bumps (internal to app stores)
+const buildNumber = 13;
 export default {
   name: "client-app",
   displayName: "LA Markers",
@@ -10,7 +12,7 @@ export default {
     icon: "./icon.png",
     ios: {
       bundleIdentifier: "com.austinwebre.lahistoricalmarkers",
-      buildNumber: "12",
+      buildNumber: `${buildNumber}`,
       infoPlist: {
         NSLocationWhenInUseUsageDescription:
           "This app uses your location to search for nearby markers.",
@@ -25,7 +27,7 @@ export default {
     },
     android: {
       package: "com.austinwebre.lahistoricalmarkers",
-      versionCode: 12,
+      versionCode: buildNumber,
       permissions: [
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION",
