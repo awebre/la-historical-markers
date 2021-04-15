@@ -20,20 +20,23 @@ export default {
           "This app uses your camera to submit photos of markers.",
         NSPhotoLibraryUsageDescription:
           "This app uses your camera roll to submit photos of markers.",
+        LSApplicationQueriesSchemes: ["comgooglemaps", "waze"],
       },
     },
     android: {
       package: "com.austinwebre.lahistoricalmarkers",
       versionCode: 11,
-      permissions: ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
+      permissions: [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+      ],
       config: {
         googleMaps: {
           apiKey: "",
         },
       },
-    },
-    extra: {
-      imageBaseUrl: "https://lahm-photos.thewebre.com/marker-photos",
     },
   },
 };

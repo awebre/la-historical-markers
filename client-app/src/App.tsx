@@ -3,14 +3,17 @@ import {
   StyleSheet,
   Dimensions,
   KeyboardAvoidingView,
-  View,
+  TouchableOpacity,
+  Text,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
+import Toast from "react-native-easy-toast";
+import { FontAwesome5 } from "@expo/vector-icons";
+import { showLocation } from "react-native-map-link";
 import { Location, MarkerDto } from "types";
 import { MarkersSearchView, SubmitMarkerView, useMarkers } from "markers";
 import { useDebounce, useLocation } from "hooks";
 import { colors } from "utils";
-import Toast from "react-native-easy-toast";
 import TermsAndConditionsModal from "terms/TermsAndConditionsModal";
 
 export default function App() {
@@ -56,6 +59,23 @@ export default function App() {
   });
   return (
     <KeyboardAvoidingView style={styles.container} behavior="position">
+      {selectedMarker && (
+        <TouchableOpacity
+          onPress={() =>
+            showLocation({
+              latitude: selectedMarker.latitude,
+              longitude: selectedMarker.longitude,
+              alwaysIncludeGoogle: true,
+            })
+          }
+          style={styles.goButton}
+        >
+          <FontAwesome5 name="directions" size={24} color="white" />
+          <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>
+            GO
+          </Text>
+        </TouchableOpacity>
+      )}
       <MapView
         ref={map}
         style={[
@@ -114,7 +134,7 @@ export default function App() {
             toast.current?.show(`We received your submission of ${name}`, 3000);
             setNewMarker(null);
           }}
-          updateMapMarker={setNewMarker}
+          updateMapMarker={setNewMarkerAndNavigate}
         />
       )}
       <Toast ref={toast} />
@@ -122,11 +142,20 @@ export default function App() {
     </KeyboardAvoidingView>
   );
 
+  function setNewMarkerAndNavigate(location: Location | null) {
+    setNewMarker(location);
+    navigateToLocation(location);
+  }
+
   function selectMarkerAndNavigate(marker: MarkerDto | null) {
     setSelectedMarker(marker);
-    if (marker != null) {
+    navigateToLocation(marker);
+  }
+
+  function navigateToLocation(location: Location | null) {
+    if (location != null) {
       setLastRegion(region);
-      const { latitude, longitude } = marker;
+      const { latitude, longitude } = location;
       map.current?.animateToRegion({
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
@@ -165,4 +194,17 @@ const styles = StyleSheet.create({
   viewMap: { height: Dimensions.get("window").height * 0.25 },
   toast: {},
   toastText: {},
+  goButton: {
+    top: Dimensions.get("window").height * 0.25 - 75,
+    right: 25,
+    position: "absolute",
+    height: 60,
+    width: 60,
+    borderRadius: 30,
+    backgroundColor: "#0099ff",
+    zIndex: 1,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
