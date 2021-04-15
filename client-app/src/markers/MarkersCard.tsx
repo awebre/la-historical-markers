@@ -52,9 +52,9 @@ export default function MarkersCard({
             ItemSeparatorComponent={FlatListItemSeparator}
           />
         )}
-        {!isLoading && (!markers || markers.length === 0) && (
+        {!isLoading && (!markers || markers.length === 0 || isError) && (
           <View style={styles.listItem}>
-            <Text>No markers found</Text>
+            <Text>No Markers Found</Text>
           </View>
         )}
       </Card.Body>

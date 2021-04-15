@@ -26,6 +26,9 @@ export default function App() {
   const toast = useRef<Toast>(null);
   const map = useRef<MapView>(null);
 
+  const [cachedMarkers, setCachedMarkers] = useState<MarkerDto[] | undefined>(
+    undefined
+  );
   const [userLocation, setUserLocation] = useState<Location | null>(null);
   const [selectedMarker, setSelectedMarker] = useState<MarkerDto | null>(null);
   const [openMarker, setOpenMarker] = useState<MarkerDto | null>(null);
@@ -53,10 +56,17 @@ export default function App() {
     }
   }, [shouldNavigateToUser, userLocation]);
 
-  const loadableMarkers = useMarkers({
+  const { markers, isLoading, isError } = useMarkers({
     region: debouncedRegion,
     userLocation: debouncedUserLocation,
   });
+
+  useEffect(() => {
+    if (markers != undefined) {
+      setCachedMarkers(markers);
+    }
+  }, [markers, isLoading, setCachedMarkers]);
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior="position">
       {selectedMarker && (
@@ -65,7 +75,6 @@ export default function App() {
             showLocation({
               latitude: selectedMarker.latitude,
               longitude: selectedMarker.longitude,
-              alwaysIncludeGoogle: true,
             })
           }
           style={styles.goButton}
@@ -83,12 +92,11 @@ export default function App() {
           isAdding || selectedMarker ? styles.viewMap : styles.searchMap,
         ]}
         showsUserLocation={true}
-        onRegionChange={setRegion}
+        onRegionChangeComplete={setRegion}
         onMarkerSelect={(event) =>
           setOpenMarker(
-            loadableMarkers?.markers?.find(
-              (x) => x.id.toString() === event.nativeEvent.id
-            ) ?? null
+            markers?.find((x) => x.id.toString() === event.nativeEvent.id) ??
+              null
           )
         }
         onMarkerDeselect={() => {
@@ -97,7 +105,7 @@ export default function App() {
         onCalloutPress={() => selectMarkerAndNavigate(openMarker)}
       >
         {!isAdding &&
-          loadableMarkers?.markers?.map((m) => (
+          markers?.map((m) => (
             <Marker
               key={m.id.toString()}
               identifier={m.id.toString()}
@@ -112,7 +120,7 @@ export default function App() {
       </MapView>
       {!isAdding && (
         <MarkersSearchView
-          loadableMarkers={loadableMarkers}
+          loadableMarkers={{ markers: cachedMarkers, isLoading, isError }}
           selectedMarker={selectedMarker}
           setSelectedMarker={selectMarkerAndNavigate}
           setIsAdding={() => setIsAdding(true)}
