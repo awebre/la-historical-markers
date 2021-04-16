@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   StyleSheet,
   Dimensions,
@@ -75,6 +75,7 @@ export default function App() {
             showLocation({
               latitude: selectedMarker.latitude,
               longitude: selectedMarker.longitude,
+              alwaysIncludeGoogle: true,
             })
           }
           style={styles.goButton}

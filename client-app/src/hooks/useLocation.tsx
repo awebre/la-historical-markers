@@ -15,7 +15,9 @@ export default function useLocation({
 }: UseLocationProps) {
   const [permissionGranted, setPermissionGranted] = useState(false);
   const requestAndWatchLocation = useCallback(async () => {
-    const { status } = await LocationManager.requestPermissionsAsync();
+    const {
+      status,
+    } = await LocationManager.requestForegroundPermissionsAsync();
     if (status !== LocationManager.PermissionStatus.GRANTED) {
       setPermissionGranted(false);
       return;
