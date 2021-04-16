@@ -35,11 +35,8 @@ export default function FormGroup({
 
 const styles = StyleSheet.create({
   container: {
-    display: "flex",
-    alignItems: "stretch",
-    justifyContent: "center",
-    flexDirection: "row",
     marginTop: 15,
+    maxWidth: "100%",
   },
   label: {
     fontSize: 15,
@@ -48,8 +45,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 0,
-    flexShrink: 1,
-    flexGrow: 1,
+    display: "flex",
     borderWidth: 1,
     borderRadius: 5,
     borderColor: colors.primary,

@@ -13,6 +13,7 @@ export default function useLocation({
   location,
   setLocation,
 }: UseLocationProps) {
+  let didCancel = false;
   const [permissionGranted, setPermissionGranted] = useState(false);
   const requestAndWatchLocation = useCallback(async () => {
     const {
@@ -30,9 +31,12 @@ export default function useLocation({
   }, [setLocation]);
 
   useEffect(() => {
-    if (autoExecute && location === null) {
+    if (!didCancel && autoExecute && location === null) {
       requestAndWatchLocation();
     }
+    return () => {
+      didCancel = true;
+    };
   }, [location]);
 
   return { requestLocation: requestAndWatchLocation, permissionGranted };

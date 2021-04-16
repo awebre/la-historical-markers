@@ -1,5 +1,12 @@
 import React from "react";
-import { StyleProp, StyleSheet, ViewStyle, View, Text } from "react-native";
+import {
+  StyleProp,
+  StyleSheet,
+  ViewStyle,
+  View,
+  Text,
+  Dimensions,
+} from "react-native";
 import { colors } from "utils";
 
 interface BaseTutorialProps {
