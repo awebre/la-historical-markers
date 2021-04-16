@@ -32,6 +32,11 @@ export default function MarkersCard({
     <Card style={[styles.card, style]}>
       <Card.Header style={styles.cardHeader}>
         <Text style={styles.cardHeaderText}>Nearby Historical Markers</Text>
+        {markers && (
+          <Card.Badge
+            text={`${markers.length} result${markers.length !== 1 ? "s" : ""}`}
+          />
+        )}
       </Card.Header>
       <Card.Body style={styles.body}>
         {isLoading && (

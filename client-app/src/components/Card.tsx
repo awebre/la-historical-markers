@@ -1,6 +1,7 @@
 import React from "react";
 import {
   View,
+  Text,
   StyleSheet,
   StyleProp,
   ViewStyle,
@@ -14,8 +15,20 @@ interface BaseCardProps {
   children: React.ReactNode;
 }
 
+interface BadgeProps {
+  badgeStyle?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
+  text: string;
+}
+
 const Header: React.FC<BaseCardProps> = ({ style, children }) => (
   <View style={[styles.header, style]}>{children}</View>
+);
+
+const Badge: React.FC<BadgeProps> = ({ badgeStyle, textStyle, text }) => (
+  <View style={[styles.badge, badgeStyle]}>
+    <Text style={[styles.badgeText, textStyle]}>{text}</Text>
+  </View>
 );
 
 const Body: React.FC<BaseCardProps> = ({ style, children }) => (
@@ -28,15 +41,18 @@ const Footer: React.FC<BaseCardProps> = ({ style, children }) => (
 
 interface CardSubComponents {
   Header: typeof Header;
+  Badge: typeof Badge;
   Body: typeof Body;
   Footer: typeof Footer;
 }
+
 const Card: React.FC<BaseCardProps> & CardSubComponents = ({
   style,
   children,
 }) => <View style={[style, styles.card]}>{children}</View>;
 
 Card.Header = Header;
+Card.Badge = Badge;
 Card.Body = Body;
 Card.Footer = Footer;
 export { Card as default, headerTextStyle };
@@ -63,6 +79,19 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 5,
     borderTopRightRadius: 5,
     padding: 15,
+  },
+  badge: {
+    display: "flex",
+    justifyContent: "center",
+    backgroundColor: colors.accent,
+    borderRadius: 2,
+    margin: -5, //ew, negative margins
+    paddingLeft: 5,
+    paddingRight: 5,
+  },
+  badgeText: {
+    color: colors.lightText,
+    fontWeight: "bold",
   },
   body: {
     padding: 10,

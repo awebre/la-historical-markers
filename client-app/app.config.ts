@@ -9,8 +9,9 @@ export default {
     version: "1.2.2",
     assetBundlePatterns: ["**/*"],
     orientation: "portrait",
-    icon: "./icon.png",
+    icon: "./assets/icon.png",
     ios: {
+      icon: "./assets/icon.png",
       bundleIdentifier: "com.austinwebre.lahistoricalmarkers",
       buildNumber: `${buildNumber}`,
       infoPlist: {
@@ -26,6 +27,11 @@ export default {
       },
     },
     android: {
+      icon: "./assets/icon.png",
+      adaptiveIcon: {
+        foregroundImage: "./assets/android-icon.png",
+        backgroundColor: "#754e27",
+      },
       package: "com.austinwebre.lahistoricalmarkers",
       versionCode: buildNumber,
       permissions: [

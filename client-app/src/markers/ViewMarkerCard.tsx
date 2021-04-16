@@ -34,11 +34,7 @@ export default function ViewMarkerCard({
         <View style={{ flex: 1 }}>
           <Text style={styles.cardHeaderText}>{marker.name}</Text>
         </View>
-        <View style={styles.milesBadge}>
-          <Text style={styles.milesText}>
-            {humanizedDistance(marker.distance)}
-          </Text>
-        </View>
+        <Card.Badge text={humanizedDistance(marker.distance)} />
       </Card.Header>
       <Card.Body>
         <ScrollView>
@@ -81,17 +77,4 @@ const styles = StyleSheet.create({
   },
   cardHeader: {},
   cardHeaderText: { ...headerTextStyle },
-  milesText: {
-    color: colors.lightText,
-    fontWeight: "bold",
-  },
-  milesBadge: {
-    display: "flex",
-    justifyContent: "center",
-    backgroundColor: colors.accent,
-    borderRadius: 2,
-    margin: -5, //ew, negative margins
-    paddingLeft: 5,
-    paddingRight: 5,
-  },
 });
