@@ -1,4 +1,4 @@
-import { ImageSource, MarkerDto } from "types";
+import { ImageSource, Location } from "types";
 
 interface StepContentProps {
   name: string | null;
@@ -6,6 +6,7 @@ interface StepContentProps {
   description: string | null;
   setDescription: (description: string | null) => void;
   requestLocation: () => void;
+  location: Location | null;
   image: ImageSource | null;
   setImage: (image: ImageSource | null) => void;
 }

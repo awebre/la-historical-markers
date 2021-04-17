@@ -17,6 +17,7 @@ export default function SubmissionTutorialModal({
   close,
   cancel,
   requestLocation,
+  location,
   name,
   setName,
   description,
@@ -40,6 +41,7 @@ export default function SubmissionTutorialModal({
             <View>
               <currentStep.Content
                 requestLocation={requestLocation}
+                location={location}
                 name={name}
                 setName={setName}
                 description={description}

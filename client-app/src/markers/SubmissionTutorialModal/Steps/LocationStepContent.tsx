@@ -6,11 +6,11 @@ import { StepContentProps } from "./types";
 
 export default function LocationStepContent({
   requestLocation,
-  marker,
+  location,
 }: StepContentProps) {
   return (
     <View>
-      {marker ? (
+      {location ? (
         <>
           <Text style={{ fontSize: 20, paddingBottom: 10 }}>
             Does this location look correct?
@@ -28,11 +28,11 @@ export default function LocationStepContent({
               initialRegion={{
                 latitudeDelta: 0.001,
                 longitudeDelta: 0.001,
-                ...marker,
+                ...location,
               }}
               style={{ height: 200, width: "100%" }}
             >
-              {marker && <Marker coordinate={{ ...marker }} />}
+              {location && <Marker coordinate={{ ...location }} />}
             </MapView>
           </View>
           <Text style={{ fontSize: 16, paddingTop: 10 }}>

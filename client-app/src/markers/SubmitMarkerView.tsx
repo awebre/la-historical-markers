@@ -13,7 +13,7 @@ import * as ImageManipulator from "expo-image-manipulator";
 import { Alert, Card, headerTextStyle, ImagePreviewPicker } from "components";
 import { colors, confirm, url } from "utils";
 import { useLocation } from "hooks";
-import { MarkerDto, ImageSource, Location } from "types";
+import { ImageSource, Location } from "types";
 import SubmissionTutorialModal from "./SubmissionTutorialModal/SubmissionTutorialModal";
 import MarkerForm from "./MarkerForm";
 
@@ -173,6 +173,7 @@ export default function SubmitMarkerView({
         description={description}
         setDescription={setDescription}
         visible={tutorialVisible}
+        location={location}
         requestLocation={requestLocation}
         cancel={onCancel}
         close={() => setTutorialVisible(false)}
