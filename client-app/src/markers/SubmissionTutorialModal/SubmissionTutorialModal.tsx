@@ -16,9 +16,11 @@ export default function SubmissionTutorialModal({
   visible,
   close,
   cancel,
-  marker,
-  setMarker,
   requestLocation,
+  name,
+  setName,
+  description,
+  setDescription,
   image,
   setImage,
 }: SubmissionTutorialModalProps) {
@@ -38,8 +40,10 @@ export default function SubmissionTutorialModal({
             <View>
               <currentStep.Content
                 requestLocation={requestLocation}
-                marker={marker}
-                setMarker={setMarker}
+                name={name}
+                setName={setName}
+                description={description}
+                setDescription={setDescription}
                 image={image}
                 setImage={setImage}
               />
@@ -53,7 +57,8 @@ export default function SubmissionTutorialModal({
             <Button title="Skip" onPress={close} color={colors.accent} />
             <Button title="Cancel" onPress={cancel} color={colors.alert} />
             <currentStep.NextButton
-              marker={marker}
+              name={name}
+              description={description}
               requestLocation={requestLocation}
               goToNextStep={goToNextStep}
               close={close}

@@ -34,19 +34,21 @@ export default function SubmitMarkerView({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [image, setImage] = useState<ImageSource | null>(null);
-  const [marker, setMarker] = useState<MarkerDto | null>(null);
+  const [location, setLocation] = useState<Location | null>(null);
+  const [name, setName] = useState<string | null>(null);
+  const [description, setDescription] = useState<string | null>(null);
 
   const { requestLocation, permissionGranted } = useLocation({
-    location: marker,
+    location,
     setLocation: (location) => {
       updateMapMarker(location);
-      setMarker(marker ? { ...marker, ...location } : (location as MarkerDto));
+      setLocation(location);
     },
   });
 
   async function submitMarker() {
     setIsSubmitting(true);
-    if (marker) {
+    if (location && name && description) {
       try {
         let base64Image;
         const localUri = image?.uri;
@@ -62,11 +64,11 @@ export default function SubmitMarkerView({
 
         const resp = await fetch(`${url}/api/markers`, {
           method: "post",
-          body: JSON.stringify({ base64Image, ...marker }),
+          body: JSON.stringify({ base64Image, location, name, description }),
         });
         if (resp.ok) {
           setIsSubmitting(false);
-          onSuccess(marker?.name);
+          onSuccess(name);
         } else {
           setError(
             "Your submission was not accepted. Please check that the Name and Description are both entered and that the location of the marker looks correct on the map above."
@@ -124,10 +126,12 @@ export default function SubmitMarkerView({
                 disabled={isSubmitting}
               />
             </View>
-            {marker?.latitude && marker?.longitude ? (
+            {location?.latitude && location?.longitude ? (
               <MarkerForm
-                marker={marker}
-                setMarker={setMarker}
+                name={name}
+                setName={setName}
+                description={description}
+                setDescription={setDescription}
                 editable={!isSubmitting}
               />
             ) : (
@@ -159,13 +163,15 @@ export default function SubmitMarkerView({
             title={isSubmitting ? "Submitting..." : "Submit"}
             onPress={submitMarker}
             color={colors.primary}
-            disabled={!marker || isSubmitting}
+            disabled={!location || isSubmitting}
           />
         </Card.Footer>
       </Card>
       <SubmissionTutorialModal
-        marker={marker}
-        setMarker={setMarker}
+        name={name}
+        setName={setName}
+        description={description}
+        setDescription={setDescription}
         visible={tutorialVisible}
         requestLocation={requestLocation}
         cancel={onCancel}

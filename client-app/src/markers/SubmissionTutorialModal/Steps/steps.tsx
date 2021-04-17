@@ -1,6 +1,5 @@
 import React from "react";
 import { Button } from "react-native";
-import { Marker } from "react-native-maps";
 import { colors } from "utils";
 import DescriptionStepContent from "./DescriptionStepContent";
 import keys from "./keys";
@@ -45,12 +44,12 @@ const steps = [
     key: keys.description,
     heading: "Name and Description",
     Content: DescriptionStepContent,
-    NextButton: ({ close, marker }: NextButtonProps) => (
+    NextButton: ({ close, name, description }: NextButtonProps) => (
       <Button
         title="Review"
         onPress={close}
         color={colors.primary}
-        disabled={!marker?.name && !marker?.description}
+        disabled={!name || !description}
       />
     ),
   },
