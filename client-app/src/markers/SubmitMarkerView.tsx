@@ -94,7 +94,9 @@ export default function SubmitMarkerView({
     <View>
       <Card style={cardStyles}>
         <Card.Header>
-          <Text style={styles.headerText}>Review Your Submission</Text>
+          <Text style={styles.headerText}>
+            Review and Submit Your Submission
+          </Text>
         </Card.Header>
         <Card.Body style={styles.body}>
           <ScrollView style={{ paddingRight: 10 }}>
