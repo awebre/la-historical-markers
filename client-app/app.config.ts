@@ -39,6 +39,7 @@ export default {
         "ACCESS_FINE_LOCATION",
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
       ],
       config: {
         googleMaps: {

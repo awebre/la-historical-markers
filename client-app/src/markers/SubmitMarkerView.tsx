@@ -64,7 +64,7 @@ export default function SubmitMarkerView({
 
         const resp = await fetch(`${url}/api/markers`, {
           method: "post",
-          body: JSON.stringify({ base64Image, location, name, description }),
+          body: JSON.stringify({ base64Image, ...location, name, description }),
         });
         if (resp.ok) {
           setIsSubmitting(false);
