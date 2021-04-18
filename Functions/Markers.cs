@@ -17,6 +17,7 @@ using LaHistoricalMarkers.Config;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using System.Threading.Tasks;
+using LaHistoricalMarkers.Core.Features.Markers;
 
 namespace LaHistoricalMarkers.Functions
 {

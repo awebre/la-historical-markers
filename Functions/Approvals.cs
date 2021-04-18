@@ -1,14 +1,16 @@
-using System;
-using System.Threading.Tasks;
+using Dapper;
+using LaHistoricalMarkers.Core.Features.Markers;
+using LaHistoricalMarkers.Core.Features.Moderation;
+using LaHistoricalMarkers.Core.Security;
+using LaHistoricalMarkers.Data;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using LaHistoricalMarkers.Data;
 using SendGrid;
 using SendGrid.Helpers.Mail;
-using Dapper;
-using LaHistoricalMarkers.Security;
+using System;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace LaHistoricalMarkers.Functions

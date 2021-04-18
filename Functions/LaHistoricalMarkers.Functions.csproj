@@ -5,8 +5,11 @@
     <AzureFunctionsVersion>v3</AzureFunctionsVersion>
     <OutputType>Exe</OutputType>
     <_FunctionsSkipCleanOutput>true</_FunctionsSkipCleanOutput>
-    <RootNamespace>la_historical_markers</RootNamespace>
+    <RootNamespace>LaHistoricalMarkers.Functions</RootNamespace>
   </PropertyGroup>
+  <Target Name="RunFunctions">
+    <Exec Command="func start" />
+  </Target>
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.0.12" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Storage" Version="4.0.4" />
@@ -27,5 +30,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core\LaHistoricalMarkerss.Core.csproj" />
   </ItemGroup>
 </Project>
