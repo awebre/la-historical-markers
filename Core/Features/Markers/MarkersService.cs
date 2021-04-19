@@ -58,5 +58,45 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 userLongitude
             })).AsList();
         }
+
+        public async Task<PendingSubmissionDto> AddMarkerSubmission(MarkerSubmissionDto submission, string fileHandle)
+        {
+            var id = await QuerySingleAsync<int>(@"
+            INSERT INTO [LaHistoricalMarkers].[dbo].[Marker] (
+                [Name], 
+                [Description], 
+                [Location], 
+                [IsApproved], 
+                [CreatedTimestamp],
+                [ImageFileName]
+            )
+            OUTPUT INSERTED.Id
+            VALUES (
+                @name,
+                @description,
+                GEOGRAPHY::Point(@latitude, @longitude, 4326),
+                0,
+                SYSDATETIMEOFFSET(),
+                @imageFileName
+            )",
+            new
+            {
+                name = submission.Name,
+                description = submission.Description,
+                latitude = submission.Latitude,
+                longitude = submission.Longitude,
+                imageFileName = fileHandle
+            });
+
+            return new PendingSubmissionDto
+            {
+                Id = id,
+                Name = submission.Name,
+                Description = submission.Description,
+                Latitude = submission.Latitude,
+                Longitude = submission.Longitude,
+                ImageFileName = fileHandle
+            };
+        }
     }
 }

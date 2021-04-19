@@ -14,12 +14,26 @@ namespace LaHistoricalMarkers.Core.Data
             connectionString = connectionProvider.GetConnectionString();
         }
 
-        private IDbConnection GetConnection() => new SqlConnection(connectionString);
+        protected IDbConnection GetConnection() => new SqlConnection(connectionString);
 
-        public async Task<IEnumerable<T>> QueryAsync<T>(string sql, object param)
+        protected async Task<IEnumerable<T>> QueryAsync<T>(string sql, object param)
         {
-            using var db = GetConnection();
-            return await db.QueryAsync<T>(sql, param);
+            using var connection = GetConnection();
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+            var result = await connection.QueryAsync<T>(sql, param, transaction);
+            transaction.Commit();
+            return result;
+        }
+
+        protected async Task<T> QuerySingleAsync<T>(string sql, object param)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+            var result = await connection.QuerySingleAsync<T>(sql, param, transaction);
+            transaction.Commit();
+            return result;
         }
     }
 }

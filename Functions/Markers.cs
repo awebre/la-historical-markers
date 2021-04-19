@@ -71,53 +71,14 @@ namespace LaHistoricalMarkers.Functions
                 };
             }
 
-            string fileGuid = null;
+            string fileHandle = null;
             if (!string.IsNullOrEmpty(submission.Base64Image))
             {
                 var fileBytes = Convert.FromBase64String(submission.Base64Image);
-                fileGuid = await imageStorageService.UploadFileAndGetHandle(fileBytes);
+                fileHandle = await imageStorageService.UploadFileAndGetHandle(fileBytes);
             }
 
-            using var connection = Database.GetConnection();
-            connection.Open();
-            using var transaction = connection.BeginTransaction();
-            var id = connection.QuerySingle<int>(@"
-            INSERT INTO [LaHistoricalMarkers].[dbo].[Marker] (
-                [Name], 
-                [Description], 
-                [Location], 
-                [IsApproved], 
-                [CreatedTimestamp],
-                [ImageFileName]
-            )
-            OUTPUT INSERTED.Id
-            VALUES (
-                @name,
-                @description,
-                GEOGRAPHY::Point(@latitude, @longitude, 4326),
-                0,
-                SYSDATETIMEOFFSET(),
-                @imageFileName
-            )",
-            new
-            {
-                name = submission.Name,
-                description = submission.Description,
-                latitude = submission.Latitude,
-                longitude = submission.Longitude,
-                imageFileName = fileGuid
-            }, transaction);
-            transaction.Commit();
-            var pending = new PendingSubmissionDto
-            {
-                Id = id,
-                Name = submission.Name,
-                Description = submission.Description,
-                Latitude = submission.Latitude,
-                Longitude = submission.Longitude,
-                ImageFileName = fileGuid
-            };
-
+            var pending = await markersService.AddMarkerSubmission(submission, fileHandle);
             return new SubmissionResponse
             {
                 QueueMessage = pending,
@@ -133,6 +94,8 @@ namespace LaHistoricalMarkers.Functions
             var str = streamReader.ReadToEnd();
             var report = JsonSerializer.Deserialize<ReportDto>(str, DefaultJsonConfiguration.SerializerOptions);
 
+            //TODO: make this use a dynamic template similar to approvals
+            //then consolidate this api behind your own service for consistency
             var apiKey = Environment.GetEnvironmentVariable("SendGrid");
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress(Environment.GetEnvironmentVariable("FromEmail"), "LA Historical Markers Alert");

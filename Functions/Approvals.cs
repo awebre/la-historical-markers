@@ -15,66 +15,23 @@ using System.Web;
 
 namespace LaHistoricalMarkers.Functions
 {
-    public static class Approvals
+    public class Approvals
     {
+        private readonly ApprovalService approvalService;
+
+        public Approvals(ApprovalService approvalService)
+        {
+            this.approvalService = approvalService;
+        }
+
         [Function("approval-email")]
-        public static async Task ApprovalEmail([QueueTrigger("la-hm-approvals", Connection = "AzureWebJobsStorage")] PendingSubmissionDto pending,
+        public async Task ApprovalEmail([QueueTrigger("la-hm-approvals", Connection = "AzureWebJobsStorage")] PendingSubmissionDto pending,
             FunctionContext context)
         {
             var logger = context.GetLogger("Approvals");
 
-            using var connection = Database.GetConnection();
-            connection.Open();
-            using var transaction = connection.BeginTransaction();
+            await approvalService.SendApprovalEmail(pending);
 
-            var otp = connection.QueryFirstOrDefault<string>(@"
-            SELECT otp.[Value]
-                FROM [LaHistoricalMarkers].[dbo].[OneTimePassword] otp
-                RIGHT JOIN [LaHistoricalMarkers].[dbo].[MarkerAccess] access
-                ON otp.Id = access.Id
-                WHERE access.MarkerId = @markerId",
-            new { markerId = pending.Id }, transaction);
-
-            if (string.IsNullOrEmpty(otp))
-            {
-                otp = OneTimePasswordGenerator.Generate();
-                var otpId = connection.QuerySingle<int>(@"
-                INSERT INTO [LaHistoricalMarkers].[dbo].[OneTimePassword](
-                    [Value]
-                )
-                OUTPUT INSERTED.Id
-                VALUES (@otp)",
-                new { otp }, transaction);
-                connection.Execute(@"
-                INSERT INTO [LaHistoricalMarkers].[dbo].[MarkerAccess](
-                    [MarkerId],
-                    [OtpId]
-                )
-                VALUES (
-                    @markerId,
-                    @otpId
-                )", new { markerId = pending.Id, otpId }, transaction);
-            }
-
-            var apiKey = Environment.GetEnvironmentVariable("SendGrid");
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress(Environment.GetEnvironmentVariable("FromEmail"), "LA Historical Markers Alert");
-            var tos = Environment.GetEnvironmentVariable("ToEmails").Split(",");
-            var message = new SendGridMessage();
-            message.SetTemplateData(new ApprovalRequestDto(pending)
-            {
-                Otp = otp
-            });
-            message.SetTemplateId(Environment.GetEnvironmentVariable("Template"));
-            message.SetFrom(from);
-            foreach (var to in tos)
-            {
-                message.AddTo(to);
-            }
-
-            await client.SendEmailAsync(message);
-
-            transaction.Commit();
             logger.LogInformation($"C# Queue trigger function processed: \nEmail sent.");
         }
 
