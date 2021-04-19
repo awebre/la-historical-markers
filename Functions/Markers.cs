@@ -11,8 +11,6 @@ using System.IO;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using Dapper;
-using LaHistoricalMarkers.Data;
 using LaHistoricalMarkers.Config;
 using SendGrid;
 using SendGrid.Helpers.Mail;

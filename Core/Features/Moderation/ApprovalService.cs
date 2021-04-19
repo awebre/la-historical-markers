@@ -18,6 +18,54 @@ namespace LaHistoricalMarkers.Core.Features.Moderation
             this.emailService = emailService;
         }
 
+        public async Task SendApprovalEmail(PendingSubmissionDto pending)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+            var otp = await GetOtpForSubmission(pending.Id, transaction);
+
+            var tos = Environment.GetEnvironmentVariable("ToEmails").Split(",");
+            var templateId = Environment.GetEnvironmentVariable("Template");
+            await emailService.SendTemplatedEmail(tos, templateId, new ApprovalRequestDto(pending)
+            {
+                Otp = otp
+            });
+
+            transaction.Commit();
+        }
+
+        public async Task<ApprovalResultType> ApproveOrReject(bool approved, int markerId, string otp)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+            var otpId = await GetValidOtpId(markerId, otp, transaction);
+            if (!otpId.HasValue)
+            {
+                transaction.Commit();
+                return ApprovalResultType.Unauthenticated;
+            }
+
+            connection.Execute(@"
+            DELETE FROM [LaHistoricalMarkers].[dbo].[MarkerAccess]
+            WHERE [OtpId] = @otpId",
+new { otpId = otpId.Value }, transaction);
+
+            connection.Execute(@"
+            DELETE FROM [LaHistoricalMarkers].[dbo].[OneTimePassword]
+            WHERE [Id] = @otpId", new { otpId = otpId.Value }, transaction);
+
+            connection.Execute(@"
+            UPDATE [LaHistoricalMarkers].[dbo].[Marker]
+            SET IsApproved = @approved
+            WHERE [Id] = @markerId",
+            new { approved, markerId }, transaction);
+
+            transaction.Commit();
+            return approved ? ApprovalResultType.Accepted : ApprovalResultType.Rejected;
+        }
+
         ///<summary>
         /// Gets the current valid OTP for the specified marker or generates one, if none exists
         ///</summary>
@@ -57,21 +105,18 @@ new { markerId = markerId }, transaction);
             return otp;
         }
 
-        public async Task SendApprovalEmail(PendingSubmissionDto pending)
+        private async Task<int?> GetValidOtpId(int markerId, string otp, IDbTransaction transaction)
         {
-            using var connection = GetConnection();
-            connection.Open();
-            using var transaction = connection.BeginTransaction();
-            var otp = await GetOtpForSubmission(pending.Id, transaction);
+            var connection = transaction.Connection;
+            var otpId = await connection.QueryFirstOrDefaultAsync<int?>(@"
+            SELECT otp.Id
+                FROM [LaHistoricalMarkers].[dbo].[OneTimePassword] otp
+                RIGHT JOIN [LaHistoricalMarkers].[dbo].[MarkerAccess] access
+                ON otp.Id = access.OtpId
+                WHERE access.MarkerId = @markerId AND otp.Value = @otp",
+                new { markerId, otp }, transaction);
 
-            var tos = Environment.GetEnvironmentVariable("ToEmails").Split(",");
-            var templateId = Environment.GetEnvironmentVariable("Template");
-            await emailService.SendTemplatedEmail(tos, templateId, new ApprovalRequestDto(pending)
-            {
-                Otp = otp
-            });
-
-            transaction.Commit();
+            return otpId;
         }
     }
 }
