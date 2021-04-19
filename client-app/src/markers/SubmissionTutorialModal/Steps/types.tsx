@@ -9,6 +9,8 @@ interface StepContentProps {
   location: Location | null;
   image: ImageSource | null;
   setImage: (image: ImageSource | null) => void;
+  useDeviceLocation: boolean;
+  toggleDeviceLocation: () => void;
 }
 
 interface NextButtonProps {

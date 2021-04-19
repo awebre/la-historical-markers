@@ -31,6 +31,7 @@ export default function SubmitMarkerView({
   updateMapMarker,
 }: SubmitMarkerViewProps) {
   const [tutorialVisible, setTutorialVisible] = useState(true);
+  const [useDeviceLocation, setUseDeviceLocation] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [image, setImage] = useState<ImageSource | null>(null);
@@ -41,8 +42,10 @@ export default function SubmitMarkerView({
   const { requestLocation, permissionGranted } = useLocation({
     location,
     setLocation: (location) => {
-      updateMapMarker(location);
-      setLocation(location);
+      if (useDeviceLocation) {
+        updateMapMarker(location);
+        setLocation(location);
+      }
     },
   });
 
@@ -181,6 +184,8 @@ export default function SubmitMarkerView({
         close={() => setTutorialVisible(false)}
         image={image}
         setImage={setImage}
+        useDeviceLocation={useDeviceLocation}
+        toggleDeviceLocation={() => setUseDeviceLocation(!useDeviceLocation)}
       />
     </View>
   );

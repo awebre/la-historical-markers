@@ -1,8 +1,9 @@
 const keys = {
   start: "start",
-  location: "location",
+  deviceLocation: "device-location",
   image: "image",
   description: "description",
+  manualLocation: "manual-location",
 };
 
 export default keys;

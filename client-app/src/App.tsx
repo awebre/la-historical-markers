@@ -13,13 +13,12 @@ import { showLocation } from "react-native-map-link";
 import { Location, MarkerDto } from "types";
 import { MarkersSearchView, SubmitMarkerView, useMarkers } from "markers";
 import { useDebounce, useLocation } from "hooks";
-import { colors } from "utils";
+import { colors, Locations } from "utils";
 import TermsAndConditionsModal from "terms/TermsAndConditionsModal";
 
 export default function App() {
   const [region, setRegion] = useState({
-    latitude: 30.9843,
-    longitude: -91.9623,
+    ...Locations.center,
     latitudeDelta: 5,
     longitudeDelta: 5,
   });

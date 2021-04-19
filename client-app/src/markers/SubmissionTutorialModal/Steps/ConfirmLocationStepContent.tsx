@@ -4,7 +4,7 @@ import MapView, { Marker } from "react-native-maps";
 import { colors } from "utils";
 import { StepContentProps } from "./types";
 
-export default function LocationStepContent({
+export default function ConfirmLocationStepContent({
   requestLocation,
   location,
 }: StepContentProps) {
