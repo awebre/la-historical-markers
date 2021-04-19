@@ -11,76 +11,41 @@ using System.IO;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using Dapper;
-using LaHistoricalMarkers.Data;
 using LaHistoricalMarkers.Config;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using System.Threading.Tasks;
+using LaHistoricalMarkers.Core.Features.Markers;
+using LaHistoricalMarkers.Functions.Extensions;
+using LaHistoricalMarkers.Core.Features.FileStorage;
 
 namespace LaHistoricalMarkers.Functions
 {
-    public static class Markers
+    public class Markers
     {
+        private readonly MarkersService markersService;
+        private readonly ImageStorageService imageStorageService;
+
+        public Markers(MarkersService markersService, ImageStorageService imageStorageService)
+        {
+            this.markersService = markersService;
+            this.imageStorageService = imageStorageService;
+        }
+
         [Function("search-markers")]
-        public static HttpResponseData Search([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "markers")] HttpRequestData req,
+        public async Task<HttpResponseData> Search([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "markers")] HttpRequestData req,
             FunctionContext executionContext)
         {
             var logger = executionContext.GetLogger("search-markers");
             logger.LogInformation("Request for markers received.");
 
             var query = HttpUtility.ParseQueryString(req.Url.Query);
+            var region = query["region"].Deserialize<RegionDto>();
+            var userLocation = query["userLocation"].Deserialize<UserLocationDto>();
 
-            var region = JsonSerializer.Deserialize<RegionDto>(query["region"], DefaultJsonConfiguration.SerializerOptions);
-            var latitude = region.Latitude;
-            var longitude = region.Longitude;
+            var results = await markersService.GetMarkersByRegion(region, userLocation);
 
-            //deltas map to 1 degree and represent the total number of degree from edge to edge
-            //so we can calculate the lat/long of various edges by adding/subtracting half the delta
-            //Note: this is an assumption that SEEMS to work - it may need re-evaluation
-            var longitudeDelta = region.LongitudeDelta;
-            var latitudeDelta = region.LongitudeDelta;
-
-            var topLat = (latitude + (latitudeDelta / 2)).ToString();
-            var bottomLat = (latitude - (latitudeDelta / 2)).ToString();
-            var leftLong = (longitude - (longitudeDelta / 2)).ToString();
-            var rightLong = (longitude + (longitudeDelta / 2)).ToString();
-
-
-            var userLocation = JsonSerializer.Deserialize<UserLocationDto>(query["userLocation"], DefaultJsonConfiguration.SerializerOptions);
-            //user lat/long are used to calculate distance
-            //if no user lat/long is supplied, we'll use the center of the map
-            var userLatitude = userLocation?.Latitude ?? latitude;
-            var userLongitude = userLocation?.Longitude ?? longitude;
-
-            using var connection = Database.GetConnection();
-            var results = connection.Query<MarkerDto>(@"
-            SELECT TOP (100) [Id]
-                ,[Name]
-                ,[Description]
-                ,[Location].[Lat] AS [Latitude]
-                ,[Location].[Long] AS [Longitude]
-                ,[ImageFileName]
-                ,[IsApproved]
-                ,[CreatedTimestamp]
-                ,GEOGRAPHY::Point(@userLatitude, @userLongitude, 4326).STDistance([Location]) AS Distance
-            FROM [LaHistoricalMarkers].[dbo].[Marker]
-            WHERE GEOGRAPHY::STPolyFromText('Polygon(( ' + @rightLong + ' ' + @bottomLat + ', ' + @rightLong + ' ' + @topLat + ', ' + @leftLong + ' ' + @topLat + ', ' + @leftLong + ' ' + @bottomLat + ', ' + @rightLong + ' ' + @bottomLat + '))', 4326).STIntersects([Location]) = 1
-            AND [IsApproved] = 1
-            ORDER BY Distance",
-            new
-            {
-                latitude,
-                longitude,
-                topLat,
-                bottomLat,
-                leftLong,
-                rightLong,
-                userLatitude,
-                userLongitude
-            }).AsList();
-
-            var json = JsonSerializer.Serialize(results, DefaultJsonConfiguration.SerializerOptions);
+            var json = results.Serialize();
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "application/json; charset=utf-8");
 
@@ -90,7 +55,7 @@ namespace LaHistoricalMarkers.Functions
         }
 
         [Function("submit-markers")]
-        public static SubmissionResponse Submit([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "markers")] HttpRequestData req,
+        public async Task<SubmissionResponse> Submit([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "markers")] HttpRequestData req,
             FunctionContext context)
         {
             using var streamReader = new StreamReader(req.Body);
@@ -104,63 +69,14 @@ namespace LaHistoricalMarkers.Functions
                 };
             }
 
-            string fileGuid = null;
+            string fileHandle = null;
             if (!string.IsNullOrEmpty(submission.Base64Image))
             {
-                fileGuid = $"{Guid.NewGuid()}.png";
                 var fileBytes = Convert.FromBase64String(submission.Base64Image);
-                using var memoryStream = new MemoryStream(fileBytes);
-                var serviceUri = new Uri(Environment.GetEnvironmentVariable("StorageUri"));
-                var credential = new StorageSharedKeyCredential(Environment.GetEnvironmentVariable("StorageAccount"), Environment.GetEnvironmentVariable("StorageKey"));
-                var blobService = new BlobServiceClient(serviceUri, credential);
-                var containerService = blobService.GetBlobContainerClient(Environment.GetEnvironmentVariable("StorageContainer"));
-                var blobClient = containerService.GetBlobClient(fileGuid);
-                var blobHeaders = new BlobHttpHeaders();
-                blobHeaders.ContentType = "image/png";
-                blobClient.Upload(memoryStream, blobHeaders);
+                fileHandle = await imageStorageService.UploadFileAndGetHandle(fileBytes);
             }
 
-
-            using var connection = Database.GetConnection();
-            connection.Open();
-            using var transaction = connection.BeginTransaction();
-            var id = connection.QuerySingle<int>(@"
-            INSERT INTO [LaHistoricalMarkers].[dbo].[Marker] (
-                [Name], 
-                [Description], 
-                [Location], 
-                [IsApproved], 
-                [CreatedTimestamp],
-                [ImageFileName]
-            )
-            OUTPUT INSERTED.Id
-            VALUES (
-                @name,
-                @description,
-                GEOGRAPHY::Point(@latitude, @longitude, 4326),
-                0,
-                SYSDATETIMEOFFSET(),
-                @imageFileName
-            )",
-            new
-            {
-                name = submission.Name,
-                description = submission.Description,
-                latitude = submission.Latitude,
-                longitude = submission.Longitude,
-                imageFileName = fileGuid
-            }, transaction);
-            transaction.Commit();
-            var pending = new PendingSubmissionDto
-            {
-                Id = id,
-                Name = submission.Name,
-                Description = submission.Description,
-                Latitude = submission.Latitude,
-                Longitude = submission.Longitude,
-                ImageFileName = fileGuid
-            };
-
+            var pending = await markersService.AddMarkerSubmission(submission, fileHandle);
             return new SubmissionResponse
             {
                 QueueMessage = pending,
@@ -176,6 +92,8 @@ namespace LaHistoricalMarkers.Functions
             var str = streamReader.ReadToEnd();
             var report = JsonSerializer.Deserialize<ReportDto>(str, DefaultJsonConfiguration.SerializerOptions);
 
+            //TODO: make this use a dynamic template similar to approvals
+            //then consolidate this api behind your own service for consistency
             var apiKey = Environment.GetEnvironmentVariable("SendGrid");
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress(Environment.GetEnvironmentVariable("FromEmail"), "LA Historical Markers Alert");

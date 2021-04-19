@@ -1,8 +1,8 @@
 using System;
 
-namespace LaHistoricalMarkers.Data
+namespace LaHistoricalMarkers.Core.Features.Markers
 {
-    public class UserLocationDto 
+    public class UserLocationDto
     {
         public decimal Latitude { get; set; }
 

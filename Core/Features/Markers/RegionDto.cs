@@ -1,8 +1,8 @@
 using System;
 
-namespace LaHistoricalMarkers.Data
+namespace LaHistoricalMarkers.Core.Features.Markers
 {
-    public class RegionDto 
+    public class RegionDto
     {
         public decimal Latitude { get; set; }
 
@@ -10,6 +10,6 @@ namespace LaHistoricalMarkers.Data
 
         public decimal LatitudeDelta { get; set; }
 
-        public decimal LongitudeDelta { get; set;}
+        public decimal LongitudeDelta { get; set; }
     }
 }

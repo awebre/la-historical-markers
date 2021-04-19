@@ -60,6 +60,9 @@ The last four items are used to configure the Azure Blob Storage Client, which w
 
 With these components installed and the settings file added (and updated), you should be able to click Run (or F5) and the functions should spin up for you to test locally.
 
+Note: you can also run the functions from within the root of the repository itself by simply clicking run.
+If you'd like to run the functions in "watch" mode, you can run `dotnet watch msbuild /t:RunFunctions` in the `Functions` folder.
+
 ## Expo Mobile App
 
 The mobile app was created using Expo, so running it is as simple as making sure you have have Expo installed and runing `expo start`.

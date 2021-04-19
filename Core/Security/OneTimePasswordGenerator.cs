@@ -1,7 +1,7 @@
 using System;
 using System.Security.Cryptography;
 
-namespace LaHistoricalMarkers.Security
+namespace LaHistoricalMarkers.Core.Security
 {
     public static class OneTimePasswordGenerator
     {

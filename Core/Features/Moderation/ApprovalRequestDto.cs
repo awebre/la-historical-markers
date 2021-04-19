@@ -1,6 +1,7 @@
 using System;
+using LaHistoricalMarkers.Core.Features.Markers;
 
-namespace LaHistoricalMarkers.Data
+namespace LaHistoricalMarkers.Core.Features.Moderation
 {
     public class ApprovalRequestDto : PendingSubmissionDto
     {

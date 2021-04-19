@@ -1,9 +1,11 @@
 using System;
 
-namespace LaHistoricalMarkers.Data
+namespace LaHistoricalMarkers.Core.Features.Markers
 {
-    public class MarkerSubmissionDto
+    public class PendingSubmissionDto
     {
+        public int Id { get; set; }
+
         public string Name { get; set; }
 
         public string Description { get; set; }
@@ -12,6 +14,6 @@ namespace LaHistoricalMarkers.Data
 
         public decimal Longitude { get; set; }
 
-        public string Base64Image { get; set; }
+        public string ImageFileName { get; set; }
     }
 }
