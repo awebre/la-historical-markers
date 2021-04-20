@@ -11,6 +11,7 @@ interface StepContentProps {
   setImage: (image: ImageSource | null) => void;
   useDeviceLocation: boolean;
   toggleDeviceLocation: () => void;
+  setLocation: (location: Location) => void;
 }
 
 interface NextButtonProps {

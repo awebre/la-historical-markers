@@ -49,6 +49,11 @@ export default function SubmitMarkerView({
     },
   });
 
+  function manuallyUpdateMarkerLocation(coords: Location) {
+    updateMapMarker(coords);
+    setLocation(coords);
+  }
+
   async function submitMarker() {
     setIsSubmitting(true);
     if (location && name && description) {
@@ -120,11 +125,19 @@ export default function SubmitMarkerView({
               <Alert alertText={error} cancel={() => setError("")} />
             )}
             <View style={{ paddingBottom: 10 }}>
-              <Button
-                title="Update Marker Location"
-                onPress={requestLocation}
-                disabled={isSubmitting}
-              />
+              {useDeviceLocation ? (
+                <Button
+                  title="Update Marker Location"
+                  onPress={requestLocation}
+                  disabled={isSubmitting}
+                />
+              ) : (
+                <Button
+                  title="Change Marker Location"
+                  onPress={() => setTutorialVisible(true)}
+                />
+              )}
+
               <ImagePreviewPicker
                 image={image}
                 setImage={setImage}
@@ -186,6 +199,7 @@ export default function SubmitMarkerView({
         setImage={setImage}
         useDeviceLocation={useDeviceLocation}
         toggleDeviceLocation={() => setUseDeviceLocation(!useDeviceLocation)}
+        setLocation={manuallyUpdateMarkerLocation}
       />
     </View>
   );
