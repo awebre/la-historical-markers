@@ -28,30 +28,21 @@ export default function StartStepContent({
           />
         </View>
       </View>
-      {useDeviceLocation ? (
-        <>
-          <Text style={styles.header}>
-            Let's start by getting as close to the marker as possible. Once
-            you're next to the marker, click Next.
-          </Text>
-          <MapView
-            initialRegion={{
-              ...initialRegion,
-              latitudeDelta: location ? 0.5 : 5,
-              longitudeDelta: location ? 0.5 : 5,
-            }}
-            showsUserLocation={true}
-            followsUserLocation={true}
-            style={styles.map}
-          />
-        </>
-      ) : (
-        <>
-          <Text style={styles.header}>
-            You're all set. Click next to go to the next step.
-          </Text>
-        </>
-      )}
+      <Text style={styles.header}>
+        {useDeviceLocation
+          ? "Let's start by getting as close to the marker as possible. Once you're next to the marker, click Next."
+          : "Your location will be used as a starting point. Click Next to continue setting the location."}
+      </Text>
+      <MapView
+        initialRegion={{
+          ...initialRegion,
+          latitudeDelta: location ? 0.5 : 5,
+          longitudeDelta: location ? 0.5 : 5,
+        }}
+        showsUserLocation={true}
+        followsUserLocation={true}
+        style={styles.map}
+      />
     </View>
   );
 }
