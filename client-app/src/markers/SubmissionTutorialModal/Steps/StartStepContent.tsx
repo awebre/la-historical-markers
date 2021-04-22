@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { View, Text, Switch, StyleSheet } from "react-native";
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
 import MapView from "react-native-maps";
 import { StepContentProps } from "./types";
 import { Locations } from "utils";
+import LocationEntrySwitch from "components/location";
 
 export default function StartStepContent({
   location,
@@ -16,18 +17,11 @@ export default function StartStepContent({
         <Text style={styles.header}>
           How would you like to enter the location of the marker?
         </Text>
-        <View style={styles.switchContainer}>
-          <Text>
-            {useDeviceLocation
-              ? "I would like to use my location."
-              : "I would like to drop a pin."}
-          </Text>
-          <Switch
-            value={useDeviceLocation}
-            onValueChange={toggleDeviceLocation}
-          />
-        </View>
       </View>
+      <LocationEntrySwitch
+        useDeviceLocation={useDeviceLocation}
+        toggleDeviceLocation={toggleDeviceLocation}
+      />
       <Text style={styles.header}>
         {useDeviceLocation
           ? "Let's start by getting as close to the marker as possible. Once you're next to the marker, click Next."
@@ -55,12 +49,5 @@ const styles = StyleSheet.create({
   map: {
     height: 200,
     width: "100%",
-  },
-  switchContainer: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 20,
   },
 });

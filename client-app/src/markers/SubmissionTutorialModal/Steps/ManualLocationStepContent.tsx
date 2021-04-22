@@ -5,12 +5,12 @@ import React, { useEffect, useState } from "react";
 import { Dimensions, View, Text } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { colors, Locations } from "utils";
-import { StepContentProps } from "./types";
+import { LocationContentProps, StepContentProps } from "./types";
 
 export default function ManualLocationStepContent({
   location,
   setLocation,
-}: StepContentProps) {
+}: LocationContentProps) {
   useEffect(() => {
     if (!location?.latitude || !location?.longitude) {
       setLocation(Locations.center);
