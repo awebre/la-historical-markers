@@ -33,7 +33,7 @@ namespace LaHistoricalMarkers.Core.Features.Markers
             var userLongitude = userLocation?.Longitude ?? longitude;
 
             return (await QueryAsync<MarkerDto>(@"
-            SELECT TOP (100) [Id]
+            SELECT TOP (1000) [Id]
                 ,[Name]
                 ,[Description]
                 ,[Location].[Lat] AS [Latitude]
