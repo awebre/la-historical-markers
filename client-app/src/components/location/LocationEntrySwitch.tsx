@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, Switch, StyleSheet } from "react-native";
+import { colors } from "utils";
 
 interface LocationEntrySwitchProps {
   useDeviceLocation: boolean;
@@ -13,7 +14,11 @@ export default function LocationEntrySwitch({
   return (
     <View style={styles.switchContainer}>
       <Text>I would like to use my location</Text>
-      <Switch value={useDeviceLocation} onValueChange={toggleDeviceLocation} />
+      <Switch
+        trackColor={{ true: colors.accent, false: colors.grey }}
+        value={useDeviceLocation}
+        onValueChange={toggleDeviceLocation}
+      />
     </View>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleProp,
   Text,
@@ -50,8 +50,7 @@ export default function SubmitMarkerView({
   const [description, setDescription] = useState<string | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const { requestLocation, permissionGranted } = useLocation({
-    location,
+  const { updateLocation, permissionGranted } = useLocation({
     setLocation: (location) => {
       if (useDeviceLocation) {
         updateMapMarker(location);
@@ -59,6 +58,10 @@ export default function SubmitMarkerView({
       }
     },
   });
+
+  useEffect(() => {
+    updateLocation();
+  }, [useDeviceLocation]);
 
   function manuallyUpdateMarkerLocation(coords: Location) {
     updateMapMarker(coords);
@@ -152,7 +155,7 @@ export default function SubmitMarkerView({
               {useDeviceLocation ? (
                 <Button
                   title="Update Marker Location"
-                  onPress={requestLocation}
+                  onPress={updateLocation}
                   disabled={isSubmitting}
                 />
               ) : (
@@ -246,7 +249,7 @@ export default function SubmitMarkerView({
         setDescription={setDescription}
         visible={tutorialVisible}
         location={location}
-        requestLocation={requestLocation}
+        requestLocation={updateLocation}
         cancel={onCancel}
         close={() => setTutorialVisible(false)}
         image={image}

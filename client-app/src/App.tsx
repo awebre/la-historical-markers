@@ -33,27 +33,28 @@ export default function App() {
   const [openMarker, setOpenMarker] = useState<MarkerDto | null>(null);
   const [lastRegion, setLastRegion] = useState(region);
   const [isAdding, setIsAdding] = useState(false);
-  const [shouldNavigateToUser, setShouldNavigateToUser] = useState(true);
   const [newMarker, setNewMarker] = useState<Location | null>(null);
 
   const debouncedUserLocation = useDebounce(userLocation, 1000);
 
   const debouncedRegion = useDebounce(region, 500);
-  useLocation({
-    location: userLocation,
+  const { updateLocation } = useLocation({
     setLocation: setUserLocation,
   });
 
   useEffect(() => {
-    if (shouldNavigateToUser && userLocation !== null) {
+    updateLocation();
+  }, []);
+
+  useEffect(() => {
+    if (userLocation !== null) {
       map.current?.animateToRegion({
         latitudeDelta: 0.1,
         longitudeDelta: 0.1,
         ...userLocation,
       });
-      setShouldNavigateToUser(false);
     }
-  }, [shouldNavigateToUser, userLocation]);
+  }, [userLocation]);
 
   const { markers, isLoading, isError } = useMarkers({
     region: debouncedRegion,
@@ -112,6 +113,7 @@ export default function App() {
               identifier={m.id.toString()}
               coordinate={{ latitude: m.latitude, longitude: m.longitude }}
               title={m.name}
+              pinColor={colors.primaryPin}
               description={m.description}
             />
           ))}

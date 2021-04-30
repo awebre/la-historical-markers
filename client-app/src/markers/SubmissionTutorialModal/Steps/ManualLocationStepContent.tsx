@@ -1,9 +1,8 @@
+import React, { useEffect, useState } from "react";
+import { Dimensions, View, Text, Platform } from "react-native";
+import MapView, { Marker } from "react-native-maps";
 import { DismissKeyboard } from "components";
 import { FormGroup } from "components/forms";
-import { useDebounce } from "hooks";
-import React, { useEffect, useState } from "react";
-import { Dimensions, View, Text } from "react-native";
-import MapView, { Marker } from "react-native-maps";
 import { colors, Locations } from "utils";
 import { LocationContentProps, StepContentProps } from "./types";
 
@@ -24,6 +23,8 @@ export default function ManualLocationStepContent({
   }, [location, Locations.center]);
   const [lat, setLat] = useState(`${location?.latitude}`);
   const [long, setLong] = useState(`${location?.longitude}`);
+  const keyboardType =
+    Platform.OS === "ios" ? "numbers-and-punctuation" : "number-pad";
   return (
     <View style={{ backgroundColor: colors.lightBackground }}>
       <Text style={{ fontSize: 20 }}>Drag the Pin to change the location.</Text>
@@ -42,7 +43,7 @@ export default function ManualLocationStepContent({
                 });
               }
             }}
-            keyboardType="decimal-pad"
+            keyboardType={keyboardType}
           />
           <FormGroup
             label="Longitude: "
@@ -57,25 +58,37 @@ export default function ManualLocationStepContent({
                 });
               }
             }}
-            keyboardType="decimal-pad"
+            keyboardType={keyboardType}
           />
         </View>
       </DismissKeyboard>
-      <MapView
-        initialRegion={{
-          latitude: location?.latitude ?? Locations.center.latitude,
-          longitude: location?.longitude ?? Locations.center.longitude,
-          longitudeDelta: 0.5,
-          latitudeDelta: 0.5,
+      <View
+        style={{
+          borderWidth: 1,
+          borderColor: colors.accent,
+          borderRadius: 10,
+          overflow: "hidden",
         }}
-        style={{ height: Dimensions.get("window").height * 0.4, width: "100%" }}
       >
-        <Marker
-          draggable
-          onDragEnd={(m) => setLocation(m.nativeEvent.coordinate)}
-          coordinate={location ?? Locations.center}
-        />
-      </MapView>
+        <MapView
+          initialRegion={{
+            latitude: location?.latitude ?? Locations.center.latitude,
+            longitude: location?.longitude ?? Locations.center.longitude,
+            longitudeDelta: 0.5,
+            latitudeDelta: 0.5,
+          }}
+          style={{
+            height: Dimensions.get("window").height * 0.4,
+            width: "100%",
+          }}
+        >
+          <Marker
+            draggable
+            onDragEnd={(m) => setLocation(m.nativeEvent.coordinate)}
+            coordinate={location ?? Locations.center}
+          />
+        </MapView>
+      </View>
     </View>
   );
 }
