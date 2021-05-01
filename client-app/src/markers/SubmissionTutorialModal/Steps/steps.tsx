@@ -3,10 +3,11 @@ import { Button } from "react-native";
 import { colors } from "utils";
 import DescriptionStepContent from "./DescriptionStepContent";
 import keys from "./keys";
-import LocationStepContent from "./LocationStepContent";
+import ConfirmLocationStepContent from "./ConfirmLocationStepContent";
 import StartStepContent from "./StartStepContent";
 import TakePhotoStepContent from "./TakePhotoStepContent";
 import { NextButtonProps } from "./types";
+import ManualLocationStepContent from "./ManualLocationStepContent";
 
 const steps = [
   {
@@ -25,9 +26,17 @@ const steps = [
     ),
   },
   {
-    key: keys.location,
+    key: keys.deviceLocation,
     heading: "Check and Set the Location",
-    Content: LocationStepContent,
+    Content: ConfirmLocationStepContent,
+    NextButton: ({ goToNextStep }: NextButtonProps) => (
+      <Button title="Next" onPress={goToNextStep} color={colors.primary} />
+    ),
+  },
+  {
+    key: keys.manualLocation,
+    heading: "Move the Pin to Set the Location",
+    Content: ManualLocationStepContent,
     NextButton: ({ goToNextStep }: NextButtonProps) => (
       <Button title="Next" onPress={goToNextStep} color={colors.primary} />
     ),

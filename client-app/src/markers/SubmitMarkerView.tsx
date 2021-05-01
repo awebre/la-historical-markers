@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleProp,
   Text,
@@ -8,14 +8,24 @@ import {
   ScrollView,
   View,
   Alert as RNAlert,
+  Modal,
 } from "react-native";
 import * as ImageManipulator from "expo-image-manipulator";
-import { Alert, Card, headerTextStyle, ImagePreviewPicker } from "components";
+import {
+  Alert,
+  Card,
+  headerTextStyle,
+  ImagePreviewPicker,
+  Tutorial,
+} from "components";
 import { colors, confirm, url } from "utils";
 import { useLocation } from "hooks";
 import { ImageSource, Location } from "types";
 import SubmissionTutorialModal from "./SubmissionTutorialModal/SubmissionTutorialModal";
 import MarkerForm from "./MarkerForm";
+import LocationEntrySwitch from "components/location";
+import ManualLocationStepContent from "./SubmissionTutorialModal/Steps/ManualLocationStepContent";
+import { KeyboardAvoidingView } from "react-native";
 
 interface SubmitMarkerViewProps {
   cardStyles: StyleProp<ViewStyle>;
@@ -31,20 +41,36 @@ export default function SubmitMarkerView({
   updateMapMarker,
 }: SubmitMarkerViewProps) {
   const [tutorialVisible, setTutorialVisible] = useState(true);
+  const [useDeviceLocation, setUseDeviceLocation] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [image, setImage] = useState<ImageSource | null>(null);
   const [location, setLocation] = useState<Location | null>(null);
   const [name, setName] = useState<string | null>(null);
   const [description, setDescription] = useState<string | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const { requestLocation, permissionGranted } = useLocation({
-    location,
+  const { updateLocation, permissionGranted } = useLocation({
     setLocation: (location) => {
-      updateMapMarker(location);
-      setLocation(location);
+      if (useDeviceLocation) {
+        updateMapMarker(location);
+        setLocation(location);
+      }
     },
   });
+
+  useEffect(() => {
+    updateLocation();
+  }, [useDeviceLocation]);
+
+  function manuallyUpdateMarkerLocation(coords: Location) {
+    updateMapMarker(coords);
+    setLocation(coords);
+  }
+
+  function toggleDeviceLocation() {
+    setUseDeviceLocation(!useDeviceLocation);
+  }
 
   async function submitMarker() {
     setIsSubmitting(true);
@@ -108,7 +134,7 @@ export default function SubmitMarkerView({
                   textAlign: "center",
                 }}
               >
-                {!permissionGranted
+                {!permissionGranted && useDeviceLocation
                   ? "You must allow location services in order to submit a new Marker. We use your location to report an approximate location of the marker."
                   : "Check that the above location and the information you entered is correct, then hit Submit."}
               </Text>
@@ -116,12 +142,29 @@ export default function SubmitMarkerView({
             {error !== "" && (
               <Alert alertText={error} cancel={() => setError("")} />
             )}
-            <View style={{ paddingBottom: 10 }}>
-              <Button
-                title="Update Marker Location"
-                onPress={requestLocation}
-                disabled={isSubmitting}
+            <View>
+              <Text style={{ fontWeight: "bold", paddingBottom: 10 }}>
+                How would you like to set the marker's location?
+              </Text>
+              <LocationEntrySwitch
+                useDeviceLocation={useDeviceLocation}
+                toggleDeviceLocation={toggleDeviceLocation}
               />
+            </View>
+            <View style={{ paddingBottom: 10 }}>
+              {useDeviceLocation ? (
+                <Button
+                  title="Update Marker Location"
+                  onPress={updateLocation}
+                  disabled={isSubmitting}
+                />
+              ) : (
+                <Button
+                  title="Change Marker Location"
+                  onPress={() => setIsModalVisible(true)}
+                />
+              )}
+
               <ImagePreviewPicker
                 image={image}
                 setImage={setImage}
@@ -169,6 +212,36 @@ export default function SubmitMarkerView({
           />
         </Card.Footer>
       </Card>
+      <Modal
+        visible={isModalVisible}
+        style={{
+          display: "flex",
+          height: "100%",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <KeyboardAvoidingView behavior="padding">
+          <Tutorial>
+            <Tutorial.Header text="Update the Marker's Location" />
+            <Tutorial.Content>
+              <View>
+                <ManualLocationStepContent
+                  setLocation={manuallyUpdateMarkerLocation}
+                  location={location}
+                />
+              </View>
+            </Tutorial.Content>
+            <Tutorial.Footer style={{ justifyContent: "flex-end" }}>
+              <Button
+                title="Save"
+                onPress={() => setIsModalVisible(false)}
+                color={colors.primary}
+              />
+            </Tutorial.Footer>
+          </Tutorial>
+        </KeyboardAvoidingView>
+      </Modal>
       <SubmissionTutorialModal
         name={name}
         setName={setName}
@@ -176,11 +249,14 @@ export default function SubmitMarkerView({
         setDescription={setDescription}
         visible={tutorialVisible}
         location={location}
-        requestLocation={requestLocation}
+        requestLocation={updateLocation}
         cancel={onCancel}
         close={() => setTutorialVisible(false)}
         image={image}
         setImage={setImage}
+        useDeviceLocation={useDeviceLocation}
+        toggleDeviceLocation={toggleDeviceLocation}
+        setLocation={manuallyUpdateMarkerLocation}
       />
     </View>
   );

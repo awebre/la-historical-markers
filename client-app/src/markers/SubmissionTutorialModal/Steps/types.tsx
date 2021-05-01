@@ -1,14 +1,20 @@
 import { ImageSource, Location } from "types";
 
-interface StepContentProps {
+interface StepContentProps extends LocationContentProps {
   name: string | null;
   setName: (name: string | null) => void;
   description: string | null;
   setDescription: (description: string | null) => void;
   requestLocation: () => void;
-  location: Location | null;
   image: ImageSource | null;
   setImage: (image: ImageSource | null) => void;
+  useDeviceLocation: boolean;
+  toggleDeviceLocation: () => void;
+}
+
+interface LocationContentProps {
+  location: Location | null;
+  setLocation: (location: Location) => void;
 }
 
 interface NextButtonProps {
@@ -19,4 +25,4 @@ interface NextButtonProps {
   description: string | null;
 }
 
-export { StepContentProps, NextButtonProps };
+export { StepContentProps, LocationContentProps, NextButtonProps };

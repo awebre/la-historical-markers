@@ -8,4 +8,6 @@ export default {
   grey: "#e6e6e6",
   darkGrey: "#bdbdbd",
   alert: "#ff6666",
+  primaryPin: "#734d26",
+  black: "#000000",
 };
