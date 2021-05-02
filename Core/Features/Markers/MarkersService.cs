@@ -42,6 +42,7 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 ,[IsApproved]
                 ,[CreatedTimestamp]
                 ,GEOGRAPHY::Point(@userLatitude, @userLongitude, 4326).STDistance([Location]) AS Distance
+                ,[Type]
             FROM [LaHistoricalMarkers].[dbo].[Marker]
             WHERE GEOGRAPHY::STPolyFromText('Polygon(( ' + @rightLong + ' ' + @bottomLat + ', ' + @rightLong + ' ' + @topLat + ', ' + @leftLong + ' ' + @topLat + ', ' + @leftLong + ' ' + @bottomLat + ', ' + @rightLong + ' ' + @bottomLat + '))', 4326).STIntersects([Location]) = 1
             AND [IsApproved] = 1

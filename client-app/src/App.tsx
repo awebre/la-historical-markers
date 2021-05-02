@@ -15,6 +15,7 @@ import { MarkersSearchView, SubmitMarkerView, useMarkers } from "markers";
 import { useDebounce, useLocation } from "hooks";
 import { colors, Locations } from "utils";
 import TermsAndConditionsModal from "terms/TermsAndConditionsModal";
+import { getMarkerColor } from "markers/utils";
 
 export default function App() {
   const [region, setRegion] = useState({
@@ -114,7 +115,7 @@ export default function App() {
               identifier={m.id.toString()}
               coordinate={{ latitude: m.latitude, longitude: m.longitude }}
               title={m.name}
-              pinColor={colors.primaryPin}
+              pinColor={getMarkerColor(m.type)}
               description={m.description}
             />
           ))}

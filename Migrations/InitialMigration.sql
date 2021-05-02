@@ -59,3 +59,15 @@ IF OBJECT_ID('LaHistoricalMarkers.dbo.MarkerAccess') IS NULL
 
 IF COL_LENGTH('LaHistoricalMarkers.dbo.Marker', 'ImageFileName') IS NULL
     EXEC SP_RENAME 'LaHistoricalMarkers.dbo.Marker.ImageUrl', 'ImageFileName', 'COLUMN'
+
+IF COL_LENGTH('LaHistoricalMarkers.dbo.Marker', 'Type') IS NULL
+    ALTER TABLE [LaHistoricalMarkers].[dbo].[Marker]
+        ADD [Type] VARCHAR(256) NULL;
+    GO
+
+UPDATE [LaHistoricalMarkers].[dbo].[Marker]
+    SET [Type] = 'Official'
+    WHERE [Type] IS NULL
+
+ALTER TABLE [LaHistoricalMarkers].[dbo].[Marker]
+ALTER COLUMN [Type] VARCHAR(256) NOT NULL;

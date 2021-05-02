@@ -21,5 +21,7 @@ namespace LaHistoricalMarkers.Core.Features.Markers
         public DateTimeOffset CreatedTimestamp { get; set; }
 
         public decimal Distance { get; set; }
+
+        public MarkerType Type { get; set; }
     }
 }

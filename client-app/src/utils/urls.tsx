@@ -1,4 +1,4 @@
-const ngrok = "https://d35f63e2bf59.ngrok.io";
+const ngrok = "https://5232602d7bee.ngrok.io";
 const apiUrl = __DEV__
   ? ngrok || "http://localhost:7071"
   : "https://la-historical-markers-prod.azurewebsites.net";
