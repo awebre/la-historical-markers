@@ -9,6 +9,6 @@ export default {
   darkGrey: "#bdbdbd",
   alert: "#ff6666",
   primaryPin: "#734d26",
-  secondaryPin: "#50717a",
+  secondaryPin: "#00802b",
   black: "#000000",
 };

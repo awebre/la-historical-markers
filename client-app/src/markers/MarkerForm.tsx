@@ -1,8 +1,11 @@
 import React from "react";
-import { MarkerDto } from "types";
+import { MarkerType } from "types";
 import { FormGroup } from "components/forms";
+import { MarkerSelector } from "components/markers";
 
 interface MarkerFormProps {
+  type: MarkerType;
+  setType: (type: MarkerType) => void;
   name: string | null;
   setName: (name: string | null) => void;
   description: string | null;
@@ -11,6 +14,8 @@ interface MarkerFormProps {
 }
 
 export default function MarkerForm({
+  type,
+  setType,
   name,
   setName,
   description,
@@ -19,6 +24,7 @@ export default function MarkerForm({
 }: MarkerFormProps) {
   return (
     <>
+      <MarkerSelector type={type} setType={setType} />
       <FormGroup
         label="Name:"
         value={name ?? undefined}

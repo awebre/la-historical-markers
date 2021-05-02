@@ -13,6 +13,7 @@ namespace LaHistoricalMarkers.Core.Features.Moderation
             Latitude = submission.Latitude;
             Longitude = submission.Longitude;
             ImageFileName = submission.ImageFileName;
+            Type = submission.Type;
         }
         public string Otp { get; set; }
     }

@@ -69,7 +69,8 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 [Location], 
                 [IsApproved], 
                 [CreatedTimestamp],
-                [ImageFileName]
+                [ImageFileName],
+                [Type]
             )
             OUTPUT INSERTED.Id
             VALUES (
@@ -78,7 +79,8 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 GEOGRAPHY::Point(@latitude, @longitude, 4326),
                 0,
                 SYSDATETIMEOFFSET(),
-                @imageFileName
+                @imageFileName,
+                @type
             )",
             new
             {
@@ -86,7 +88,8 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 description = submission.Description,
                 latitude = submission.Latitude,
                 longitude = submission.Longitude,
-                imageFileName = fileHandle
+                imageFileName = fileHandle,
+                type = submission.Type.ToString()
             });
 
             return new PendingSubmissionDto
@@ -96,7 +99,8 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 Description = submission.Description,
                 Latitude = submission.Latitude,
                 Longitude = submission.Longitude,
-                ImageFileName = fileHandle
+                ImageFileName = fileHandle,
+                Type = submission.Type.ToString()
             };
         }
     }

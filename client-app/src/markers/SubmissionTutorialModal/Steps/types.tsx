@@ -1,6 +1,8 @@
-import { ImageSource, Location } from "types";
+import { ImageSource, Location, MarkerType } from "types";
 
 interface StepContentProps extends LocationContentProps {
+  type: MarkerType;
+  setType: (type: MarkerType) => void;
   name: string | null;
   setName: (name: string | null) => void;
   description: string | null;

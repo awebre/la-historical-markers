@@ -11,4 +11,15 @@ function getMarkerColor(type: MarkerType) {
   }
 }
 
-export { getMarkerColor };
+function getMarkerTypeDescription(type: MarkerType | null) {
+  switch (type) {
+    case MarkerType.other:
+      return "Other";
+    case MarkerType.official:
+      return "State";
+    default:
+      return "";
+  }
+}
+
+export { getMarkerColor, getMarkerTypeDescription };

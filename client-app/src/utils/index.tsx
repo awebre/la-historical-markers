@@ -4,5 +4,14 @@ import url from "./urls";
 import colors from "./colors";
 import confirm from "./confirm";
 import * as Locations from "./locations";
+import * as typeUtils from "./typeUtils";
 
-export { fetcher, url, humanizedDistance, colors, confirm, Locations };
+export {
+  fetcher,
+  url,
+  humanizedDistance,
+  colors,
+  confirm,
+  Locations,
+  typeUtils,
+};

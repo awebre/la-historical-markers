@@ -6,6 +6,8 @@ import { colors } from "utils";
 import { StepContentProps } from "./types";
 
 export default function DescriptionStepContent({
+  type,
+  setType,
   name,
   setName,
   description,
@@ -21,6 +23,8 @@ export default function DescriptionStepContent({
           When you're done, hit Review, to finish up your submission.
         </Text>
         <MarkerForm
+          type={type}
+          setType={setType}
           name={name}
           setName={setName}
           description={description}

@@ -10,6 +10,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { colors } from "utils";
+import Label from "./Label";
 
 type FormGroupProps = {
   label: string;
@@ -27,7 +28,7 @@ export default function FormGroup({
 }: FormGroupProps) {
   return (
     <View style={[styles.container, containerStyle]}>
-      <Text style={[styles.label, labelStyle]}>{label}</Text>
+      <Label>{label}</Label>
       <TextInput style={[styles.input, inputStyle]} {...inputProps} />
     </View>
   );
@@ -37,11 +38,6 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 15,
     maxWidth: "100%",
-  },
-  label: {
-    fontSize: 15,
-    fontWeight: "500",
-    margin: 5,
   },
   input: {
     flex: 0,
