@@ -17,7 +17,7 @@ namespace LaHistoricalMarkers.Core.Features.Markers
         {
             //If no type filters are supplied then we assume that an older
             //client is querying us (one that isn't filter-aware)
-            if (typeFilters == null)
+            if (typeFilters == null || !typeFilters.Any())
             {
                 typeFilters = Enum.GetValues<MarkerType>();
             }
