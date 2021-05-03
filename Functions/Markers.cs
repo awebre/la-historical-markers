@@ -42,8 +42,10 @@ namespace LaHistoricalMarkers.Functions
             var query = HttpUtility.ParseQueryString(req.Url.Query);
             var region = query["region"].Deserialize<RegionDto>();
             var userLocation = query["userLocation"].Deserialize<UserLocationDto>();
+            var typeFilters = query["typeFilters"].Deserialize<MarkerType[]>();
+            logger.LogInformation(query["typeFilters"]);
 
-            var results = await markersService.GetMarkersByRegion(region, userLocation);
+            var results = await markersService.GetMarkersByRegion(region, userLocation, typeFilters);
 
             var json = results.Serialize();
             var response = req.CreateResponse(HttpStatusCode.OK);

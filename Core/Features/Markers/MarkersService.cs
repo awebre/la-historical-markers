@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using LaHistoricalMarkers.Core.Data;
@@ -11,8 +13,15 @@ namespace LaHistoricalMarkers.Core.Features.Markers
         {
         }
 
-        public async Task<IEnumerable<MarkerDto>> GetMarkersByRegion(RegionDto region, UserLocationDto userLocation)
+        public async Task<IEnumerable<MarkerDto>> GetMarkersByRegion(RegionDto region, UserLocationDto userLocation, MarkerType[] typeFilters = null)
         {
+            //If no type filters are supplied then we assume that an older
+            //client is querying us (one that isn't filter-aware)
+            if (typeFilters == null)
+            {
+                typeFilters = Enum.GetValues<MarkerType>();
+            }
+
             var latitude = region.Latitude;
             var longitude = region.Longitude;
 
@@ -45,6 +54,7 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 ,[Type]
             FROM [LaHistoricalMarkers].[dbo].[Marker]
             WHERE GEOGRAPHY::STPolyFromText('Polygon(( ' + @rightLong + ' ' + @bottomLat + ', ' + @rightLong + ' ' + @topLat + ', ' + @leftLong + ' ' + @topLat + ', ' + @leftLong + ' ' + @bottomLat + ', ' + @rightLong + ' ' + @bottomLat + '))', 4326).STIntersects([Location]) = 1
+            AND [Type] IN @typeFilters
             AND [IsApproved] = 1
             ORDER BY Distance",
             new
@@ -56,7 +66,8 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 leftLong,
                 rightLong,
                 userLatitude,
-                userLongitude
+                userLongitude,
+                typeFilters = typeFilters.Select(x => x.ToString())
             })).AsList();
         }
 

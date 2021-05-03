@@ -6,38 +6,37 @@ import { getMarkerColor, getMarkerTypeDescription } from "markers/utils";
 import { MarkerType } from "types";
 import MarkerIconSvg from "./MarkerIconSvg";
 
-const allFilters = [
-  {
-    id: MarkerType.official,
-    name: getMarkerTypeDescription(MarkerType.official),
-    isSelected: true,
-  },
-  {
-    id: MarkerType.other,
-    name: getMarkerTypeDescription(MarkerType.other),
-    isSelected: true,
-  },
-];
+type MarkerFilterProps = {
+  filters: MarkerFilter[];
+  setFilters: (filters: MarkerFilter[]) => void;
+};
 
-export default function MarkerFilter() {
+type MarkerFilter = {
+  id: MarkerType;
+  name: string;
+  isSelected: boolean;
+};
+
+export default function MarkerFilter({
+  filters,
+  setFilters,
+}: MarkerFilterProps) {
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState(allFilters);
   const toggleShowFilter = () => setShowFilters(!showFilters);
   const toggleFilter = (id: MarkerType) => {
     const otherFilters = filters.filter((f) => f.id !== id);
     const selectedFilter = filters.find((f) => f.id === id);
-    if (!selectedFilter) {
+    if (
+      !selectedFilter ||
+      (selectedFilter.isSelected && !otherFilters.find((f) => f.isSelected)) //if action would result in no filter's selected, do nothing
+    ) {
       return;
     }
     const updatedFilter = {
       ...selectedFilter,
       isSelected: !selectedFilter.isSelected,
     };
-    const updated = [updatedFilter, ...otherFilters];
-    console.log("updated", updated);
-    const sorted = [updatedFilter, ...otherFilters].sort((a, b) => a.id - b.id);
-    console.log("sorted", sorted);
-    setFilters(sorted);
+    setFilters([updatedFilter, ...otherFilters].sort((a, b) => a.id - b.id));
   };
   return (
     <>
@@ -110,7 +109,7 @@ const styles = StyleSheet.create({
   },
   filterTitle: {
     fontSize: 24,
-    fontWeight: "900",
+    fontWeight: "700",
   },
   filterRow: {
     display: "flex",

@@ -16,7 +16,7 @@ function getMarkerTypeDescription(type: MarkerType | null) {
     case MarkerType.other:
       return "Other";
     case MarkerType.official:
-      return "State";
+      return "LA Historical Marker";
     default:
       return "";
   }
