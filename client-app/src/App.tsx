@@ -16,6 +16,7 @@ import { useDebounce, useLocation } from "hooks";
 import { colors, Locations } from "utils";
 import TermsAndConditionsModal from "terms/TermsAndConditionsModal";
 import { getMarkerColor } from "markers/utils";
+import { MarkerFilter } from "components/markers";
 
 export default function App() {
   const [region, setRegion] = useState({
@@ -71,6 +72,7 @@ export default function App() {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="position">
+      {!selectedMarker && <MarkerFilter />}
       {selectedMarker && (
         <TouchableOpacity
           onPress={() =>

@@ -7,7 +7,7 @@ function getMarkerColor(type: MarkerType) {
       return colors.secondaryPin;
     case MarkerType.official:
     default:
-      return colors.primaryPin;
+      return colors.primaryDark;
   }
 }
 

@@ -1,3 +1,4 @@
 import MarkerSelector from "./MarkerSelector";
+import MarkerFilter from "./MarkerFilter";
 
-export { MarkerSelector };
+export { MarkerSelector, MarkerFilter };
