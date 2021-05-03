@@ -39,22 +39,23 @@ export default function App() {
 
   const debouncedRegion = useDebounce(region, 500);
   const { updateLocation } = useLocation({
+    setLocation: (location) => {
+      map.current?.animateToRegion({
+        latitudeDelta: 0.1,
+        longitudeDelta: 0.1,
+        ...location,
+      });
+    },
+  });
+
+  const { watchLocation } = useLocation({
     setLocation: setUserLocation,
   });
 
   useEffect(() => {
     updateLocation();
+    watchLocation();
   }, []);
-
-  useEffect(() => {
-    if (userLocation !== null) {
-      map.current?.animateToRegion({
-        latitudeDelta: 0.1,
-        longitudeDelta: 0.1,
-        ...userLocation,
-      });
-    }
-  }, [userLocation]);
 
   const { markers, isLoading, isError } = useMarkers({
     region: debouncedRegion,
