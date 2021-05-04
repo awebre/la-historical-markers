@@ -78,7 +78,7 @@ export default function ManualLocationStepContent({
             latitudeDelta: 0.5,
           }}
           style={{
-            height: Dimensions.get("window").height * 0.4,
+            height: Dimensions.get("window").height * 0.3,
             width: "100%",
           }}
         >
