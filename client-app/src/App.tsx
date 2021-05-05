@@ -10,11 +10,26 @@ import MapView, { Marker } from "react-native-maps";
 import Toast from "react-native-easy-toast";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { showLocation } from "react-native-map-link";
-import { Location, MarkerDto } from "types";
+import { Location, MarkerDto, MarkerType } from "types";
 import { MarkersSearchView, SubmitMarkerView, useMarkers } from "markers";
 import { useDebounce, useLocation } from "hooks";
 import { colors, Locations } from "utils";
 import TermsAndConditionsModal from "terms/TermsAndConditionsModal";
+import { getMarkerColor, getMarkerTypeDescription } from "markers/utils";
+import { MarkerFilter } from "components/markers";
+
+const allFilters = [
+  {
+    id: MarkerType.official,
+    name: getMarkerTypeDescription(MarkerType.official),
+    isSelected: true,
+  },
+  {
+    id: MarkerType.other,
+    name: getMarkerTypeDescription(MarkerType.other),
+    isSelected: true,
+  },
+];
 
 export default function App() {
   const [region, setRegion] = useState({
@@ -28,6 +43,7 @@ export default function App() {
   const [cachedMarkers, setCachedMarkers] = useState<MarkerDto[] | undefined>(
     undefined
   );
+  const [filters, setFilters] = useState(allFilters);
   const [userLocation, setUserLocation] = useState<Location | null>(null);
   const [selectedMarker, setSelectedMarker] = useState<MarkerDto | null>(null);
   const [openMarker, setOpenMarker] = useState<MarkerDto | null>(null);
@@ -60,6 +76,7 @@ export default function App() {
   const { markers, isLoading, isError } = useMarkers({
     region: debouncedRegion,
     userLocation: debouncedUserLocation,
+    filters: filters.filter((f) => f.isSelected).map((f) => f.id),
   });
 
   useEffect(() => {
@@ -70,6 +87,9 @@ export default function App() {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="position">
+      {!selectedMarker && (
+        <MarkerFilter filters={filters} setFilters={setFilters} />
+      )}
       {selectedMarker && (
         <TouchableOpacity
           onPress={() =>
@@ -114,7 +134,7 @@ export default function App() {
               identifier={m.id.toString()}
               coordinate={{ latitude: m.latitude, longitude: m.longitude }}
               title={m.name}
-              pinColor={colors.primaryPin}
+              pinColor={getMarkerColor(m.type)}
               description={m.description}
             />
           ))}

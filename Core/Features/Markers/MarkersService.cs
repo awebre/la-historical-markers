@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using LaHistoricalMarkers.Core.Data;
@@ -11,8 +13,15 @@ namespace LaHistoricalMarkers.Core.Features.Markers
         {
         }
 
-        public async Task<IEnumerable<MarkerDto>> GetMarkersByRegion(RegionDto region, UserLocationDto userLocation)
+        public async Task<IEnumerable<MarkerDto>> GetMarkersByRegion(RegionDto region, UserLocationDto userLocation, MarkerType[] typeFilters = null)
         {
+            //If no type filters are supplied then we assume that an older
+            //client is querying us (one that isn't filter-aware)
+            if (typeFilters == null || !typeFilters.Any())
+            {
+                typeFilters = Enum.GetValues<MarkerType>();
+            }
+
             var latitude = region.Latitude;
             var longitude = region.Longitude;
 
@@ -42,8 +51,10 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 ,[IsApproved]
                 ,[CreatedTimestamp]
                 ,GEOGRAPHY::Point(@userLatitude, @userLongitude, 4326).STDistance([Location]) AS Distance
+                ,[Type]
             FROM [LaHistoricalMarkers].[dbo].[Marker]
             WHERE GEOGRAPHY::STPolyFromText('Polygon(( ' + @rightLong + ' ' + @bottomLat + ', ' + @rightLong + ' ' + @topLat + ', ' + @leftLong + ' ' + @topLat + ', ' + @leftLong + ' ' + @bottomLat + ', ' + @rightLong + ' ' + @bottomLat + '))', 4326).STIntersects([Location]) = 1
+            AND [Type] IN @typeFilters
             AND [IsApproved] = 1
             ORDER BY Distance",
             new
@@ -55,7 +66,8 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 leftLong,
                 rightLong,
                 userLatitude,
-                userLongitude
+                userLongitude,
+                typeFilters = typeFilters.Select(x => x.ToString())
             })).AsList();
         }
 
@@ -68,7 +80,8 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 [Location], 
                 [IsApproved], 
                 [CreatedTimestamp],
-                [ImageFileName]
+                [ImageFileName],
+                [Type]
             )
             OUTPUT INSERTED.Id
             VALUES (
@@ -77,7 +90,8 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 GEOGRAPHY::Point(@latitude, @longitude, 4326),
                 0,
                 SYSDATETIMEOFFSET(),
-                @imageFileName
+                @imageFileName,
+                @type
             )",
             new
             {
@@ -85,7 +99,8 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 description = submission.Description,
                 latitude = submission.Latitude,
                 longitude = submission.Longitude,
-                imageFileName = fileHandle
+                imageFileName = fileHandle,
+                type = submission.Type.ToString()
             });
 
             return new PendingSubmissionDto
@@ -95,7 +110,8 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 Description = submission.Description,
                 Latitude = submission.Latitude,
                 Longitude = submission.Longitude,
-                ImageFileName = fileHandle
+                ImageFileName = fileHandle,
+                Type = submission.Type.ToString()
             };
         }
     }

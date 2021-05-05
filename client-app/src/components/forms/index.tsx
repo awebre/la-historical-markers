@@ -1,3 +1,4 @@
 import FormGroup from "./FormGroup";
+import Label from "./Label";
 
-export { FormGroup };
+export { FormGroup, Label };

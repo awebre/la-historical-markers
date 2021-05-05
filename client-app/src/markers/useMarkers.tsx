@@ -1,11 +1,12 @@
 import useSwr from "swr";
 import queryString from "query-string";
 import { url, fetcher } from "utils";
-import { Location, MarkerDto } from "types";
+import { Location, MarkerDto, MarkerType } from "types";
 
 interface MarkerSearchRequest {
   region: MarkerRegionSearch;
   userLocation: Location | null;
+  filters: MarkerType[];
 }
 
 interface MarkerRegionSearch {
@@ -27,6 +28,7 @@ export default function useMarkers(
   const parameters = queryString.stringify({
     region: JSON.stringify(request.region),
     userLocation: JSON.stringify(request.userLocation),
+    typeFilters: JSON.stringify(request.filters),
   });
   const { data, error } = useSwr<MarkerDto[], boolean>(
     `${url}/api/markers?${parameters}`,

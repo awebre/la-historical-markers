@@ -7,10 +7,10 @@ import {
   Button,
   ScrollView,
   View,
-  Alert as RNAlert,
   Modal,
 } from "react-native";
 import * as ImageManipulator from "expo-image-manipulator";
+import RNPickerSelect from "react-native-picker-select";
 import {
   Alert,
   Card,
@@ -20,12 +20,14 @@ import {
 } from "components";
 import { colors, confirm, url } from "utils";
 import { useLocation } from "hooks";
-import { ImageSource, Location } from "types";
+import { ImageSource, Location, MarkerType } from "types";
 import SubmissionTutorialModal from "./SubmissionTutorialModal/SubmissionTutorialModal";
 import MarkerForm from "./MarkerForm";
 import LocationEntrySwitch from "components/location";
 import ManualLocationStepContent from "./SubmissionTutorialModal/Steps/ManualLocationStepContent";
 import { KeyboardAvoidingView } from "react-native";
+import { MarkerSelector } from "components/markers";
+import MarkerIconSvg from "components/markers/MarkerIconSvg";
 
 interface SubmitMarkerViewProps {
   cardStyles: StyleProp<ViewStyle>;
@@ -48,6 +50,7 @@ export default function SubmitMarkerView({
   const [location, setLocation] = useState<Location | null>(null);
   const [name, setName] = useState<string | null>(null);
   const [description, setDescription] = useState<string | null>(null);
+  const [type, setType] = useState<MarkerType>(MarkerType.official);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const { updateLocation, permissionGranted } = useLocation({
@@ -90,7 +93,13 @@ export default function SubmitMarkerView({
 
         const resp = await fetch(`${url}/api/markers`, {
           method: "post",
-          body: JSON.stringify({ base64Image, ...location, name, description }),
+          body: JSON.stringify({
+            base64Image,
+            ...location,
+            type,
+            name,
+            description,
+          }),
         });
         if (resp.ok) {
           setIsSubmitting(false);
@@ -164,7 +173,6 @@ export default function SubmitMarkerView({
                   onPress={() => setIsModalVisible(true)}
                 />
               )}
-
               <ImagePreviewPicker
                 image={image}
                 setImage={setImage}
@@ -173,6 +181,8 @@ export default function SubmitMarkerView({
             </View>
             {location?.latitude && location?.longitude ? (
               <MarkerForm
+                type={type}
+                setType={setType}
                 name={name}
                 setName={setName}
                 description={description}
@@ -243,6 +253,8 @@ export default function SubmitMarkerView({
         </KeyboardAvoidingView>
       </Modal>
       <SubmissionTutorialModal
+        type={type}
+        setType={setType}
         name={name}
         setName={setName}
         description={description}

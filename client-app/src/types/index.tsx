@@ -11,7 +11,13 @@ type MarkerDto = {
   isApproved: boolean;
   createdTimestamp: Date;
   distance: number;
+  type: MarkerType;
 } & Location;
+
+enum MarkerType {
+  official,
+  other,
+}
 
 interface ImageSource {
   uri: string;
@@ -19,4 +25,4 @@ interface ImageSource {
   width: number;
 }
 
-export { Location, MarkerDto, ImageSource };
+export { Location, MarkerDto, ImageSource, MarkerType };

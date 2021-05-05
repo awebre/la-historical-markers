@@ -13,5 +13,7 @@ namespace LaHistoricalMarkers.Core.Features.Markers
         public decimal Longitude { get; set; }
 
         public string Base64Image { get; set; }
+
+        public MarkerType Type { get; set; }
     }
 }
