@@ -114,5 +114,24 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 Type = submission.Type.ToString()
             };
         }
+
+        public async Task<MarkerDto> GetMarkerById(int id)
+        {
+            var marker = await QuerySingleOrDefaultAsync<MarkerDto>(@"
+            SELECT TOP (1) [Id]
+                ,[Name]
+                ,[Description]
+                ,[Location].[Lat] AS [Latitude]
+                ,[Location].[Long] AS [Longitude]
+                ,[ImageFileName]
+                ,[IsApproved]
+                ,[CreatedTimestamp]
+                ,[Type]
+            FROM [LaHistoricalMarkers].[dbo].[Marker]
+            WHERE [Id] = @id
+            ", new { id });
+
+            return marker;
+        }
     }
 }

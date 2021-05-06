@@ -11,8 +11,8 @@ import Toast from "react-native-easy-toast";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { showLocation } from "react-native-map-link";
 import { Location, MarkerDto, MarkerType } from "types";
-import { MarkersSearchView, SubmitMarkerView, useMarkers } from "markers";
-import { useDebounce, useLocation } from "hooks";
+import { MarkersSearchView, SubmitMarkerView } from "markers";
+import { useDebounce, useLocation, useMarkers } from "hooks";
 import { colors, Locations } from "utils";
 import TermsAndConditionsModal from "terms/TermsAndConditionsModal";
 import { getMarkerColor, getMarkerTypeDescription } from "markers/utils";
@@ -73,7 +73,7 @@ export default function MarkersScreen() {
     watchLocation();
   }, []);
 
-  const { markers, isLoading, isError } = useMarkers({
+  const { markers, isLoading, hasError: isError } = useMarkers({
     region: debouncedRegion,
     userLocation: debouncedUserLocation,
     filters: filters.filter((f) => f.isSelected).map((f) => f.id),

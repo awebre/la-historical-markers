@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Card, headerTextStyle, FlatListItemSeparator } from "components";
 import { colors } from "utils";
-import { LoadableMarkers } from "./useMarkers";
+import { LoadableMarkers } from "types";
 import MarkerListItem from "./MarkerListItem";
 import { MarkerDto } from "types";
 
@@ -23,7 +23,7 @@ interface MarkersCardProps extends LoadableMarkers {
 export default function MarkersCard({
   style,
   isLoading,
-  isError,
+  hasError: isError,
   markers,
   setSelectedMarker,
   setIsAdding,

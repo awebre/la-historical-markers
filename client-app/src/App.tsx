@@ -1,24 +1,26 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { Text } from "react-native";
 import { MarkersScreen } from "screens";
 import * as Linking from "expo-linking";
 import AdminScreen from "screens/AdminScreen";
+import { RootParams } from "types";
+import { colors } from "utils";
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<RootParams>();
 const prefix = Linking.createURL("/");
 
 export default function App() {
   const linking = {
     prefixes: [prefix],
     config: {
+      initialRouteName: "Markers",
       screens: {
         Markers: {
           path: "markers",
         },
         Admin: {
-          path: "admin",
+          path: "admin/:markerId",
         },
       },
     },
@@ -34,7 +36,10 @@ export default function App() {
         <Stack.Screen
           name="Admin"
           component={AdminScreen}
-          options={{ headerTitle: "Administrate Marker" }}
+          options={{
+            headerTitle: "Edit Marker",
+            headerTintColor: colors.primary,
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>
