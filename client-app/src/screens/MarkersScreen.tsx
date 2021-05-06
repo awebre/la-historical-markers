@@ -73,7 +73,7 @@ export default function MarkersScreen() {
     watchLocation();
   }, []);
 
-  const { markers, isLoading, hasError: isError } = useMarkers({
+  const { markers, isLoading, hasError: hasError } = useMarkers({
     region: debouncedRegion,
     userLocation: debouncedUserLocation,
     filters: filters.filter((f) => f.isSelected).map((f) => f.id),
@@ -144,7 +144,7 @@ export default function MarkersScreen() {
       </MapView>
       {!isAdding && (
         <MarkersSearchView
-          loadableMarkers={{ markers: cachedMarkers, isLoading, isError }}
+          loadableMarkers={{ markers: cachedMarkers, isLoading, hasError }}
           selectedMarker={selectedMarker}
           setSelectedMarker={selectMarkerAndNavigate}
           setIsAdding={() => setIsAdding(true)}

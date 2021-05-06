@@ -10,7 +10,6 @@ import {
   Modal,
 } from "react-native";
 import * as ImageManipulator from "expo-image-manipulator";
-import RNPickerSelect from "react-native-picker-select";
 import {
   Alert,
   Card,
@@ -26,8 +25,6 @@ import MarkerForm from "./MarkerForm";
 import LocationEntrySwitch from "components/location";
 import ManualLocationStepContent from "./SubmissionTutorialModal/Steps/ManualLocationStepContent";
 import { KeyboardAvoidingView } from "react-native";
-import { MarkerSelector } from "components/markers";
-import MarkerIconSvg from "components/markers/MarkerIconSvg";
 
 interface SubmitMarkerViewProps {
   cardStyles: StyleProp<ViewStyle>;

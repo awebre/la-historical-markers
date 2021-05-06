@@ -38,7 +38,8 @@ export default function App() {
           component={AdminScreen}
           options={{
             headerTitle: "Edit Marker",
-            headerTintColor: colors.primary,
+            headerTintColor: colors.lightText,
+            headerStyle: { backgroundColor: colors.primary },
           }}
         />
       </Stack.Navigator>
