@@ -4,25 +4,20 @@ import MapView, { MapViewProps } from "react-native-maps";
 import { colors } from "utils";
 
 type Props = {
-  ref?: React.RefObject<MapView>;
+  ref?: React.Ref<MapView>;
   containerStyle?: StyleProp<ViewStyle>;
   children?: React.ReactNode;
 } & MapViewProps;
 
-export default function MapWithBorder({
-  containerStyle,
-  style,
-  children,
-  ...rest
-}: Props) {
-  return (
+export default React.forwardRef<MapView, Props>(
+  ({ containerStyle, style, children, ...rest }, ref) => (
     <View style={[styles.container, containerStyle]}>
-      <MapView style={[styles.map, style]} {...rest}>
+      <MapView ref={ref} style={[styles.map, style]} {...rest}>
         {children}
       </MapView>
     </View>
-  );
-}
+  )
+);
 
 const styles = StyleSheet.create({
   container: {

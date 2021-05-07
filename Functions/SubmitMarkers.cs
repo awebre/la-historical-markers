@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using LaHistoricalMarkers.Core.Features.Markers;
 using LaHistoricalMarkers.Core.Features.FileStorage;
 using LaHistoricalMarkers.Functions.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace LaHistoricalMarkers.Functions
 {
@@ -27,6 +28,7 @@ namespace LaHistoricalMarkers.Functions
         public async Task<SubmissionResponse> Submit([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "markers")] HttpRequestData req,
             FunctionContext context)
         {
+            var logger = context.GetLogger("submit-markers");
             using var streamReader = new StreamReader(req.Body);
             var submission = streamReader.ReadToEnd().Deserialize<MarkerSubmissionDto>();
             if (string.IsNullOrEmpty(submission.Name) || string.IsNullOrEmpty(submission.Description))
@@ -45,6 +47,7 @@ namespace LaHistoricalMarkers.Functions
             }
 
             var pending = await markersService.AddMarkerSubmission(submission, fileHandle);
+            logger.LogInformation($"DeepLinkBaseUrl: {pending.DeepLinkBaseUrl}");
             return new SubmissionResponse
             {
                 QueueMessage = pending,

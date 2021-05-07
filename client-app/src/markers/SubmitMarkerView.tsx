@@ -10,6 +10,7 @@ import {
   Modal,
 } from "react-native";
 import * as ImageManipulator from "expo-image-manipulator";
+import * as Linking from "expo-linking";
 import {
   Alert,
   Card,
@@ -17,7 +18,7 @@ import {
   ImagePreviewPicker,
   Tutorial,
 } from "components";
-import { colors, confirm, url } from "utils";
+import { colors, confirm, routes, url } from "utils";
 import { useLocation } from "hooks";
 import { ImageSource, Location, MarkerType } from "types";
 import SubmissionTutorialModal from "./SubmissionTutorialModal/SubmissionTutorialModal";
@@ -32,6 +33,8 @@ interface SubmitMarkerViewProps {
   onSuccess: (name: string) => void;
   updateMapMarker: (m: Location | null) => void;
 }
+
+const deepLink = Linking.createURL(`/${routes.adminMarker}/`);
 
 export default function SubmitMarkerView({
   cardStyles,
@@ -96,6 +99,7 @@ export default function SubmitMarkerView({
             type,
             name,
             description,
+            deepLinkBaseUrl: deepLink,
           }),
         });
         if (resp.ok) {
@@ -105,15 +109,13 @@ export default function SubmitMarkerView({
           setError(
             "Your submission was not accepted. Please check that the Name and Description are both entered and that the location of the marker looks correct on the map above."
           );
+          setIsSubmitting(false);
         }
       } catch {
         setError(
           "Looks like your submission couldn't be completed. Please try again."
         );
-      } finally {
-        if (!isSubmitting) {
-          setIsSubmitting(false);
-        }
+        setIsSubmitting(false);
       }
     }
   }

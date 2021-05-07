@@ -15,5 +15,7 @@ namespace LaHistoricalMarkers.Core.Features.Markers
         public string Base64Image { get; set; }
 
         public MarkerType Type { get; set; }
+
+        public string DeepLinkBaseUrl { get; set; }
     }
 }

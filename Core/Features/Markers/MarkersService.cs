@@ -115,6 +115,7 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 Latitude = submission.Latitude,
                 Longitude = submission.Longitude,
                 ImageFileName = fileHandle,
+                DeepLinkBaseUrl = submission.DeepLinkBaseUrl,
                 Type = submission.Type.ToString()
             };
         }

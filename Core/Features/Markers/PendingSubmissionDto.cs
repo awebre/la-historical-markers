@@ -17,5 +17,7 @@ namespace LaHistoricalMarkers.Core.Features.Markers
         public string ImageFileName { get; set; }
 
         public string Type { get; set; }
+
+        public string DeepLinkBaseUrl { get; set; }
     }
 }

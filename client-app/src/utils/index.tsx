@@ -5,6 +5,7 @@ import colors from "./colors";
 import confirm from "./confirm";
 import * as Locations from "./locations";
 import * as typeUtils from "./typeUtils";
+import routes from "./routes";
 
 export {
   fetcher,
@@ -14,4 +15,5 @@ export {
   confirm,
   Locations,
   typeUtils,
+  routes,
 };

@@ -10,7 +10,7 @@ export default {
     assetBundlePatterns: ["**/*"],
     orientation: "portrait",
     icon: "./assets/icon.png",
-    scheme: "la-historical-markers",
+    scheme: "lahm",
     ios: {
       icon: "./assets/icon.png",
       bundleIdentifier: "com.austinwebre.lahistoricalmarkers",

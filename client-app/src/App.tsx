@@ -5,7 +5,7 @@ import { MarkersScreen } from "screens";
 import * as Linking from "expo-linking";
 import AdminScreen from "screens/AdminScreen";
 import { RootParams } from "types";
-import { colors } from "utils";
+import { colors, routes } from "utils";
 
 const Stack = createStackNavigator<RootParams>();
 const prefix = Linking.createURL("/");
@@ -17,10 +17,10 @@ export default function App() {
       initialRouteName: "Markers",
       screens: {
         Markers: {
-          path: "markers",
+          path: routes.home,
         },
         Admin: {
-          path: "admin/:markerId",
+          path: `${routes.adminMarker}/:markerId`,
         },
       },
     },
