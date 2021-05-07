@@ -8,6 +8,7 @@ using LaHistoricalMarkers.Config;
 using System.Threading.Tasks;
 using LaHistoricalMarkers.Core.Features.Markers;
 using LaHistoricalMarkers.Core.Features.FileStorage;
+using LaHistoricalMarkers.Functions.Extensions;
 
 namespace LaHistoricalMarkers.Functions
 {
@@ -27,8 +28,7 @@ namespace LaHistoricalMarkers.Functions
             FunctionContext context)
         {
             using var streamReader = new StreamReader(req.Body);
-            var str = streamReader.ReadToEnd();
-            var submission = JsonSerializer.Deserialize<MarkerSubmissionDto>(str, DefaultJsonConfiguration.SerializerOptions);
+            var submission = streamReader.ReadToEnd().Deserialize<MarkerSubmissionDto>();
             if (string.IsNullOrEmpty(submission.Name) || string.IsNullOrEmpty(submission.Description))
             {
                 return new SubmissionResponse

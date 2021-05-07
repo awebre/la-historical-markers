@@ -45,5 +45,14 @@ namespace LaHistoricalMarkers.Core.Data
             transaction.Commit();
             return result;
         }
+
+        protected async Task ExecuteAsync(string sql, object param)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+            var result = await connection.ExecuteAsync(sql, param, transaction);
+            transaction.Commit();
+        }
     }
 }

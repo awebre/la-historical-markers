@@ -4,6 +4,7 @@ import MapView from "react-native-maps";
 import { StepContentProps } from "./types";
 import { colors, Locations } from "utils";
 import LocationEntrySwitch from "components/location";
+import MapWithBorder from "components/MapWithBorder";
 
 export default function StartStepContent({
   location,
@@ -45,25 +46,16 @@ export default function StartStepContent({
           ? "Let's start by getting as close to the marker as possible. Once you're next to the marker, click Next."
           : "Your location will be used as a starting point. Click Next to continue setting the location."}
       </Text>
-      <View
-        style={{
-          borderWidth: 1,
-          borderColor: colors.accent,
-          borderRadius: 10,
-          overflow: "hidden",
+      <MapWithBorder
+        ref={ref}
+        initialRegion={{
+          ...initialRegion,
+          latitudeDelta: location ? 0.5 : 5,
+          longitudeDelta: location ? 0.5 : 5,
         }}
-      >
-        <MapView
-          ref={ref}
-          initialRegion={{
-            ...initialRegion,
-            latitudeDelta: location ? 0.5 : 5,
-            longitudeDelta: location ? 0.5 : 5,
-          }}
-          showsUserLocation={true}
-          style={styles.map}
-        />
-      </View>
+        showsUserLocation={true}
+        style={styles.map}
+      />
     </View>
   );
 }

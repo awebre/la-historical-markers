@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Dimensions, View, Text, Platform } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import { Marker } from "react-native-maps";
 import { DismissKeyboard } from "components";
 import { FormGroup } from "components/forms";
 import { colors, Locations } from "utils";
 import { LocationContentProps, StepContentProps } from "./types";
+import MapWithBorder from "components/MapWithBorder";
 
 export default function ManualLocationStepContent({
   location,
@@ -62,33 +63,24 @@ export default function ManualLocationStepContent({
           />
         </View>
       </DismissKeyboard>
-      <View
+      <MapWithBorder
+        initialRegion={{
+          latitude: location?.latitude ?? Locations.center.latitude,
+          longitude: location?.longitude ?? Locations.center.longitude,
+          longitudeDelta: 0.5,
+          latitudeDelta: 0.5,
+        }}
         style={{
-          borderWidth: 1,
-          borderColor: colors.accent,
-          borderRadius: 10,
-          overflow: "hidden",
+          height: Dimensions.get("window").height * 0.3,
+          width: "100%",
         }}
       >
-        <MapView
-          initialRegion={{
-            latitude: location?.latitude ?? Locations.center.latitude,
-            longitude: location?.longitude ?? Locations.center.longitude,
-            longitudeDelta: 0.5,
-            latitudeDelta: 0.5,
-          }}
-          style={{
-            height: Dimensions.get("window").height * 0.3,
-            width: "100%",
-          }}
-        >
-          <Marker
-            draggable
-            onDragEnd={(m) => setLocation(m.nativeEvent.coordinate)}
-            coordinate={location ?? Locations.center}
-          />
-        </MapView>
-      </View>
+        <Marker
+          draggable
+          onDragEnd={(m) => setLocation(m.nativeEvent.coordinate)}
+          coordinate={location ?? Locations.center}
+        />
+      </MapWithBorder>
     </View>
   );
 }

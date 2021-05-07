@@ -8,6 +8,7 @@ using LaHistoricalMarkers.Core.Features.Markers;
 using LaHistoricalMarkers.Core.Features.FileStorage;
 using LaHistoricalMarkers.Core.Features.Emails;
 using LaHistoricalMarkers.Core.Features.Moderation;
+using LaHistoricalMarkers.Core.Features.Authentication;
 
 namespace la_historical_markers
 {
@@ -24,6 +25,7 @@ namespace la_historical_markers
                     s.AddScoped<SendGridEmailService>(_ => new SendGridEmailService(Environment.GetEnvironmentVariable("SendGrid"), Environment.GetEnvironmentVariable("FromEmail")));
                     s.AddScoped<MarkersService>();
                     s.AddScoped<ApprovalService>();
+                    s.AddScoped<OtpAuthService>();
 
                     var uri = new Uri(Environment.GetEnvironmentVariable("StorageUri"));
                     var storageAccount = Environment.GetEnvironmentVariable("StorageAccount");
