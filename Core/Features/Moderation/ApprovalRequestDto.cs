@@ -14,6 +14,7 @@ namespace LaHistoricalMarkers.Core.Features.Moderation
             Longitude = submission.Longitude;
             ImageFileName = submission.ImageFileName;
             Type = submission.Type;
+            DeepLinkBaseUrl = submission.DeepLinkBaseUrl;
         }
         public string Otp { get; set; }
     }

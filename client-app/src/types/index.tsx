@@ -1,28 +1,19 @@
-type Location = {
-  latitude: number;
-  longitude: number;
+import {
+  Location,
+  MarkerDto,
+  ImageSource,
+  MarkerType,
+  LoadableMarkers,
+  LoadableMarker,
+} from "./markers/types";
+import { RootParams } from "./navigation/types";
+
+export {
+  Location,
+  MarkerDto,
+  ImageSource,
+  MarkerType,
+  LoadableMarkers,
+  LoadableMarker,
+  RootParams,
 };
-
-type MarkerDto = {
-  id: number;
-  name: string;
-  description: string;
-  imageFileName?: string;
-  isApproved: boolean;
-  createdTimestamp: Date;
-  distance: number;
-  type: MarkerType;
-} & Location;
-
-enum MarkerType {
-  official,
-  other,
-}
-
-interface ImageSource {
-  uri: string;
-  height: number;
-  width: number;
-}
-
-export { Location, MarkerDto, ImageSource, MarkerType };

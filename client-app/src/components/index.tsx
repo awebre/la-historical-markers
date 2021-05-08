@@ -4,6 +4,7 @@ import Alert from "./Alert";
 import Tutorial from "./Tutorial";
 import ImagePreviewPicker from "./ImagePreviewPicker";
 import DismissKeyboard from "./DismissKeyboard";
+import LoadingIndicator from "./LoadingIndicator";
 
 export {
   Card,
@@ -13,4 +14,5 @@ export {
   Tutorial,
   ImagePreviewPicker,
   DismissKeyboard,
+  LoadingIndicator,
 };

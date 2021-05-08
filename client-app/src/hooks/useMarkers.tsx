@@ -1,7 +1,7 @@
 import useSwr from "swr";
 import queryString from "query-string";
 import { url, fetcher } from "utils";
-import { Location, MarkerDto, MarkerType } from "types";
+import { LoadableMarkers, Location, MarkerDto, MarkerType } from "types";
 
 interface MarkerSearchRequest {
   region: MarkerRegionSearch;
@@ -14,12 +14,6 @@ interface MarkerRegionSearch {
   longitude: number;
   latitudeDelta: number;
   longitudeDelta: number;
-}
-
-export interface LoadableMarkers {
-  markers: MarkerDto[] | undefined;
-  isLoading: boolean;
-  isError: boolean | undefined;
 }
 
 export default function useMarkers(
@@ -37,6 +31,6 @@ export default function useMarkers(
   return {
     markers: data,
     isLoading: !error && !data,
-    isError: error,
+    hasError: error,
   };
 }

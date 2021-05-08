@@ -3,6 +3,7 @@ using System.Data;
 using System.Threading.Tasks;
 using Dapper;
 using LaHistoricalMarkers.Core.Data;
+using LaHistoricalMarkers.Core.Features.Authentication;
 using LaHistoricalMarkers.Core.Features.Emails;
 using LaHistoricalMarkers.Core.Features.Markers;
 using LaHistoricalMarkers.Core.Security;
@@ -12,10 +13,15 @@ namespace LaHistoricalMarkers.Core.Features.Moderation
     public class ApprovalService : BaseSqlService
     {
         private readonly SendGridEmailService emailService;
+        private readonly OtpAuthService authService;
 
-        public ApprovalService(SendGridEmailService emailService, IConnectionStringProvider connectionProvider) : base(connectionProvider)
+        public ApprovalService(
+            SendGridEmailService emailService,
+            OtpAuthService authService,
+            IConnectionStringProvider connectionProvider) : base(connectionProvider)
         {
             this.emailService = emailService;
+            this.authService = authService;
         }
 
         public async Task SendApprovalEmail(PendingSubmissionDto pending)
@@ -23,7 +29,7 @@ namespace LaHistoricalMarkers.Core.Features.Moderation
             using var connection = GetConnection();
             connection.Open();
             using var transaction = connection.BeginTransaction();
-            var otp = await GetOtpForSubmission(pending.Id, transaction);
+            var otp = await authService.GetOtpForMarker(pending.Id, transaction);
 
             var tos = Environment.GetEnvironmentVariable("ToEmails").Split(",");
             var templateId = Environment.GetEnvironmentVariable("Template");
@@ -40,21 +46,13 @@ namespace LaHistoricalMarkers.Core.Features.Moderation
             using var connection = GetConnection();
             connection.Open();
             using var transaction = connection.BeginTransaction();
-            var otpId = await GetValidOtpId(markerId, otp, transaction);
-            if (!otpId.HasValue)
+            var authResult = await authService.GetAuthResult(markerId, otp, transaction);
+
+            if (authResult == AuthResult.Denied)
             {
                 transaction.Commit();
                 return ApprovalResultType.Unauthenticated;
             }
-
-            connection.Execute(@"
-            DELETE FROM [LaHistoricalMarkers].[dbo].[MarkerAccess]
-            WHERE [OtpId] = @otpId",
-new { otpId = otpId.Value }, transaction);
-
-            connection.Execute(@"
-            DELETE FROM [LaHistoricalMarkers].[dbo].[OneTimePassword]
-            WHERE [Id] = @otpId", new { otpId = otpId.Value }, transaction);
 
             connection.Execute(@"
             UPDATE [LaHistoricalMarkers].[dbo].[Marker]
@@ -64,59 +62,6 @@ new { otpId = otpId.Value }, transaction);
 
             transaction.Commit();
             return approved ? ApprovalResultType.Accepted : ApprovalResultType.Rejected;
-        }
-
-        ///<summary>
-        /// Gets the current valid OTP for the specified marker or generates one, if none exists
-        ///</summary>
-        private async Task<string> GetOtpForSubmission(int markerId,
-                                                      IDbTransaction transaction)
-        {
-            var connection = transaction.Connection;
-            var otp = await connection.QueryFirstOrDefaultAsync<string>(@"
-            SELECT otp.[Value]
-                FROM [LaHistoricalMarkers].[dbo].[OneTimePassword] otp
-                RIGHT JOIN [LaHistoricalMarkers].[dbo].[MarkerAccess] access
-                ON otp.Id = access.Id
-                WHERE access.MarkerId = @markerId",
-new { markerId = markerId }, transaction);
-
-            if (string.IsNullOrEmpty(otp))
-            {
-                otp = OneTimePasswordGenerator.Generate();
-                var otpId = await connection.QuerySingleAsync<int>(@"
-                INSERT INTO [LaHistoricalMarkers].[dbo].[OneTimePassword](
-                    [Value]
-                )
-                OUTPUT INSERTED.Id
-                VALUES (@otp)",
-                new { otp }, transaction);
-                connection.Execute(@"
-                INSERT INTO [LaHistoricalMarkers].[dbo].[MarkerAccess](
-                    [MarkerId],
-                    [OtpId]
-                )
-                VALUES (
-                    @markerId,
-                    @otpId
-                )", new { markerId = markerId, otpId }, transaction);
-            }
-
-            return otp;
-        }
-
-        private async Task<int?> GetValidOtpId(int markerId, string otp, IDbTransaction transaction)
-        {
-            var connection = transaction.Connection;
-            var otpId = await connection.QueryFirstOrDefaultAsync<int?>(@"
-            SELECT otp.Id
-                FROM [LaHistoricalMarkers].[dbo].[OneTimePassword] otp
-                RIGHT JOIN [LaHistoricalMarkers].[dbo].[MarkerAccess] access
-                ON otp.Id = access.OtpId
-                WHERE access.MarkerId = @markerId AND otp.Value = @otp",
-                new { markerId, otp }, transaction);
-
-            return otpId;
         }
     }
 }

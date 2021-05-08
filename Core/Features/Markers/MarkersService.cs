@@ -4,13 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using LaHistoricalMarkers.Core.Data;
+using LaHistoricalMarkers.Core.Features.Authentication;
 
 namespace LaHistoricalMarkers.Core.Features.Markers
 {
     public class MarkersService : BaseSqlService
     {
-        public MarkersService(IConnectionStringProvider connectionProvider) : base(connectionProvider)
+        private readonly OtpAuthService authService;
+
+        public MarkersService(OtpAuthService authService, IConnectionStringProvider connectionProvider) : base(connectionProvider)
         {
+            this.authService = authService;
         }
 
         public async Task<IEnumerable<MarkerDto>> GetMarkersByRegion(RegionDto region, UserLocationDto userLocation, MarkerType[] typeFilters = null)
@@ -111,8 +115,64 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 Latitude = submission.Latitude,
                 Longitude = submission.Longitude,
                 ImageFileName = fileHandle,
+                DeepLinkBaseUrl = submission.DeepLinkBaseUrl,
                 Type = submission.Type.ToString()
             };
+        }
+
+        public async Task<MarkerDto> GetMarkerById(int id)
+        {
+            var marker = await QuerySingleOrDefaultAsync<MarkerDto>(@"
+            SELECT TOP (1) [Id]
+                ,[Name]
+                ,[Description]
+                ,[Location].[Lat] AS [Latitude]
+                ,[Location].[Long] AS [Longitude]
+                ,[ImageFileName]
+                ,[IsApproved]
+                ,[CreatedTimestamp]
+                ,[Type]
+            FROM [LaHistoricalMarkers].[dbo].[Marker]
+            WHERE [Id] = @id
+            ", new { id });
+
+            return marker;
+        }
+
+        public async Task<EditMarkerResult> EditMarker(EditMarkerDto markerDto, string otp)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+            var authResult = await authService.GetAuthResult(markerDto.Id, otp, transaction);
+
+            if (authResult == AuthResult.Denied)
+            {
+                transaction.Commit();
+                return EditMarkerResult.Unauthenticated;
+            }
+
+            connection.Execute(@"
+UPDATE [dbo].[Marker]
+SET 
+    [Name] = @name,
+    [Description] = @description,
+    [Location] = GEOGRAPHY::Point(@latitude, @longitude, 4326),
+    [Type] = @type,
+    [IsApproved] = @isApproved
+WHERE Id = @id",
+            new
+            {
+                id = markerDto.Id,
+                name = markerDto.Name,
+                description = markerDto.Description,
+                latitude = markerDto.Latitude,
+                longitude = markerDto.Longitude,
+                type = markerDto.Type.ToString(),
+                isApproved = markerDto.IsApproved
+            }, transaction);
+            transaction.Commit();
+            return EditMarkerResult.Succes;
         }
     }
 }

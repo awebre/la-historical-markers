@@ -1,7 +1,6 @@
 import React from "react";
 import { StyleProp, ViewStyle } from "react-native";
-import { LoadableMarkers } from "markers";
-import { MarkerDto } from "types";
+import { LoadableMarkers, MarkerDto } from "types";
 import MarkersCard from "./MarkersCard";
 import ViewMarkerCard from "./ViewMarkerCard";
 
