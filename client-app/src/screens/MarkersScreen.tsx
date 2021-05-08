@@ -17,6 +17,7 @@ import { colors, Locations } from "utils";
 import TermsAndConditionsModal from "terms/TermsAndConditionsModal";
 import { getMarkerColor, getMarkerTypeDescription } from "markers/utils";
 import { MarkerFilter } from "components/markers";
+import LocationNavigationButton from "components/LocationNavigationButton";
 
 const allFilters = [
   {
@@ -91,21 +92,11 @@ export default function MarkersScreen() {
         <MarkerFilter filters={filters} setFilters={setFilters} />
       )}
       {selectedMarker && (
-        <TouchableOpacity
-          onPress={() =>
-            showLocation({
-              latitude: selectedMarker.latitude,
-              longitude: selectedMarker.longitude,
-              alwaysIncludeGoogle: true,
-            })
-          }
+        <LocationNavigationButton
           style={styles.goButton}
-        >
-          <FontAwesome5 name="directions" size={24} color="white" />
-          <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>
-            GO
-          </Text>
-        </TouchableOpacity>
+          latitude={selectedMarker.latitude}
+          longitude={selectedMarker.longitude}
+        />
       )}
       <MapView
         ref={map}
@@ -230,13 +221,6 @@ const styles = StyleSheet.create({
     top: Dimensions.get("window").height * 0.25 - 75,
     right: 25,
     position: "absolute",
-    height: 60,
-    width: 60,
-    borderRadius: 30,
-    backgroundColor: "#0099ff",
     zIndex: 1,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
   },
 });

@@ -20,6 +20,7 @@ import { MarkerSelector } from "components/markers";
 import { photosUrl } from "utils/urls";
 import { Marker } from "react-native-maps";
 import MapWithBorder from "components/MapWithBorder";
+import LocationNavigationButton from "components/LocationNavigationButton";
 
 type Props = StackScreenProps<RootParams, "Admin">;
 
@@ -69,88 +70,97 @@ export default function AdminScreen({ route, navigation }: Props) {
       <DismissKeyboard>
         <>
           <ScrollView style={styles.scrollview}>
-            {!!error && <Alert alertText={error} cancel={() => setError("")} />}
-            {isLoading && !hasError && <LoadingIndicator size={100} />}
-            {!isLoading && !hasError && markerDto && (
-              <View>
-                <MapWithBorder
-                  containerStyle={styles.mapContainer}
-                  style={styles.map}
-                  initialRegion={{
-                    latitude: markerDto.latitude,
-                    longitude: markerDto.longitude,
-                    latitudeDelta: 0.1,
-                    longitudeDelta: 0.1,
-                  }}
-                >
-                  <Marker
-                    coordinate={{
+            <View style={styles.scrollContent}>
+              {!!error && (
+                <Alert alertText={error} cancel={() => setError("")} />
+              )}
+              {isLoading && !hasError && <LoadingIndicator size={100} />}
+              {!isLoading && !hasError && markerDto && (
+                <View>
+                  <MapWithBorder
+                    containerStyle={styles.mapContainer}
+                    style={styles.map}
+                    initialRegion={{
                       latitude: markerDto.latitude,
                       longitude: markerDto.longitude,
+                      latitudeDelta: 0.1,
+                      longitudeDelta: 0.1,
                     }}
+                  >
+                    <Marker
+                      coordinate={{
+                        latitude: markerDto.latitude,
+                        longitude: markerDto.longitude,
+                      }}
+                    />
+                  </MapWithBorder>
+                  <LocationNavigationButton
+                    latitude={markerDto.latitude}
+                    longitude={markerDto.longitude}
+                    style={styles.goButton}
                   />
-                </MapWithBorder>
 
-                {markerDto?.imageFileName && (
-                  <Image
-                    source={{
-                      uri: `${photosUrl}/${markerDto.imageFileName}`,
-                    }}
-                    style={{
-                      width: "100%",
-                      aspectRatio: 1,
-                      resizeMode: "contain",
-                      marginBottom: 10,
-                    }}
-                  />
-                )}
-                <MarkerSelector
-                  type={markerDto?.type ?? MarkerType.official}
-                  setType={(type) =>
-                    setMarkerDto({
-                      ...(markerDto ? markerDto : ({} as MarkerDto)),
-                      type,
-                    })
-                  }
-                />
-                <FormGroup
-                  label="Name:"
-                  value={markerDto?.name}
-                  onChangeText={(name) =>
-                    setMarkerDto({
-                      ...(markerDto ? markerDto : ({} as MarkerDto)),
-                      name,
-                    })
-                  }
-                  editable={true}
-                />
-                <FormGroup
-                  label="Description:"
-                  value={markerDto?.description}
-                  onChangeText={(description) =>
-                    setMarkerDto({
-                      ...(markerDto ? markerDto : ({} as MarkerDto)),
-                      description,
-                    })
-                  }
-                  multiline={true}
-                  editable={true}
-                />
-                <View style={styles.switchContainer}>
-                  <Label>Approved: </Label>
-                  <Switch
-                    trackColor={{ true: colors.accent, false: colors.grey }}
-                    value={markerDto?.isApproved}
-                    onValueChange={(isApproved) =>
+                  {markerDto?.imageFileName && (
+                    <Image
+                      source={{
+                        uri: `${photosUrl}/${markerDto.imageFileName}`,
+                      }}
+                      style={{
+                        width: "100%",
+                        aspectRatio: 1,
+                        resizeMode: "contain",
+                        marginBottom: 10,
+                      }}
+                    />
+                  )}
+                  <MarkerSelector
+                    type={markerDto?.type ?? MarkerType.official}
+                    setType={(type) =>
                       setMarkerDto({
                         ...(markerDto ? markerDto : ({} as MarkerDto)),
-                        isApproved,
+                        type,
                       })
                     }
                   />
+                  <FormGroup
+                    label="Name:"
+                    value={markerDto?.name}
+                    onChangeText={(name) =>
+                      setMarkerDto({
+                        ...(markerDto ? markerDto : ({} as MarkerDto)),
+                        name,
+                      })
+                    }
+                    editable={true}
+                  />
+                  <FormGroup
+                    label="Description:"
+                    value={markerDto?.description}
+                    onChangeText={(description) =>
+                      setMarkerDto({
+                        ...(markerDto ? markerDto : ({} as MarkerDto)),
+                        description,
+                      })
+                    }
+                    multiline={true}
+                    editable={true}
+                  />
+                  <View style={styles.switchContainer}>
+                    <Label>Approved: </Label>
+                    <Switch
+                      trackColor={{ true: colors.accent, false: colors.grey }}
+                      value={markerDto?.isApproved}
+                      onValueChange={(isApproved) =>
+                        setMarkerDto({
+                          ...(markerDto ? markerDto : ({} as MarkerDto)),
+                          isApproved,
+                        })
+                      }
+                    />
+                  </View>
                 </View>
-              </View>
-            )}
+              )}
+            </View>
           </ScrollView>
           <View style={styles.footer}>
             <Button
@@ -175,10 +185,17 @@ const styles = StyleSheet.create({
   map: {
     height: 250,
   },
+  goButton: {
+    position: "absolute",
+    top: 180,
+    right: 15,
+  },
   scrollview: {
-    padding: 10,
     height: Dimensions.get("window").height - 175,
     backgroundColor: colors.lightBackground,
+  },
+  scrollContent: {
+    padding: 15,
   },
   switchContainer: {
     marginTop: 15,
@@ -189,7 +206,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     paddingTop: 10,
-    height: 100,
+    height: 75,
     backgroundColor: colors.grey,
   },
 });
