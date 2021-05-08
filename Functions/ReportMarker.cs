@@ -30,8 +30,9 @@ namespace LaHistoricalMarkers.Functions
             var str = streamReader.ReadToEnd();
             var report = JsonSerializer.Deserialize<ReportDto>(str, DefaultJsonConfiguration.SerializerOptions);
             using var connection = authService.GetConnection();
+            connection.Open();
             using var transaction = connection.BeginTransaction();
-            var otp = authService.GetOtpForMarker(report.MarkerId, transaction);
+            var otp = await authService.GetOtpForMarker(report.MarkerId, transaction);
 
             //TODO: make this use a dynamic template similar to approvals
             //and add queue functionality
