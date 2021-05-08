@@ -14,7 +14,7 @@ namespace LaHistoricalMarkers.Core.Data
             connectionString = connectionProvider.GetConnectionString();
         }
 
-        protected IDbConnection GetConnection() => new SqlConnection(connectionString);
+        public IDbConnection GetConnection() => new SqlConnection(connectionString);
 
         protected async Task<IEnumerable<T>> QueryAsync<T>(string sql, object param)
         {
