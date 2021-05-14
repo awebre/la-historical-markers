@@ -11,6 +11,9 @@ export default {
     orientation: "portrait",
     icon: "./assets/icon.png",
     scheme: "lahm",
+    updates: {
+      enabled: false,
+    },
     ios: {
       icon: "./assets/icon.png",
       bundleIdentifier: "com.austinwebre.lahistoricalmarkers",
