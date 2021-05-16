@@ -1,21 +1,19 @@
 using System;
-using System.Data;
 using System.Threading.Tasks;
 using Dapper;
 using LaHistoricalMarkers.Core.Data;
 using LaHistoricalMarkers.Core.Features.Authentication;
 using LaHistoricalMarkers.Core.Features.Emails;
 using LaHistoricalMarkers.Core.Features.Markers;
-using LaHistoricalMarkers.Core.Security;
 
 namespace LaHistoricalMarkers.Core.Features.Moderation
 {
-    public class ApprovalService : BaseSqlService
+    public class ModerationService : BaseSqlService
     {
         private readonly SendGridEmailService emailService;
         private readonly OtpAuthService authService;
 
-        public ApprovalService(
+        public ModerationService(
             SendGridEmailService emailService,
             OtpAuthService authService,
             IConnectionStringProvider connectionProvider) : base(connectionProvider)
@@ -62,6 +60,20 @@ namespace LaHistoricalMarkers.Core.Features.Moderation
 
             transaction.Commit();
             return approved ? ApprovalResultType.Accepted : ApprovalResultType.Rejected;
+        }
+
+        public async Task SendUserReportEmail(UserReportDto reportDto)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+            var otp = await authService.GetOtpForMarker(reportDto.MarkerId, transaction);
+
+            var tos = Environment.GetEnvironmentVariable("ToEmails").Split(",");
+            var content = $"The following marker was reported: {reportDto.MarkerId}\n\nThe user reports:\n{reportDto.Report}\n\nlahm://admin/marker/{reportDto.MarkerId}?otp={otp}";
+            await emailService.SendEmail(tos, "User Report", content);
+
+            transaction.Commit();
         }
     }
 }

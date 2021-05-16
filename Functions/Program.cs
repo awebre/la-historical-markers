@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using LaHistoricalMarkers.Core.Data;
@@ -24,7 +22,7 @@ namespace la_historical_markers
 
                     s.AddScoped<SendGridEmailService>(_ => new SendGridEmailService(Environment.GetEnvironmentVariable("SendGrid"), Environment.GetEnvironmentVariable("FromEmail")));
                     s.AddScoped<MarkersService>();
-                    s.AddScoped<ApprovalService>();
+                    s.AddScoped<ModerationService>();
                     s.AddScoped<OtpAuthService>();
 
                     var uri = new Uri(Environment.GetEnvironmentVariable("StorageUri"));

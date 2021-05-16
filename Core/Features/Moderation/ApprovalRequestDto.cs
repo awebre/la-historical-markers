@@ -1,4 +1,3 @@
-using System;
 using LaHistoricalMarkers.Core.Features.Markers;
 
 namespace LaHistoricalMarkers.Core.Features.Moderation

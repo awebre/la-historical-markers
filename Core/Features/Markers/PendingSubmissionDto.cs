@@ -1,5 +1,3 @@
-using System;
-
 namespace LaHistoricalMarkers.Core.Features.Markers
 {
     public class PendingSubmissionDto

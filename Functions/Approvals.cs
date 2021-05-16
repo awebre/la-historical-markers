@@ -1,9 +1,6 @@
-using Dapper;
-using LaHistoricalMarkers.Core.Features.Markers;
 using LaHistoricalMarkers.Core.Features.Moderation;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -13,22 +10,11 @@ namespace LaHistoricalMarkers.Functions
 {
     public class Approvals
     {
-        private readonly ApprovalService approvalService;
+        private readonly ModerationService approvalService;
 
-        public Approvals(ApprovalService approvalService)
+        public Approvals(ModerationService approvalService)
         {
             this.approvalService = approvalService;
-        }
-
-        [Function("approval-email")]
-        public async Task ApprovalEmail([QueueTrigger("la-hm-approvals", Connection = "AzureWebJobsStorage")] PendingSubmissionDto pending,
-            FunctionContext context)
-        {
-            var logger = context.GetLogger("Approvals");
-
-            await approvalService.SendApprovalEmail(pending);
-
-            logger.LogInformation($"C# Queue trigger function processed: \nEmail sent.");
         }
 
         [Function("marker-approval")]

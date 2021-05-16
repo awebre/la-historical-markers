@@ -1,15 +1,14 @@
 using System;
 using System.Net;
-using System.Text.Json;
 using System.IO;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
-using LaHistoricalMarkers.Config;
 using System.Threading.Tasks;
 using LaHistoricalMarkers.Core.Features.Markers;
 using LaHistoricalMarkers.Core.Features.FileStorage;
 using LaHistoricalMarkers.Functions.Extensions;
 using Microsoft.Extensions.Logging;
+using LaHistoricalMarkers.Core.Infrastructure;
 
 namespace LaHistoricalMarkers.Functions
 {
@@ -57,7 +56,7 @@ namespace LaHistoricalMarkers.Functions
     }
     public class SubmissionResponse
     {
-        [QueueOutput("la-hm-approvals")]
+        [QueueOutput(Queues.ApprovalEmailQueue)]
         public PendingSubmissionDto QueueMessage { get; set; }
 
         public HttpResponseData Response { get; set; }
