@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LaHistoricalMarkers.Config;
 using LaHistoricalMarkers.Core.Features.Authentication;
 using LaHistoricalMarkers.Core.Features.Markers;
+using LaHistoricalMarkers.Core.Features.Moderation;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using SendGrid;
@@ -22,7 +23,7 @@ namespace LaHistoricalMarkers.Functions
         }
 
         [Function("report-marker")]
-        public async Task<HttpResponseData> Report(
+        public async Task<UserReportResponse> Report(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "markers/report")] HttpRequestData req,
             FunctionContext context)
         {
@@ -33,25 +34,27 @@ namespace LaHistoricalMarkers.Functions
             connection.Open();
             using var transaction = connection.BeginTransaction();
             var otp = await authService.GetOtpForMarker(report.MarkerId, transaction);
-
-            //TODO: make this use a dynamic template similar to approvals
-            //and add queue functionality
-            var apiKey = Environment.GetEnvironmentVariable("SendGrid");
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress(Environment.GetEnvironmentVariable("FromEmail"), "LA Historical Markers Alert");
-            var tos = Environment.GetEnvironmentVariable("ToEmails").Split(",");
-            var message = new SendGridMessage();
-            message.Subject = "User Report";
-            message.PlainTextContent = $"The following marker was reported: {report.MarkerId}\n\nThe user reports:\n{report.Report}\n\nlahm://admin/marker/{report.MarkerId}?otp={otp}";
-            message.SetFrom(from);
-            foreach (var to in tos)
-            {
-                message.AddTo(to);
-            }
-
-            await client.SendEmailAsync(message);
             transaction.Commit();
-            return req.CreateResponse(HttpStatusCode.OK);
+            var userReport = new UserReportEmailPayload
+            {
+                MarkerId = report.MarkerId,
+                Report = report.Report,
+                Otp = otp
+            };
+
+            return new UserReportResponse
+            {
+                Response = req.CreateResponse(HttpStatusCode.OK),
+                UserReport = userReport
+            };
+        }
+
+        public class UserReportResponse
+        {
+            public HttpResponseData Response { get; set; }
+
+            [QueueOutput("user-reports")]
+            public UserReportEmailPayload UserReport { get; set; }
         }
 
         public class ReportDto
