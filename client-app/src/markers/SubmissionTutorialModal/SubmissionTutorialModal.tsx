@@ -47,7 +47,7 @@ export default function SubmissionTutorialModal({
   }
   return (
     <Modal visible={visible}>
-      <KeyboardAvoidingView behavior="padding">
+      <KeyboardAvoidingView behavior="position">
         <Tutorial>
           <Tutorial.Header text={currentStep.heading} />
           <Tutorial.Content>
