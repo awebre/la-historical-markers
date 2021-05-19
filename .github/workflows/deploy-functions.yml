@@ -11,7 +11,7 @@ jobs:
           creds: ${{ secrets.AZURE_SQL_CREDENTIALS }}
       - uses: azure/sql-action@v1
         with:
-          server-name: awebre-sql-prod
+          server-name: ${{ secrets.AZURE_SQL_SERVER_NAME }}
           connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
           sql-file: "./Migrations/InitialMigration.sql"
   build-and-deploy:
