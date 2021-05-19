@@ -1,6 +1,5 @@
 name: Build and Deploy Functions
-on:
-  workflow_dispatch:
+on: workflow_dispatch
 
 jobs:
   migrate-sql:
@@ -11,10 +10,10 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_SQL_CREDENTIALS }}
       - uses: azure/sql-action@v1
-          with:
-            server-name: awebre-sql-prod
-            connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
-            sql-file: './Migrations/InitialMigration.sql'
+        with:
+          server-name: awebre-sql-prod
+          connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+          sql-file: "./Migrations/InitialMigration.sql"
   build-and-deploy:
     runs-on: windows-latest
     steps:
