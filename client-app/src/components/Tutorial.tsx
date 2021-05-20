@@ -6,6 +6,7 @@ import {
   View,
   Text,
   Dimensions,
+  ScrollView,
 } from "react-native";
 import { colors } from "utils";
 
@@ -31,7 +32,9 @@ const Header: React.FC<TutorialHeaderProps> = ({ style, text }) => (
 );
 
 const Content: React.FC<BaseTutorialProps> = ({ style, children }) => (
-  <View style={[styles.content, style]}>{children}</View>
+  <ScrollView contentContainerStyle={[styles.content, style]}>
+    {children}
+  </ScrollView>
 );
 
 const Footer: React.FC<BaseTutorialProps> = ({ style, children }) => (
