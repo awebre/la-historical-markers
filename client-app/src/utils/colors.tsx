@@ -11,4 +11,5 @@ export default {
   primaryDark: "#734d26",
   secondaryPin: "#00802b",
   black: "#000000",
+  white: "#FFFFFF",
 };

@@ -15,6 +15,7 @@ export default function LocationEntrySwitch({
     <View style={styles.switchContainer}>
       <Text>I would like to use my location</Text>
       <Switch
+        thumbColor={colors.white}
         trackColor={{ true: colors.accent, false: colors.grey }}
         value={useDeviceLocation}
         onValueChange={toggleDeviceLocation}
