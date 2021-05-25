@@ -1,12 +1,12 @@
 //increase this for build version bumps (internal to app stores)
-const buildNumber = 28;
+const buildNumber = 29;
 export default {
   name: "client-app",
   displayName: "LA Markers",
   expo: {
     name: "LA Historical Markers",
     slug: "la-historical-markers",
-    version: "1.3.1",
+    version: "1.3.2",
     assetBundlePatterns: ["**/*"],
     orientation: "portrait",
     icon: "./assets/icon.png",
