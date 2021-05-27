@@ -44,6 +44,7 @@ export default {
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
+        "QUERY_ALL_PACKAGES",
       ],
       config: {
         googleMaps: {
