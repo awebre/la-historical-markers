@@ -1,15 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  StyleSheet,
-  Dimensions,
-  KeyboardAvoidingView,
-  TouchableOpacity,
-  Text,
-} from "react-native";
+import { StyleSheet, Dimensions, KeyboardAvoidingView } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import Toast from "react-native-easy-toast";
-import { FontAwesome5 } from "@expo/vector-icons";
-import { showLocation } from "react-native-map-link";
 import { Location, MarkerDto, MarkerType } from "types";
 import { MarkersSearchView, SubmitMarkerView } from "markers";
 import { useDebounce, useLocation, useMarkers } from "hooks";
@@ -18,6 +10,7 @@ import TermsAndConditionsModal from "terms/TermsAndConditionsModal";
 import { getMarkerColor, getMarkerTypeDescription } from "markers/utils";
 import { MarkerFilter } from "components/markers";
 import LocationNavigationButton from "components/LocationNavigationButton";
+import MarkerSearchBar from "markers/MarkerSearchBar.tsx";
 
 const allFilters = [
   {
@@ -41,9 +34,8 @@ export default function MarkersScreen() {
   const toast = useRef<Toast>(null);
   const map = useRef<MapView>(null);
 
-  const [cachedMarkers, setCachedMarkers] = useState<MarkerDto[] | undefined>(
-    undefined
-  );
+  const [cachedMarkers, setCachedMarkers] =
+    useState<MarkerDto[] | undefined>(undefined);
   const [filters, setFilters] = useState(allFilters);
   const [userLocation, setUserLocation] = useState<Location | null>(null);
   const [selectedMarker, setSelectedMarker] = useState<MarkerDto | null>(null);
@@ -74,7 +66,11 @@ export default function MarkersScreen() {
     watchLocation();
   }, []);
 
-  const { markers, isLoading, hasError: hasError } = useMarkers({
+  const {
+    markers,
+    isLoading,
+    hasError: hasError,
+  } = useMarkers({
     region: debouncedRegion,
     userLocation: debouncedUserLocation,
     filters: filters.filter((f) => f.isSelected).map((f) => f.id),
@@ -87,82 +83,91 @@ export default function MarkersScreen() {
   }, [markers, isLoading, setCachedMarkers]);
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="position">
+    <>
       {!selectedMarker && (
-        <MarkerFilter filters={filters} setFilters={setFilters} />
+        <>
+          <MarkerFilter filters={filters} setFilters={setFilters} />
+          <MarkerSearchBar />
+        </>
       )}
-      {selectedMarker && (
-        <LocationNavigationButton
-          style={styles.goButton}
-          latitude={selectedMarker.latitude}
-          longitude={selectedMarker.longitude}
-        />
-      )}
-      <MapView
-        ref={map}
-        style={[
-          styles.map,
-          isAdding || selectedMarker ? styles.viewMap : styles.searchMap,
-        ]}
-        showsUserLocation={true}
-        onRegionChangeComplete={setRegion}
-        onMarkerSelect={(event) =>
-          setOpenMarker(
-            cachedMarkers?.find(
-              (x) => x.id.toString() === event.nativeEvent.id
-            ) ?? null
-          )
-        }
-        onMarkerDeselect={() => {
-          setOpenMarker(null);
-        }}
-        onCalloutPress={() => selectMarkerAndNavigate(openMarker)}
-      >
-        {!isAdding &&
-          cachedMarkers?.map((m) => (
-            <Marker
-              key={m.id.toString()}
-              identifier={m.id.toString()}
-              coordinate={{ latitude: m.latitude, longitude: m.longitude }}
-              title={m.name}
-              pinColor={getMarkerColor(m.type)}
-              description={m.description}
-            />
-          ))}
-        {isAdding && newMarker && newMarker.latitude && newMarker.longitude && (
-          <Marker coordinate={{ ...newMarker }} />
+      <KeyboardAvoidingView style={styles.container} behavior="position">
+        {selectedMarker && (
+          <LocationNavigationButton
+            style={styles.goButton}
+            latitude={selectedMarker.latitude}
+            longitude={selectedMarker.longitude}
+          />
         )}
-      </MapView>
-      {!isAdding && (
-        <MarkersSearchView
-          loadableMarkers={{ markers: cachedMarkers, isLoading, hasError }}
-          selectedMarker={selectedMarker}
-          setSelectedMarker={selectMarkerAndNavigate}
-          setIsAdding={() => setIsAdding(true)}
-          markersCardStyles={[
-            styles.card,
-            selectedMarker ? styles.viewCard : styles.searchCard,
+        <MapView
+          ref={map}
+          style={[
+            styles.map,
+            isAdding || selectedMarker ? styles.viewMap : styles.searchMap,
           ]}
-        />
-      )}
-      {isAdding && (
-        <SubmitMarkerView
-          cardStyles={styles.viewCard}
-          cancel={() => {
-            setIsAdding(false);
-            setNewMarker(null);
+          showsUserLocation={true}
+          onRegionChangeComplete={setRegion}
+          onMarkerSelect={(event) =>
+            setOpenMarker(
+              cachedMarkers?.find(
+                (x) => x.id.toString() === event.nativeEvent.id
+              ) ?? null
+            )
+          }
+          onMarkerDeselect={() => {
+            setOpenMarker(null);
           }}
-          onSuccess={(name) => {
-            setIsAdding(false);
-            toast.current?.show(`We received your submission of ${name}`, 3000);
-            setNewMarker(null);
-          }}
-          updateMapMarker={setNewMarkerAndNavigate}
-        />
-      )}
-      <Toast ref={toast} />
-      <TermsAndConditionsModal />
-    </KeyboardAvoidingView>
+          onCalloutPress={() => selectMarkerAndNavigate(openMarker)}
+        >
+          {!isAdding &&
+            cachedMarkers?.map((m) => (
+              <Marker
+                key={m.id.toString()}
+                identifier={m.id.toString()}
+                coordinate={{ latitude: m.latitude, longitude: m.longitude }}
+                title={m.name}
+                pinColor={getMarkerColor(m.type)}
+                description={m.description}
+              />
+            ))}
+          {isAdding &&
+            newMarker &&
+            newMarker.latitude &&
+            newMarker.longitude && <Marker coordinate={{ ...newMarker }} />}
+        </MapView>
+        {!isAdding && (
+          <MarkersSearchView
+            loadableMarkers={{ markers: cachedMarkers, isLoading, hasError }}
+            selectedMarker={selectedMarker}
+            setSelectedMarker={selectMarkerAndNavigate}
+            setIsAdding={() => setIsAdding(true)}
+            markersCardStyles={[
+              styles.card,
+              selectedMarker ? styles.viewCard : styles.searchCard,
+            ]}
+          />
+        )}
+        {isAdding && (
+          <SubmitMarkerView
+            cardStyles={styles.viewCard}
+            cancel={() => {
+              setIsAdding(false);
+              setNewMarker(null);
+            }}
+            onSuccess={(name) => {
+              setIsAdding(false);
+              toast.current?.show(
+                `We received your submission of ${name}`,
+                3000
+              );
+              setNewMarker(null);
+            }}
+            updateMapMarker={setNewMarkerAndNavigate}
+          />
+        )}
+        <Toast ref={toast} />
+        <TermsAndConditionsModal />
+      </KeyboardAvoidingView>
+    </>
   );
 
   function setNewMarkerAndNavigate(location: Location | null) {

@@ -50,7 +50,7 @@ export default function MarkerFilter({
         onPress={toggleShowFilter}
         activeOpacity={1}
       >
-        <FontAwesome5 name="filter" color="white" />
+        <FontAwesome5 name="filter" color="white" size={18} />
       </TouchableOpacity>
       {showFilters && (
         <View style={styles.filterContainer}>
@@ -81,7 +81,7 @@ export default function MarkerFilter({
 const styles = StyleSheet.create({
   filterButton: {
     top: 50,
-    right: 25,
+    left: 25,
     position: "absolute",
     height: 50,
     width: 50,
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   filterContainer: {
     position: "absolute",
     top: 100,
-    right: 25,
+    left: 25,
     zIndex: 1,
     backgroundColor: "white",
     padding: 10,
