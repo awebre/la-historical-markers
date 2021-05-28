@@ -11,8 +11,9 @@ import {
 import { Card, headerTextStyle, FlatListItemSeparator } from "components";
 import { colors } from "utils";
 import { LoadableMarkers } from "types";
-import MarkerListItem from "./MarkerListItem";
+import MarkerListItem from "../components/markers/MarkerListItem";
 import { MarkerDto } from "types";
+import { MarkersList } from "components/markers";
 
 interface MarkersCardProps extends LoadableMarkers {
   style: StyleProp<ViewStyle>;
@@ -23,7 +24,7 @@ interface MarkersCardProps extends LoadableMarkers {
 export default function MarkersCard({
   style,
   isLoading,
-  hasError: isError,
+  hasError,
   markers,
   setSelectedMarker,
   setIsAdding,
@@ -39,29 +40,12 @@ export default function MarkersCard({
         )}
       </Card.Header>
       <Card.Body style={styles.body}>
-        {isLoading && (
-          <View style={styles.listItem}>
-            <Text>Looking for nearby markers...</Text>
-          </View>
-        )}
-        {markers && markers.length > 0 && !isError && (
-          <FlatList
-            data={markers}
-            renderItem={({ item }) => (
-              <MarkerListItem
-                marker={item}
-                onPress={() => setSelectedMarker(item)}
-              />
-            )}
-            keyExtractor={(item) => item.id.toString()}
-            ItemSeparatorComponent={FlatListItemSeparator}
-          />
-        )}
-        {!isLoading && (!markers || markers.length === 0 || isError) && (
-          <View style={styles.listItem}>
-            <Text>No Markers Found</Text>
-          </View>
-        )}
+        <MarkersList
+          isLoading={isLoading}
+          markers={markers}
+          setSelectedMarker={setSelectedMarker}
+          hasError={hasError}
+        />
       </Card.Body>
       <Card.Footer style={styles.footer}>
         <Button

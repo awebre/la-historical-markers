@@ -5,6 +5,7 @@ import Tutorial from "./Tutorial";
 import ImagePreviewPicker from "./ImagePreviewPicker";
 import DismissKeyboard from "./DismissKeyboard";
 import LoadingIndicator from "./LoadingIndicator";
+import SearchBar from "./SearchBar";
 
 export {
   Card,
@@ -15,4 +16,5 @@ export {
   ImagePreviewPicker,
   DismissKeyboard,
   LoadingIndicator,
+  SearchBar,
 };
