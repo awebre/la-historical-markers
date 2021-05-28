@@ -153,14 +153,14 @@ namespace LaHistoricalMarkers.Core.Features.Markers
             }
 
             connection.Execute(@"
-UPDATE [dbo].[Marker]
-SET 
-    [Name] = @name,
-    [Description] = @description,
-    [Location] = GEOGRAPHY::Point(@latitude, @longitude, 4326),
-    [Type] = @type,
-    [IsApproved] = @isApproved
-WHERE Id = @id",
+            UPDATE [dbo].[Marker]
+            SET 
+                [Name] = @name,
+                [Description] = @description,
+                [Location] = GEOGRAPHY::Point(@latitude, @longitude, 4326),
+                [Type] = @type,
+                [IsApproved] = @isApproved
+            WHERE Id = @id",
             new
             {
                 id = markerDto.Id,
@@ -173,6 +173,17 @@ WHERE Id = @id",
             }, transaction);
             transaction.Commit();
             return EditMarkerResult.Succes;
+        }
+
+        public async Task<IEnumerable<MarkerSearchResultDto>> GetMarkersBySearchTerm(string search)
+        {
+            return (await QueryAsync<MarkerSearchResultDto>(@"
+            SELECT TOP (50) 
+                [Id],
+                [Name],
+                [Description]
+            FROM [LaHistoricalMarkers].[dbo].[Marker]
+            WHERE [Name] LIKE @search OR [Description] LIKE @search", new { search = $"%{search}%" })).ToList();
         }
     }
 }
