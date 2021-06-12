@@ -11,6 +11,8 @@ interface MarkerSearchBarProps {
 export default function MarkerSearchBar({
   setSelectedMarker,
 }: MarkerSearchBarProps) {
+  const close = () => setShowModal(false);
+
   const onSelectMarker = (marker: MarkerDto) => {
     setSelectedMarker(marker);
     close();
@@ -26,7 +28,7 @@ export default function MarkerSearchBar({
       </SearchBar>
       <MarkerSearchModal
         show={showModal}
-        close={() => setShowModal(false)}
+        close={close}
         setSelectedMarker={onSelectMarker}
       />
     </>

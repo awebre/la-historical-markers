@@ -87,7 +87,7 @@ export default function MarkersScreen() {
       {!selectedMarker && (
         <>
           <MarkerFilter filters={filters} setFilters={setFilters} />
-          <MarkerSearchBar setSelectedMarker={setSelectedMarker} />
+          <MarkerSearchBar setSelectedMarker={selectMarkerAndNavigate} />
         </>
       )}
       <KeyboardAvoidingView style={styles.container} behavior="position">

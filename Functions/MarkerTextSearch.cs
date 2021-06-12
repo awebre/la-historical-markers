@@ -21,7 +21,9 @@ namespace LaHistoricalMarkers.Functions
             string search,
             FunctionContext executionContext)
         {
-            var results = await markersService.GetMarkersBySearchTerm(search);
+            var query = HttpUtility.ParseQueryString(req.Url.Query);
+            var userLocation = query["userLocation"].Deserialize<UserLocationDto>();
+            var results = await markersService.GetMarkersBySearchTerm(search, userLocation);
             var json = results.Serialize();
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "application/json; charset=utf-8");

@@ -1,6 +1,4 @@
-import { DismissKeyboard, SearchBar } from "components";
-import { MarkersList } from "components/markers";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Dimensions,
@@ -9,8 +7,11 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { MarkerDto } from "types";
-import { colors } from "utils";
+import { Location, MarkerDto } from "types";
+import { colors, Locations } from "utils";
+import { DismissKeyboard, SearchBar } from "components";
+import { MarkersList } from "components/markers";
+import { useLocation, useMarkerTextSearch } from "hooks";
 
 interface MarkerSearchModalProps {
   show: boolean;
@@ -21,16 +22,42 @@ interface MarkerSearchModalProps {
 export default function MarkerSearchModal({
   show,
   close,
+  setSelectedMarker,
 }: MarkerSearchModalProps) {
+  const [search, setSearch] = useState<string | null>(null);
+  const [location, setLocation] = useState<Location | null>(null);
+  const { updateLocation } = useLocation({
+    setLocation,
+  });
+
+  useEffect(() => {
+    updateLocation();
+  }, [updateLocation]);
+
+  const searchResults = useMarkerTextSearch({
+    search,
+    userLocation: location,
+  });
+
   return (
     <Modal visible={show}>
       <DismissKeyboard>
         <View style={styles.container}>
           <SearchBar style={styles.searchBar}>
-            <TextInput style={styles.input} autoFocus={true} />
+            <TextInput
+              style={styles.input}
+              autoFocus={true}
+              onChangeText={setSearch}
+              value={search ?? undefined}
+            />
           </SearchBar>
-          <View style={styles.results}></View>
           <Button onPress={close} title="Done" color={colors.primary} />
+          {search !== null && (
+            <MarkersList
+              {...searchResults}
+              setSelectedMarker={setSelectedMarker}
+            />
+          )}
         </View>
       </DismissKeyboard>
     </Modal>
@@ -60,5 +87,4 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 0,
   },
-  results: {},
 });

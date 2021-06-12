@@ -175,15 +175,29 @@ namespace LaHistoricalMarkers.Core.Features.Markers
             return EditMarkerResult.Succes;
         }
 
-        public async Task<IEnumerable<MarkerSearchResultDto>> GetMarkersBySearchTerm(string search)
+        public async Task<IEnumerable<MarkerDto>> GetMarkersBySearchTerm(string search, UserLocationDto userLocation)
         {
-            return (await QueryAsync<MarkerSearchResultDto>(@"
-            SELECT TOP (50) 
-                [Id],
-                [Name],
-                [Description]
+            return (await QueryAsync<MarkerDto>(@"
+            SELECT TOP (50)
+                 [Id]
+                ,[Name]
+                ,[Description]
+                ,[Location].[Lat] AS [Latitude]
+                ,[Location].[Long] AS [Longitude]
+                ,[ImageFileName]
+                ,[IsApproved]
+                ,[CreatedTimestamp]
+                ,GEOGRAPHY::Point(@userLatitude, @userLongitude, 4326).STDistance([Location]) AS Distance
+                ,[Type]
             FROM [LaHistoricalMarkers].[dbo].[Marker]
-            WHERE [Name] LIKE @search OR [Description] LIKE @search", new { search = $"%{search}%" })).ToList();
+            WHERE [Name] LIKE @search OR [Description] LIKE @search
+            ORDER BY Distance",
+            new
+            {
+                search = $"%{search}%",
+                userLatitude = userLocation.Latitude,
+                userLongitude = userLocation.Longitude
+            })).ToList();
         }
     }
 }
