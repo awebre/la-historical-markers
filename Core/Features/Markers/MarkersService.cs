@@ -190,7 +190,7 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 ,GEOGRAPHY::Point(@userLatitude, @userLongitude, 4326).STDistance([Location]) AS Distance
                 ,[Type]
             FROM [Marker]
-            WHERE [IsApproved] = 1 AND [Name] LIKE @search
+            WHERE [IsApproved] = 1 AND ([Name] LIKE @search OR [Description] LIKE @search)
             ORDER BY Distance",
             new
             {
