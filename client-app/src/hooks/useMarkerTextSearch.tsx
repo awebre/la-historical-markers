@@ -16,7 +16,9 @@ export default function useMarkers(
   });
   const { data, error } = useSwr<MarkerDto[], boolean>(
     request.search !== null
-      ? `${url}/api/markers/search/${request.search}?${parameters}`
+      ? `${url}/api/markers/search/${encodeURIComponent(
+          request.search
+        )}?${parameters}`
       : null,
     fetcher
   );

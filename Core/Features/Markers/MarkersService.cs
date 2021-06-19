@@ -56,7 +56,7 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 ,[CreatedTimestamp]
                 ,GEOGRAPHY::Point(@userLatitude, @userLongitude, 4326).STDistance([Location]) AS Distance
                 ,[Type]
-            FROM [LaHistoricalMarkers].[dbo].[Marker]
+            FROM [Marker]
             WHERE GEOGRAPHY::STPolyFromText('Polygon(( ' + @rightLong + ' ' + @bottomLat + ', ' + @rightLong + ' ' + @topLat + ', ' + @leftLong + ' ' + @topLat + ', ' + @leftLong + ' ' + @bottomLat + ', ' + @rightLong + ' ' + @bottomLat + '))', 4326).STIntersects([Location]) = 1
             AND [Type] IN @typeFilters
             AND [IsApproved] = 1
@@ -78,7 +78,7 @@ namespace LaHistoricalMarkers.Core.Features.Markers
         public async Task<PendingSubmissionDto> AddMarkerSubmission(MarkerSubmissionDto submission, string fileHandle)
         {
             var id = await QuerySingleAsync<int>(@"
-            INSERT INTO [LaHistoricalMarkers].[dbo].[Marker] (
+            INSERT INTO [Marker] (
                 [Name], 
                 [Description], 
                 [Location], 
@@ -132,7 +132,7 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 ,[IsApproved]
                 ,[CreatedTimestamp]
                 ,[Type]
-            FROM [LaHistoricalMarkers].[dbo].[Marker]
+            FROM [Marker]
             WHERE [Id] = @id
             ", new { id });
 
@@ -189,12 +189,12 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 ,[CreatedTimestamp]
                 ,GEOGRAPHY::Point(@userLatitude, @userLongitude, 4326).STDistance([Location]) AS Distance
                 ,[Type]
-            FROM [LaHistoricalMarkers].[dbo].[Marker]
-            WHERE [Name] LIKE @search OR [Description] LIKE @search
+            FROM [Marker]
+            WHERE [IsApproved] = 1 AND [Name] LIKE @search
             ORDER BY Distance",
             new
             {
-                search = $"%{search}%",
+                search = $"%{search.Replace(' ', '_')}%",
                 userLatitude = userLocation.Latitude,
                 userLongitude = userLocation.Longitude
             })).ToList();
