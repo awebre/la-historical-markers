@@ -1,4 +1,4 @@
 export type RootParams = {
-  Markers: undefined;
+  Home: undefined;
   Admin: { markerId: number; otp: string };
 };

@@ -1,20 +1,52 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { MarkersScreen } from "screens";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { FontAwesome5 } from "@expo/vector-icons";
 import * as Linking from "expo-linking";
-import AdminScreen from "screens/AdminScreen";
+import { ExploreScreen, AdminScreen, MyMarkersScreen } from "screens";
 import { RootParams } from "types";
 import { colors, routes } from "utils";
 
 const Stack = createStackNavigator<RootParams>();
 const prefix = Linking.createURL("/");
+const Tab = createBottomTabNavigator();
+
+function Tabs() {
+  return (
+    <Tab.Navigator
+      tabBarOptions={{
+        activeTintColor: colors.primary,
+        style: { backgroundColor: colors.mediumBackground },
+      }}
+    >
+      <Tab.Screen
+        name="Explore"
+        component={ExploreScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="compass" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="My Markers"
+        component={MyMarkersScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="map" color={color} size={size} />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
 
 export default function App() {
   const linking = {
     prefixes: [prefix],
     config: {
-      initialRouteName: "Markers",
+      initialRouteName: "Explore",
       screens: {
         Markers: {
           path: routes.home,
@@ -27,10 +59,10 @@ export default function App() {
   };
   return (
     <NavigationContainer linking={linking}>
-      <Stack.Navigator initialRouteName="Markers">
+      <Stack.Navigator initialRouteName="Home">
         <Stack.Screen
-          name="Markers"
-          component={MarkersScreen}
+          name="Home"
+          component={Tabs}
           options={{ headerShown: false }}
         />
         <Stack.Screen

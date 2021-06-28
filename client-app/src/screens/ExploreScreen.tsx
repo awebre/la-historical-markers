@@ -25,7 +25,7 @@ const allFilters = [
   },
 ];
 
-export default function MarkersScreen() {
+export default function ExploreScreen() {
   const [region, setRegion] = useState({
     ...Locations.center,
     latitudeDelta: 5,
@@ -34,8 +34,9 @@ export default function MarkersScreen() {
   const toast = useRef<Toast>(null);
   const map = useRef<MapView>(null);
 
-  const [cachedMarkers, setCachedMarkers] =
-    useState<MarkerDto[] | undefined>(undefined);
+  const [cachedMarkers, setCachedMarkers] = useState<MarkerDto[] | undefined>(
+    undefined
+  );
   const [filters, setFilters] = useState(allFilters);
   const [userLocation, setUserLocation] = useState<Location | null>(null);
   const [selectedMarker, setSelectedMarker] = useState<MarkerDto | null>(null);
@@ -208,22 +209,25 @@ const styles = StyleSheet.create({
     marginTop: -5,
   },
   searchCard: {
-    maxHeight: Dimensions.get("window").height * 0.4 - 50,
+    paddingBottom: 15,
+    maxHeight: "40%",
   },
   viewCard: {
-    maxHeight: Dimensions.get("window").height * 0.75 - 50,
+    paddingBottom: 15,
+    maxHeight: "75%",
   },
   map: {
     width: Dimensions.get("window").width,
   },
   searchMap: {
-    height: Dimensions.get("window").height * 0.6,
+    height: "60%",
   },
-  viewMap: { height: Dimensions.get("window").height * 0.25 },
+  viewMap: { height: "25%" },
   toast: {},
   toastText: {},
   goButton: {
-    top: Dimensions.get("window").height * 0.25 - 75,
+    marginTop: -75,
+    top: "25%",
     right: 25,
     position: "absolute",
     zIndex: 1,
