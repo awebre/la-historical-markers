@@ -34,3 +34,8 @@ export type LoadableMarkers = {
 export type LoadableMarker = {
   marker: MarkerDto | undefined;
 } & Loadable;
+
+export type SavedMarker = {
+  id: number;
+  name: string;
+} & Location;

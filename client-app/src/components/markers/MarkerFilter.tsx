@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { colors } from "utils";
-import { getMarkerColor, getMarkerTypeDescription } from "markers/utils";
+import { getMarkerColor } from "components/markers/utils";
 import { MarkerType } from "types";
 import MarkerIconSvg from "./MarkerIconSvg";
 

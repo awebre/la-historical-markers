@@ -1,5 +1,5 @@
 import { DismissKeyboard } from "components";
-import MarkerForm from "markers/MarkerForm";
+import MarkerForm from "explore/MarkerForm";
 import React from "react";
 import { Text, View } from "react-native";
 import { colors } from "utils";

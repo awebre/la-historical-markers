@@ -9,7 +9,6 @@ import {
   StyleProp,
   ViewStyle,
 } from "react-native";
-import Constants from "expo-constants";
 import { Card, headerTextStyle } from "components";
 import { MarkerDto } from "types";
 import { colors, humanizedDistance } from "utils";

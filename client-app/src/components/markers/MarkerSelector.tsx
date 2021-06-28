@@ -1,7 +1,7 @@
 import React from "react";
 import RNPickerSelect from "react-native-picker-select";
-import { StyleSheet, View, Text } from "react-native";
-import { getMarkerTypeDescription } from "markers/utils";
+import { StyleSheet, View } from "react-native";
+import { getMarkerTypeDescription } from "./utils";
 import { MarkerType } from "types";
 import { Label } from "components/forms";
 import { colors } from "utils";

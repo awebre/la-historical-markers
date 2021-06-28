@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { MarkerDto } from "types";
 import { humanizedDistance } from "utils";
-import { getMarkerColor } from "../../markers/utils";
+import { getMarkerColor } from "./utils";
 
 interface MarkerListItemProps {
   marker: MarkerDto;

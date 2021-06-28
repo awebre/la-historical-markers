@@ -3,14 +3,17 @@ import { StyleSheet, Dimensions, KeyboardAvoidingView } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import Toast from "react-native-easy-toast";
 import { Location, MarkerDto, MarkerType } from "types";
-import { MarkersSearchView, SubmitMarkerView } from "markers";
+import { MarkersSearchView, SubmitMarkerView } from "explore";
 import { useDebounce, useLocation, useMarkers } from "hooks";
 import { colors, Locations } from "utils";
 import TermsAndConditionsModal from "terms/TermsAndConditionsModal";
-import { getMarkerColor, getMarkerTypeDescription } from "markers/utils";
+import {
+  getMarkerColor,
+  getMarkerTypeDescription,
+} from "components/markers/utils";
 import { MarkerFilter } from "components/markers";
 import LocationNavigationButton from "components/LocationNavigationButton";
-import MarkerSearchBar from "markers/MarkerSearchBar.tsx";
+import MarkerSearchBar from "explore/MarkerSearchBar";
 
 const allFilters = [
   {
