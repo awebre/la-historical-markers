@@ -194,7 +194,7 @@ namespace LaHistoricalMarkers.Core.Features.Markers
             ORDER BY Distance",
             new
             {
-                search = $"%{search.Replace(' ', '_')}%",
+                search = $"%{search}%",
                 userLatitude = userLocation.Latitude,
                 userLongitude = userLocation.Longitude
             })).ToList();
