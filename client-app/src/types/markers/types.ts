@@ -38,4 +38,5 @@ export type LoadableMarker = {
 export type SavedMarker = {
   id: number;
   name: string;
+  type: MarkerType;
 } & Location;

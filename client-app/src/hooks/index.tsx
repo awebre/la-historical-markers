@@ -4,6 +4,7 @@ import useMarkers from "./useMarkers";
 import useMarker from "./useMarker";
 import useTermsAndConditions from "./useTermsAndConditions";
 import useMarkerTextSearch from "./useMarkerTextSearch";
+import useSavedMarkers from "./useSavedMarkers";
 export {
   useDebounce,
   useLocation,
@@ -11,4 +12,5 @@ export {
   useMarkers,
   useMarker,
   useMarkerTextSearch,
+  useSavedMarkers,
 };

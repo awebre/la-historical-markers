@@ -10,6 +10,7 @@ import * as Linking from "expo-linking";
 import { ExploreScreen, AdminScreen, MyMarkersScreen } from "screens";
 import { RootParams } from "types";
 import { colors, routes } from "utils";
+import { SavedMarkersProvider } from "saved-markers";
 
 const Stack = createStackNavigator<RootParams>();
 const prefix = Linking.createURL("/");
@@ -17,31 +18,33 @@ const Tab = createBottomTabNavigator();
 
 function Tabs() {
   return (
-    <Tab.Navigator
-      tabBarOptions={{
-        activeTintColor: colors.primary,
-        style: { backgroundColor: colors.mediumBackground },
-      }}
-    >
-      <Tab.Screen
-        name="Explore"
-        component={ExploreScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="compass" color={color} size={size} />
-          ),
+    <SavedMarkersProvider>
+      <Tab.Navigator
+        tabBarOptions={{
+          activeTintColor: colors.primary,
+          style: { backgroundColor: colors.mediumBackground },
         }}
-      />
-      <Tab.Screen
-        name="My Markers"
-        component={MyMarkersScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="map" color={color} size={size} />
-          ),
-        }}
-      />
-    </Tab.Navigator>
+      >
+        <Tab.Screen
+          name="Explore"
+          component={ExploreScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <FontAwesome5 name="compass" color={color} size={size} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="My Markers"
+          component={MyMarkersScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <FontAwesome5 name="map" color={color} size={size} />
+            ),
+          }}
+        />
+      </Tab.Navigator>
+    </SavedMarkersProvider>
   );
 }
 

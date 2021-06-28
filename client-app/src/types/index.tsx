@@ -5,6 +5,7 @@ import {
   MarkerType,
   LoadableMarkers,
   LoadableMarker,
+  SavedMarker,
 } from "./markers/types";
 import { RootParams } from "./navigation/types";
 
@@ -16,4 +17,5 @@ export {
   LoadableMarkers,
   LoadableMarker,
   RootParams,
+  SavedMarker,
 };
