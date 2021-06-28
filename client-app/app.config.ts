@@ -1,5 +1,5 @@
 //increase this for build version bumps (internal to app stores)
-const buildNumber = 30;
+const buildNumber = 31;
 export default {
   name: "client-app",
   displayName: "LA Markers",
