@@ -43,9 +43,12 @@ export type SavedMarker = {
 } & Location;
 
 export type SavedMarkerCategory =
-  | "Visited"
-  | "Authored"
-  | "Save For Later"
+  | Visited
+  | Authored
+  | SaveForLater
   | CustomCategory;
 
-export type CustomCategory = string;
+export type Visited = { type: "Visited" };
+export type Authored = { type: "Authored" };
+export type SaveForLater = { type: "Save For Later" };
+export type CustomCategory = { type: "Custom"; value: string };

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { SavedMarkersContext } from "saved-markers";
+import SavedMarkersContext from "saved-markers/SavedMarkersContext";
 
 export default function useSavedMarkers() {
   const savedMarkers = useContext(SavedMarkersContext);

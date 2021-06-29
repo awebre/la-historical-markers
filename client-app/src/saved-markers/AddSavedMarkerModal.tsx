@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { MarkerDto, SavedMarker, SavedMarkerCategory } from "types";
 import { colors } from "utils";
 import { useSavedMarkers } from "hooks";
+import { getIconFromCategory } from "./utils";
 
 type AddSavedMarkerModalProps = {
   marker: MarkerDto;
@@ -36,10 +37,12 @@ export default function AddSavedMarkerModal({
   const { addMarker } = useSavedMarkers();
 
   const updateCategories = (category: SavedMarkerCategory) => {
-    const index = savedMarker.categories.findIndex((c) => c == category);
+    const index = savedMarker.categories.findIndex(
+      (c) => c.type == category.type
+    );
     if (index !== -1) {
       const newCategories = savedMarker.categories.filter(
-        (c) => c !== category
+        (c) => c.type !== category.type
       );
       setSavedMarker({ ...savedMarker, categories: newCategories });
     } else {
@@ -57,17 +60,17 @@ export default function AddSavedMarkerModal({
         <Text>You may select more than one.</Text>
         <View style={styles.categories}>
           <CategorySelector
-            category="Visited"
+            category={{ type: "Visited" }}
             selectedCategories={savedMarker.categories}
             updateCategories={updateCategories}
           />
           <CategorySelector
-            category="Authored"
+            category={{ type: "Authored" }}
             selectedCategories={savedMarker.categories}
             updateCategories={updateCategories}
           />
           <CategorySelector
-            category="Save For Later"
+            category={{ type: "Save For Later" }}
             selectedCategories={savedMarker.categories}
             updateCategories={updateCategories}
           />
@@ -81,6 +84,7 @@ export default function AddSavedMarkerModal({
           <Button
             title="Save"
             color={colors.primary}
+            disabled={savedMarker.categories.length < 1}
             onPress={() => {
               addMarker(savedMarker);
               setVisible(false);
@@ -103,15 +107,9 @@ const CategorySelector = ({
   selectedCategories,
   updateCategories,
 }: CategorySelectorProps) => {
-  const isActive = selectedCategories.findIndex((c) => c === category) !== -1;
-  const icon =
-    category === "Visited"
-      ? "map-marked"
-      : category === "Authored"
-      ? "feather-alt"
-      : category === "Save For Later"
-      ? "bookmark"
-      : "list-alt";
+  const isActive =
+    selectedCategories.findIndex((c) => c.type === category.type) !== -1;
+  const icon = getIconFromCategory(category);
   return (
     <TouchableOpacity
       style={[styles.category, isActive ? styles.active : null]}
@@ -131,7 +129,7 @@ const CategorySelector = ({
         color={isActive ? colors.accent : colors.darkGrey}
         backgroundColor={colors.lightBackground}
       />
-      <Text>{category}</Text>
+      <Text>{category.type}</Text>
     </TouchableOpacity>
   );
 };

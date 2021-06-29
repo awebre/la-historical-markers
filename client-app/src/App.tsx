@@ -10,7 +10,7 @@ import * as Linking from "expo-linking";
 import { ExploreScreen, AdminScreen, MyMarkersScreen } from "screens";
 import { RootParams } from "types";
 import { colors, routes } from "utils";
-import { SavedMarkersProvider } from "saved-markers";
+import { SavedMarkersProvider } from "saved-markers/SavedMarkersContext";
 
 const Stack = createStackNavigator<RootParams>();
 const prefix = Linking.createURL("/");

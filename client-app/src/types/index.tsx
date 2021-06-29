@@ -8,6 +8,9 @@ import {
   SavedMarker,
   SavedMarkerCategory,
   CustomCategory,
+  Visited,
+  Authored,
+  SaveForLater,
 } from "./markers/types";
 import { RootParams } from "./navigation/types";
 
@@ -21,5 +24,8 @@ export {
   RootParams,
   SavedMarker,
   SavedMarkerCategory,
+  Visited,
+  Authored,
+  SaveForLater,
   CustomCategory,
 };
