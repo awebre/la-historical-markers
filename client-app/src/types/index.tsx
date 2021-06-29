@@ -6,6 +6,8 @@ import {
   LoadableMarkers,
   LoadableMarker,
   SavedMarker,
+  SavedMarkerCategory,
+  CustomCategory,
 } from "./markers/types";
 import { RootParams } from "./navigation/types";
 
@@ -18,4 +20,6 @@ export {
   LoadableMarker,
   RootParams,
   SavedMarker,
+  SavedMarkerCategory,
+  CustomCategory,
 };

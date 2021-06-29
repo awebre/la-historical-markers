@@ -39,4 +39,13 @@ export type SavedMarker = {
   id: number;
   name: string;
   type: MarkerType;
+  categories: SavedMarkerCategory[];
 } & Location;
+
+export type SavedMarkerCategory =
+  | "Visited"
+  | "Authored"
+  | "Save For Later"
+  | CustomCategory;
+
+export type CustomCategory = string;

@@ -12,7 +12,6 @@ const initialRegion = {
 };
 export default function MyMarkersScreen() {
   const { markers } = useSavedMarkers();
-  console.log(markers);
   return (
     <>
       <MapView

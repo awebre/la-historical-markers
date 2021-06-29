@@ -1,5 +1,5 @@
 import SavedMarkersContext, {
   SavedMarkersProvider,
 } from "./SavedMarkersContext";
-
-export { SavedMarkersContext, SavedMarkersProvider };
+import AddSavedMarkerModal from "./AddSavedMarkerModal";
+export { SavedMarkersContext, SavedMarkersProvider, AddSavedMarkerModal };

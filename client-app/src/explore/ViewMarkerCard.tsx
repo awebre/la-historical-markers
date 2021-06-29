@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import {
   Text,
   ScrollView,
@@ -10,11 +10,12 @@ import {
   ViewStyle,
 } from "react-native";
 import { Card, headerTextStyle } from "components";
-import { MarkerDto, SavedMarker } from "types";
+import { MarkerDto } from "types";
 import { colors, humanizedDistance } from "utils";
 import { photosUrl } from "utils/urls";
 import ReportMarkerModal from "./ReportMarkerModal";
 import { useSavedMarkers } from "hooks";
+import { AddSavedMarkerModal } from "saved-markers";
 
 interface ViewMarkerCardProps {
   style: StyleProp<ViewStyle>;
@@ -28,7 +29,8 @@ export default function ViewMarkerCard({
   onCancel,
 }: ViewMarkerCardProps) {
   const [reportVisible, setReportVisible] = useState(false);
-  const { markers: savedMarkers, addMarker, removeMarker } = useSavedMarkers();
+  const [saveMarkerVisible, setSaveMarkerVisible] = useState(false);
+  const { markers: savedMarkers, removeMarker } = useSavedMarkers();
   const isSaved = savedMarkers.find((m) => m.id === marker.id) !== undefined;
   return (
     <Card style={[styles.card, style]}>
@@ -65,20 +67,17 @@ export default function ViewMarkerCard({
         <Button onPress={onCancel} title="Done" color={colors.primary} />
         <Button
           onPress={() =>
-            isSaved
-              ? removeMarker(marker.id)
-              : addMarker({
-                  id: marker.id,
-                  name: marker.name,
-                  latitude: marker.latitude,
-                  longitude: marker.longitude,
-                  type: marker.type,
-                })
+            isSaved ? removeMarker(marker.id) : setSaveMarkerVisible(true)
           }
           title={isSaved ? "Remove" : "Save"}
           color={colors.accent}
         />
       </Card.Footer>
+      <AddSavedMarkerModal
+        visible={saveMarkerVisible}
+        setVisible={setSaveMarkerVisible}
+        marker={marker}
+      />
       <ReportMarkerModal
         markerId={marker.id}
         isVisible={reportVisible}
