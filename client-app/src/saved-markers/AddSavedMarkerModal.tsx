@@ -2,17 +2,28 @@ import React, { useState } from "react";
 import {
   Button,
   Modal,
+  KeyboardAvoidingView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
+  ViewStyle,
+  Dimensions,
+  ScrollView,
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { MarkerDto, SavedMarker, SavedMarkerCategory } from "types";
+import {
+  CustomCategory,
+  MarkerDto,
+  SavedMarker,
+  SavedMarkerCategory,
+} from "types";
 import { colors } from "utils";
 import { useSavedMarkers } from "hooks";
-import { getIconFromCategory } from "./utils";
+import { getIconFromCategory, getLabel } from "./utils";
+import { TextInput } from "react-native-gesture-handler";
+import { DismissKeyboard } from "components";
 
 type AddSavedMarkerModalProps = {
   marker: MarkerDto;
@@ -20,11 +31,22 @@ type AddSavedMarkerModalProps = {
   setVisible: (v: boolean) => void;
 };
 
+const isActive = (
+  category: SavedMarkerCategory,
+  selected: SavedMarkerCategory[]
+) => {
+  return selected.findIndex((c) => c.type === category.type) !== -1;
+};
+
 export default function AddSavedMarkerModal({
   marker,
   visible,
   setVisible,
 }: AddSavedMarkerModalProps) {
+  const [customCategory, setCustomCategory] = useState<CustomCategory>({
+    type: "Custom",
+    value: "",
+  });
   const [savedMarker, setSavedMarker] = useState<SavedMarker>({
     id: marker.id,
     name: marker.name,
@@ -44,6 +66,9 @@ export default function AddSavedMarkerModal({
       const newCategories = savedMarker.categories.filter(
         (c) => c.type !== category.type
       );
+      if (category.type == "Custom") {
+        setCustomCategory({ type: category.type, value: "" });
+      }
       setSavedMarker({ ...savedMarker, categories: newCategories });
     } else {
       const newCategories = [...savedMarker.categories, category];
@@ -53,45 +78,68 @@ export default function AddSavedMarkerModal({
 
   return (
     <Modal visible={visible}>
-      <SafeAreaView style={styles.containers}>
-        <Text style={styles.heading}>
-          How would you categorize {marker.name}?
-        </Text>
-        <Text>You may select more than one.</Text>
-        <View style={styles.categories}>
-          <CategorySelector
-            category={{ type: "Visited" }}
-            selectedCategories={savedMarker.categories}
-            updateCategories={updateCategories}
-          />
-          <CategorySelector
-            category={{ type: "Authored" }}
-            selectedCategories={savedMarker.categories}
-            updateCategories={updateCategories}
-          />
-          <CategorySelector
-            category={{ type: "Save For Later" }}
-            selectedCategories={savedMarker.categories}
-            updateCategories={updateCategories}
-          />
-        </View>
-        <View style={styles.actions}>
-          <Button
-            title="Cancel"
-            color={colors.alert}
-            onPress={() => setVisible(false)}
-          />
-          <Button
-            title="Save"
-            color={colors.primary}
-            disabled={savedMarker.categories.length < 1}
-            onPress={() => {
-              addMarker(savedMarker);
-              setVisible(false);
-            }}
-          />
-        </View>
-      </SafeAreaView>
+      <KeyboardAvoidingView behavior="position">
+        <DismissKeyboard>
+          <ScrollView contentContainerStyle={{ height: "100%" }}>
+            <SafeAreaView style={styles.containers}>
+              <Text style={styles.heading}>
+                How would you categorize {marker.name}?
+              </Text>
+              <Text>You may select more than one.</Text>
+              <View style={styles.categories}>
+                <CategorySelector
+                  category={{ type: "Visited" }}
+                  selectedCategories={savedMarker.categories}
+                  updateCategories={updateCategories}
+                />
+                <CategorySelector
+                  category={{ type: "Authored" }}
+                  selectedCategories={savedMarker.categories}
+                  updateCategories={updateCategories}
+                />
+                <CategorySelector
+                  category={{ type: "Save For Later" }}
+                  selectedCategories={savedMarker.categories}
+                  updateCategories={updateCategories}
+                />
+                <CategorySelector
+                  category={customCategory}
+                  selectedCategories={savedMarker.categories}
+                  updateCategories={updateCategories}
+                  style={styles.customCategory}
+                ></CategorySelector>
+                {isActive(customCategory, savedMarker.categories) && (
+                  <TextInput
+                    style={styles.input}
+                    placeholder="My Favorites"
+                    placeholderTextColor={colors.darkGrey}
+                    value={customCategory.value}
+                    onChangeText={(val) =>
+                      setCustomCategory({ ...customCategory, value: val })
+                    }
+                  />
+                )}
+              </View>
+              <View style={styles.actions}>
+                <Button
+                  title="Cancel"
+                  color={colors.alert}
+                  onPress={() => setVisible(false)}
+                />
+                <Button
+                  title="Save"
+                  color={colors.primary}
+                  disabled={savedMarker.categories.length < 1}
+                  onPress={() => {
+                    addMarker(savedMarker);
+                    setVisible(false);
+                  }}
+                />
+              </View>
+            </SafeAreaView>
+          </ScrollView>
+        </DismissKeyboard>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -100,22 +148,23 @@ type CategorySelectorProps = {
   category: SavedMarkerCategory;
   selectedCategories: SavedMarkerCategory[];
   updateCategories: (c: SavedMarkerCategory) => void;
+  style?: ViewStyle;
 };
 
 const CategorySelector = ({
   category,
   selectedCategories,
   updateCategories,
+  style,
 }: CategorySelectorProps) => {
-  const isActive =
-    selectedCategories.findIndex((c) => c.type === category.type) !== -1;
+  const active = isActive(category, selectedCategories);
   const icon = getIconFromCategory(category);
   return (
     <TouchableOpacity
-      style={[styles.category, isActive ? styles.active : null]}
+      style={[styles.category, active ? styles.active : null, style]}
       onPress={() => updateCategories(category)}
     >
-      {isActive && (
+      {active && (
         <FontAwesome5
           name="check-circle"
           size={24}
@@ -126,10 +175,10 @@ const CategorySelector = ({
       <FontAwesome5
         name={icon}
         size={48}
-        color={isActive ? colors.accent : colors.darkGrey}
+        color={active ? colors.accent : colors.darkGrey}
         backgroundColor={colors.lightBackground}
       />
-      <Text>{category.type}</Text>
+      <Text>{getLabel(category)}</Text>
     </TouchableOpacity>
   );
 };
@@ -140,7 +189,6 @@ const styles = StyleSheet.create({
     height: "100%",
     display: "flex",
     flexDirection: "column",
-    flexWrap: "wrap",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -151,6 +199,7 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
   categories: {
+    paddingVertical: 50,
     width: "100%",
     display: "flex",
     flexDirection: "row",
@@ -161,13 +210,27 @@ const styles = StyleSheet.create({
     margin: 10,
     borderRadius: 5,
     borderWidth: 1,
+    flex: 1,
     borderColor: colors.darkGrey,
-    width: 100,
-    height: 100,
+    minWidth: 100,
+    minHeight: 100,
     backgroundColor: colors.lightBackground,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+  },
+  customCategory: {
+    flex: 3,
+  },
+  input: {
+    width: Dimensions.get("window").width - 20,
+    borderWidth: 1,
+    borderRadius: 5,
+    borderColor: colors.primary,
+    backgroundColor: colors.lightBackground,
+    margin: 5,
+    padding: 5,
+    fontSize: 16,
   },
   active: {
     borderColor: colors.accent,
