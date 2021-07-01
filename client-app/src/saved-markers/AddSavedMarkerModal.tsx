@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Modal,
@@ -24,6 +24,7 @@ import { useSavedMarkers } from "hooks";
 import { getIconFromCategory, getLabel } from "./utils";
 import { TextInput } from "react-native-gesture-handler";
 import { DismissKeyboard } from "components";
+import { Typeahead } from "components/forms";
 
 type AddSavedMarkerModalProps = {
   marker: MarkerDto;
@@ -56,7 +57,18 @@ export default function AddSavedMarkerModal({
     categories: [],
   });
 
-  const { addMarker } = useSavedMarkers();
+  const { addMarker, markers } = useSavedMarkers();
+  const customCategories = markers
+    .flatMap((m) => m.categories)
+    .reduce((custom, category) => {
+      if (
+        category?.type === "Custom" &&
+        !custom.find((c) => c === category.value)
+      ) {
+        return [...custom, category.value];
+      }
+      return custom;
+    }, new Array<string>());
 
   const updateCategories = (category: SavedMarkerCategory) => {
     const index = savedMarker.categories.findIndex(
@@ -66,7 +78,7 @@ export default function AddSavedMarkerModal({
       const newCategories = savedMarker.categories.filter(
         (c) => c.type !== category.type
       );
-      if (category.type == "Custom") {
+      if (category.type === "Custom") {
         setCustomCategory({ type: category.type, value: "" });
       }
       setSavedMarker({ ...savedMarker, categories: newCategories });
@@ -75,6 +87,18 @@ export default function AddSavedMarkerModal({
       setSavedMarker({ ...savedMarker, categories: newCategories });
     }
   };
+
+  useEffect(() => {
+    if (isActive(customCategory, savedMarker.categories)) {
+      const otherCategories = savedMarker.categories.filter(
+        (c) => c.type !== customCategory.type
+      );
+      setSavedMarker({
+        ...savedMarker,
+        categories: [...otherCategories, customCategory],
+      });
+    }
+  }, [customCategory]);
 
   return (
     <Modal visible={visible}>
@@ -107,16 +131,14 @@ export default function AddSavedMarkerModal({
                   selectedCategories={savedMarker.categories}
                   updateCategories={updateCategories}
                   style={styles.customCategory}
-                ></CategorySelector>
+                />
                 {isActive(customCategory, savedMarker.categories) && (
-                  <TextInput
-                    style={styles.input}
-                    placeholder="My Favorites"
-                    placeholderTextColor={colors.darkGrey}
-                    value={customCategory.value}
+                  <Typeahead
+                    text={customCategory.value}
                     onChangeText={(val) =>
                       setCustomCategory({ ...customCategory, value: val })
                     }
+                    options={customCategories}
                   />
                 )}
               </View>

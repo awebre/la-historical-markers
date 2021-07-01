@@ -23,6 +23,7 @@
     "expo-splash-screen": "~0.10.2",
     "expo-updates": "~0.5.4",
     "expo-web-browser": "~9.1.0",
+    "fuse.js": "^6.4.6",
     "query-string": "^7.0.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
