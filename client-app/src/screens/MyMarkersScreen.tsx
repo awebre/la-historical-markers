@@ -1,8 +1,9 @@
 import { getMarkerColor } from "components/markers/utils";
 import { useSavedMarkers } from "hooks";
 import React from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, ScrollView } from "react-native";
 import MapView, { Marker } from "react-native-maps";
+import { SavedMarkerCategory } from "types";
 import { colors, Locations } from "utils";
 
 const initialRegion = {
@@ -10,8 +11,24 @@ const initialRegion = {
   latitudeDelta: 5,
   longitudeDelta: 5,
 };
+const Categories: SavedMarkerCategory[] = [
+  { type: "Visited" },
+  { type: "Authored" },
+  { type: "Save For Later" },
+];
+
 export default function MyMarkersScreen() {
   const { markers } = useSavedMarkers();
+  const categoryStats = Categories.map((c) => {
+    const markerCount = markers.filter(
+      (m) => m.categories.find((cat) => cat.type === c.type) !== undefined
+    )?.length;
+    return {
+      markerCount,
+      category: c.type,
+    };
+  });
+  console.log(categoryStats);
   return (
     <>
       <MapView
@@ -34,24 +51,36 @@ export default function MyMarkersScreen() {
           );
         })}
       </MapView>
-      <View style={styles.statsContainer}>
-        <View style={styles.stat}>
-          <Text style={styles.stat}>{`${markers.length} markers saved`}</Text>
-        </View>
-      </View>
+      <ScrollView style={styles.statsContainer}>
+        {categoryStats &&
+          categoryStats.length > 0 &&
+          categoryStats.map((s) => (
+            <View key={s.category} style={styles.stat}>
+              <Text style={styles.stat}>{`${s.category}:`}</Text>
+              <Text style={styles.stat}>{s.markerCount}</Text>
+            </View>
+          ))}
+      </ScrollView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
   map: {
-    height: "90%",
+    height: "75%",
   },
   statsContainer: {
-    height: "10%",
+    height: "25%",
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
     backgroundColor: colors.mediumBackground,
   },
   stat: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    justifyContent: "space-between",
     borderRadius: 5,
     margin: 10,
     fontSize: 24,

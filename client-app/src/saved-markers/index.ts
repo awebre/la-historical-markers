@@ -1,2 +1,3 @@
-import AddSavedMarkerModal from "./AddSavedMarkerModal";
-export { AddSavedMarkerModal };
+import SavedMarkerModal from "./SavedMarkerModal";
+
+export { SavedMarkerModal };

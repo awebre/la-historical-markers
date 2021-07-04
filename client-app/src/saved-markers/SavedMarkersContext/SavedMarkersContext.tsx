@@ -10,6 +10,7 @@ type SavedMarkers = {
   markers: SavedMarker[];
   addMarker: (marker: SavedMarker) => void;
   removeMarker: (id: number) => void;
+  updateMarker: (marker: SavedMarker) => void;
 };
 
 const SAVED_MARKERS = "SAVED_MARKERS";
@@ -60,6 +61,18 @@ export function SavedMarkersProvider({ children }: SavedMarkersProviderProps) {
     [savedMarkers, saveMarkers]
   );
 
+  const updateMarker = useCallback(
+    async (marker: SavedMarker) => {
+      const removeIndex = savedMarkers.findIndex((m) => m.id == marker.id);
+      if (removeIndex === -1) {
+        saveMarkers([...savedMarkers, marker]);
+      } else {
+        saveMarkers([...savedMarkers.splice(removeIndex + 1, 1), marker]);
+      }
+    },
+    [savedMarkers, saveMarkers]
+  );
+
   const removeMarker = useCallback(
     async (id: number) => {
       const removeIndex = savedMarkers.findIndex((m) => m.id == id);
@@ -75,6 +88,7 @@ export function SavedMarkersProvider({ children }: SavedMarkersProviderProps) {
     markers: savedMarkers,
     addMarker,
     removeMarker,
+    updateMarker,
   };
 
   return (

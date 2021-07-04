@@ -13,21 +13,15 @@ import {
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  CustomCategory,
-  MarkerDto,
-  SavedMarker,
-  SavedMarkerCategory,
-} from "types";
+import { CustomCategory, SavedMarker, SavedMarkerCategory } from "types";
 import { colors } from "utils";
 import { useSavedMarkers } from "hooks";
 import { getIconFromCategory, getLabel } from "./utils";
-import { TextInput } from "react-native-gesture-handler";
 import { DismissKeyboard } from "components";
 import { Typeahead } from "components/forms";
 
-type AddSavedMarkerModalProps = {
-  marker: MarkerDto;
+type SavedMarkerModalProps = {
+  marker: SavedMarker;
   visible: boolean;
   setVisible: (v: boolean) => void;
 };
@@ -39,25 +33,22 @@ const isActive = (
   return selected.findIndex((c) => c.type === category.type) !== -1;
 };
 
-export default function AddSavedMarkerModal({
+export default function SavedMarkerModal({
   marker,
   visible,
   setVisible,
-}: AddSavedMarkerModalProps) {
-  const [customCategory, setCustomCategory] = useState<CustomCategory>({
+}: SavedMarkerModalProps) {
+  const initialCustom = (marker.categories.find(
+    (x) => x.type === "Custom"
+  ) as CustomCategory) ?? {
     type: "Custom",
     value: "",
-  });
-  const [savedMarker, setSavedMarker] = useState<SavedMarker>({
-    id: marker.id,
-    name: marker.name,
-    type: marker.type,
-    latitude: marker.latitude,
-    longitude: marker.longitude,
-    categories: [],
-  });
+  };
+  const [customCategory, setCustomCategory] =
+    useState<CustomCategory>(initialCustom);
+  const [savedMarker, setSavedMarker] = useState<SavedMarker>(marker);
 
-  const { addMarker, markers } = useSavedMarkers();
+  const { updateMarker, removeMarker, markers } = useSavedMarkers();
   const customCategories = markers
     .flatMap((m) => m.categories)
     .reduce((custom, category) => {
@@ -106,10 +97,11 @@ export default function AddSavedMarkerModal({
         <DismissKeyboard>
           <ScrollView contentContainerStyle={{ height: "100%" }}>
             <SafeAreaView style={styles.containers}>
-              <Text style={styles.heading}>
-                How would you categorize {marker.name}?
+              <Text style={styles.heading}>{marker.name}</Text>
+              <Text style={{ padding: 10, textAlign: "center" }}>
+                You have saved this marker to your map. Select one or more of
+                the categories below.
               </Text>
-              <Text>You may select more than one.</Text>
               <View style={styles.categories}>
                 <CategorySelector
                   category={{ type: "Visited" }}
@@ -144,16 +136,19 @@ export default function AddSavedMarkerModal({
               </View>
               <View style={styles.actions}>
                 <Button
-                  title="Cancel"
+                  title="Delete"
                   color={colors.alert}
-                  onPress={() => setVisible(false)}
+                  onPress={() => {
+                    removeMarker(savedMarker.id);
+                    setVisible(false);
+                  }}
                 />
                 <Button
-                  title="Save"
+                  title="Done"
                   color={colors.primary}
                   disabled={savedMarker.categories.length < 1}
                   onPress={() => {
-                    addMarker(savedMarker);
+                    updateMarker(savedMarker);
                     setVisible(false);
                   }}
                 />
@@ -227,6 +222,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-evenly",
+    zIndex: 1,
   },
   category: {
     margin: 10,

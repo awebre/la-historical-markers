@@ -15,7 +15,7 @@ import { colors, humanizedDistance } from "utils";
 import { photosUrl } from "utils/urls";
 import ReportMarkerModal from "./ReportMarkerModal";
 import { useSavedMarkers } from "hooks";
-import { AddSavedMarkerModal } from "saved-markers";
+import { SavedMarkerModal } from "saved-markers";
 
 interface ViewMarkerCardProps {
   style: StyleProp<ViewStyle>;
@@ -30,8 +30,8 @@ export default function ViewMarkerCard({
 }: ViewMarkerCardProps) {
   const [reportVisible, setReportVisible] = useState(false);
   const [saveMarkerVisible, setSaveMarkerVisible] = useState(false);
-  const { markers: savedMarkers, removeMarker } = useSavedMarkers();
-  const isSaved = savedMarkers.find((m) => m.id === marker.id) !== undefined;
+  const { markers: savedMarkers } = useSavedMarkers();
+  const savedMarker = savedMarkers.find((m) => m.id === marker.id);
   return (
     <Card style={[styles.card, style]}>
       <Card.Header style={styles.cardHeader}>
@@ -66,17 +66,26 @@ export default function ViewMarkerCard({
         />
         <Button onPress={onCancel} title="Done" color={colors.primary} />
         <Button
-          onPress={() =>
-            isSaved ? removeMarker(marker.id) : setSaveMarkerVisible(true)
-          }
-          title={isSaved ? "Remove" : "Save"}
+          onPress={() => setSaveMarkerVisible(true)}
+          title={savedMarker !== undefined ? "View Saved" : "Save"}
           color={colors.accent}
         />
       </Card.Footer>
-      <AddSavedMarkerModal
+      <SavedMarkerModal
         visible={saveMarkerVisible}
         setVisible={setSaveMarkerVisible}
-        marker={marker}
+        marker={
+          savedMarker !== undefined
+            ? savedMarker
+            : {
+                id: marker.id,
+                name: marker.name,
+                type: marker.type,
+                latitude: marker.latitude,
+                longitude: marker.longitude,
+                categories: [],
+              }
+        }
       />
       <ReportMarkerModal
         markerId={marker.id}
