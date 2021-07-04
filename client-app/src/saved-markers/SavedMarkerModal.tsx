@@ -114,7 +114,7 @@ export default function SavedMarkerModal({
                   updateCategories={updateCategories}
                 />
                 <CategorySelector
-                  category={{ type: "Save For Later" }}
+                  category={{ type: "Saved For Later" }}
                   selectedCategories={savedMarker.categories}
                   updateCategories={updateCategories}
                 />

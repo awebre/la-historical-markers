@@ -6,7 +6,7 @@ export function getIconFromCategory(category: SavedMarkerCategory) {
       return "map-marked";
     case "Authored":
       return "feather-alt";
-    case "Save For Later":
+    case "Saved For Later":
       return "bookmark";
     case "Custom":
       return "list-alt";
