@@ -88,7 +88,7 @@ export default function ExploreScreen() {
 
   return (
     <>
-      {!selectedMarker && (
+      {!selectedMarker && !isAdding && (
         <>
           <MarkerFilter filters={filters} setFilters={setFilters} />
           <MarkerSearchBar setSelectedMarker={selectMarkerAndNavigate} />

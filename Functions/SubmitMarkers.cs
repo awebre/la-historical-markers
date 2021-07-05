@@ -47,10 +47,13 @@ namespace LaHistoricalMarkers.Functions
 
             var pending = await markersService.AddMarkerSubmission(submission, fileHandle);
             logger.LogInformation($"DeepLinkBaseUrl: {pending.DeepLinkBaseUrl}");
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            await response.WriteStringAsync(pending.Serialize());
+            response.Headers.Add("Content-Type", "application/json");
             return new SubmissionResponse
             {
                 QueueMessage = pending,
-                Response = req.CreateResponse(HttpStatusCode.OK)
+                Response = response
             };
         }
     }

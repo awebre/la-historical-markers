@@ -13,6 +13,7 @@ import Fuse from "fuse.js";
 
 type TypeaheadProps = {
   text: string;
+  placeholder?: string;
   options: string[];
   onChangeText: (s: string) => void;
   style?: ViewStyle;
@@ -20,25 +21,35 @@ type TypeaheadProps = {
 
 export function Typeahead({
   text,
+  placeholder,
   options,
   onChangeText,
   style,
 }: TypeaheadProps) {
   const [searchResults, setSearchResults] = useState<string[]>();
+  const [hasFocus, setHasFocus] = useState(false);
   useEffect(() => {
-    const fuse = new Fuse(options);
-    const result = fuse.search(text);
-    setSearchResults(result.map((r) => r.item));
+    if (!!text) {
+      const fuse = new Fuse(options);
+      const result = fuse.search(text);
+      setSearchResults(result.map((r) => r.item));
+    } else {
+      setSearchResults(options.sort().slice(0, 5));
+    }
   }, [options, text]);
 
   return (
     <View style={style}>
       <TextInput
-        value={text}
+        placeholder={placeholder}
+        placeholderTextColor={colors.darkGrey}
+        value={!text ? undefined : text}
         onChangeText={onChangeText}
         style={styles.input}
+        onFocus={() => setHasFocus(true)}
       />
-      {searchResults &&
+      {hasFocus &&
+        searchResults &&
         searchResults.length > 0 &&
         (searchResults.length > 1 || searchResults.find((r) => r !== text)) && (
           <View style={[styles.dropdown]}>
@@ -46,7 +57,10 @@ export function Typeahead({
               <Pressable
                 key={item}
                 style={styles.dropdownItemContainer}
-                onPressIn={() => onChangeText(item)}
+                onPress={() => {
+                  onChangeText(item);
+                  setHasFocus(false);
+                }}
               >
                 <Text style={styles.dropdownItem}>{item}</Text>
               </Pressable>

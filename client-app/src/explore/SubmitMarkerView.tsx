@@ -19,8 +19,8 @@ import {
   Tutorial,
 } from "components";
 import { colors, confirm, routes, url } from "utils";
-import { useLocation } from "hooks";
-import { ImageSource, Location, MarkerType } from "types";
+import { useLocation, useSavedMarkers } from "hooks";
+import { ImageSource, Location, MarkerDto, MarkerType } from "types";
 import SubmissionTutorialModal from "./SubmissionTutorialModal/SubmissionTutorialModal";
 import MarkerForm from "./MarkerForm";
 import LocationEntrySwitch from "components/location";
@@ -52,6 +52,7 @@ export default function SubmitMarkerView({
   const [description, setDescription] = useState<string | null>(null);
   const [type, setType] = useState<MarkerType>(MarkerType.official);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const { addMarker } = useSavedMarkers();
 
   const { updateLocation, permissionGranted } = useLocation({
     setLocation: (location) => {
@@ -104,6 +105,17 @@ export default function SubmitMarkerView({
         });
         if (resp.ok) {
           setIsSubmitting(false);
+          const json = await resp.json();
+          const newMarker = json as MarkerDto;
+          //TODO: this means that we will need to refetch the list every so often to make sure it is correct
+          addMarker({
+            id: newMarker.id,
+            name: newMarker.name,
+            type: newMarker.type,
+            latitude: newMarker.latitude,
+            longitude: newMarker.longitude,
+            categories: [{ type: "Authored" }, { type: "Visited" }],
+          });
           onSuccess(name);
         } else {
           setError(
@@ -111,7 +123,7 @@ export default function SubmitMarkerView({
           );
           setIsSubmitting(false);
         }
-      } catch {
+      } catch (e) {
         setError(
           "Looks like your submission couldn't be completed. Please try again."
         );

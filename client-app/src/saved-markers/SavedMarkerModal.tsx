@@ -94,68 +94,67 @@ export default function SavedMarkerModal({
   return (
     <Modal visible={visible}>
       <KeyboardAvoidingView behavior="position">
-        <DismissKeyboard>
-          <ScrollView contentContainerStyle={{ height: "100%" }}>
-            <SafeAreaView style={styles.containers}>
-              <Text style={styles.heading}>{marker.name}</Text>
-              <Text style={{ padding: 10, textAlign: "center" }}>
-                You have saved this marker to your map. Select one or more of
-                the categories below.
-              </Text>
-              <View style={styles.categories}>
-                <CategorySelector
-                  category={{ type: "Visited" }}
-                  selectedCategories={savedMarker.categories}
-                  updateCategories={updateCategories}
+        <ScrollView contentContainerStyle={{ height: "100%" }}>
+          <SafeAreaView style={styles.containers}>
+            <Text style={styles.heading}>{marker.name}</Text>
+            <Text style={{ padding: 10, textAlign: "center" }}>
+              You have saved this marker to your map. Select one or more of the
+              categories below.
+            </Text>
+            <View style={styles.categories}>
+              <CategorySelector
+                category={{ type: "Visited" }}
+                selectedCategories={savedMarker.categories}
+                updateCategories={updateCategories}
+              />
+              <CategorySelector
+                category={{ type: "Authored" }}
+                selectedCategories={savedMarker.categories}
+                updateCategories={updateCategories}
+              />
+              <CategorySelector
+                category={{ type: "For Later" }}
+                selectedCategories={savedMarker.categories}
+                updateCategories={updateCategories}
+              />
+              <CategorySelector
+                category={customCategory}
+                selectedCategories={savedMarker.categories}
+                updateCategories={updateCategories}
+                style={styles.customCategory}
+              />
+              {isActive(customCategory, savedMarker.categories) && (
+                <Typeahead
+                  placeholder="Find or Add Custom Category"
+                  text={customCategory.value ?? undefined}
+                  onChangeText={(val) =>
+                    setCustomCategory({ ...customCategory, value: val })
+                  }
+                  options={customCategories}
                 />
-                <CategorySelector
-                  category={{ type: "Authored" }}
-                  selectedCategories={savedMarker.categories}
-                  updateCategories={updateCategories}
-                />
-                <CategorySelector
-                  category={{ type: "Saved For Later" }}
-                  selectedCategories={savedMarker.categories}
-                  updateCategories={updateCategories}
-                />
-                <CategorySelector
-                  category={customCategory}
-                  selectedCategories={savedMarker.categories}
-                  updateCategories={updateCategories}
-                  style={styles.customCategory}
-                />
-                {isActive(customCategory, savedMarker.categories) && (
-                  <Typeahead
-                    text={customCategory.value}
-                    onChangeText={(val) =>
-                      setCustomCategory({ ...customCategory, value: val })
-                    }
-                    options={customCategories}
-                  />
-                )}
-              </View>
-              <View style={styles.actions}>
-                <Button
-                  title="Delete"
-                  color={colors.alert}
-                  onPress={() => {
-                    removeMarker(savedMarker.id);
-                    setVisible(false);
-                  }}
-                />
-                <Button
-                  title="Done"
-                  color={colors.primary}
-                  disabled={savedMarker.categories.length < 1}
-                  onPress={() => {
-                    updateMarker(savedMarker);
-                    setVisible(false);
-                  }}
-                />
-              </View>
-            </SafeAreaView>
-          </ScrollView>
-        </DismissKeyboard>
+              )}
+            </View>
+            <View style={styles.actions}>
+              <Button
+                title="Delete"
+                color={colors.alert}
+                onPress={() => {
+                  removeMarker(savedMarker.id);
+                  setVisible(false);
+                }}
+              />
+              <Button
+                title="Done"
+                color={colors.primary}
+                disabled={savedMarker.categories.length < 1}
+                onPress={() => {
+                  updateMarker(savedMarker);
+                  setVisible(false);
+                }}
+              />
+            </View>
+          </SafeAreaView>
+        </ScrollView>
       </KeyboardAvoidingView>
     </Modal>
   );

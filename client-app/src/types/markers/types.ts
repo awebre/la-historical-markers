@@ -45,10 +45,10 @@ export type SavedMarker = {
 export type SavedMarkerCategory =
   | Visited
   | Authored
-  | SaveForLater
+  | ForLater
   | CustomCategory;
 
 export type Visited = { type: "Visited" };
 export type Authored = { type: "Authored" };
-export type SaveForLater = { type: "Saved For Later" };
+export type ForLater = { type: "For Later" };
 export type CustomCategory = { type: "Custom"; value: string };

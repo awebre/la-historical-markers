@@ -10,7 +10,7 @@ import {
   CustomCategory,
   Visited,
   Authored,
-  SaveForLater,
+  ForLater,
 } from "./markers/types";
 import { RootParams } from "./navigation/types";
 
@@ -26,6 +26,6 @@ export {
   SavedMarkerCategory,
   Visited,
   Authored,
-  SaveForLater,
+  ForLater,
   CustomCategory,
 };

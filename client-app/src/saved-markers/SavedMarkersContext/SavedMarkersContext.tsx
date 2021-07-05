@@ -26,7 +26,9 @@ export function SavedMarkersProvider({ children }: SavedMarkersProviderProps) {
     ) => {
       const result = (await AsyncStorage.getItem(SAVED_MARKERS)) ?? "";
       const markers: SavedMarker[] = JSON.parse(result);
-      setSavedMarkers(markers);
+      setSavedMarkers(
+        markers.filter((x) => x !== undefined && x.id !== undefined)
+      );
     };
 
     getSavedMarkers(setSavedMarkers);
@@ -63,12 +65,8 @@ export function SavedMarkersProvider({ children }: SavedMarkersProviderProps) {
 
   const updateMarker = useCallback(
     async (marker: SavedMarker) => {
-      const removeIndex = savedMarkers.findIndex((m) => m.id == marker.id);
-      if (removeIndex === -1) {
-        saveMarkers([...savedMarkers, marker]);
-      } else {
-        saveMarkers([...savedMarkers.splice(removeIndex + 1, 1), marker]);
-      }
+      const otherMarkers = savedMarkers.filter((m) => m.id !== marker.id);
+      saveMarkers([...otherMarkers, marker]);
     },
     [savedMarkers, saveMarkers]
   );
