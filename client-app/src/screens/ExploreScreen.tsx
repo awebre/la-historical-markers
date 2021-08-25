@@ -14,6 +14,7 @@ import {
 import { MarkerFilter } from "components/markers";
 import LocationNavigationButton from "components/LocationNavigationButton";
 import MarkerSearchBar from "explore/MarkerSearchBar";
+import { tailwind } from "tailwind-util";
 
 const allFilters = [
   {
@@ -94,7 +95,10 @@ export default function ExploreScreen() {
           <MarkerSearchBar setSelectedMarker={selectMarkerAndNavigate} />
         </>
       )}
-      <KeyboardAvoidingView style={styles.container} behavior="position">
+      <KeyboardAvoidingView
+        style={tailwind("h-full bg-brown-light")}
+        behavior="position"
+      >
         {selectedMarker && (
           <LocationNavigationButton
             style={styles.goButton}

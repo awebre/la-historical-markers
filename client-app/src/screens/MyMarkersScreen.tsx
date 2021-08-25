@@ -6,6 +6,7 @@ import { useSavedMarkers } from "hooks";
 import { SavedMarkerModal, SavedMarkerStats } from "saved-markers";
 import { SavedMarker, SavedMarkerCategory } from "types";
 import { colors, Locations } from "utils";
+import { tailwind } from "tailwind";
 
 const initialRegion = {
   ...Locations.center,
