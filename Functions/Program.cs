@@ -8,7 +8,7 @@ using LaHistoricalMarkers.Core.Features.Emails;
 using LaHistoricalMarkers.Core.Features.Moderation;
 using LaHistoricalMarkers.Core.Features.Authentication;
 
-namespace la_historical_markers
+namespace LaHistoricalMarkers
 {
     public class Program
     {
