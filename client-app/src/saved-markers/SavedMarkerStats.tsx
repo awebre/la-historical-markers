@@ -84,6 +84,19 @@ export default function SavedMarkerStats({ markers }: SavedMarkerStatsProps) {
             </View>
           </View>
         ))}
+      {(!categoryStats || categoryStats.length < 1) && (
+        <View
+          style={{
+            marginTop: 50,
+          }}
+        >
+          <Text
+            style={{ fontSize: 16, fontWeight: "bold", color: colors.primary }}
+          >
+            Nothing to see here yet...
+          </Text>
+        </View>
+      )}
     </ScrollView>
   );
 }

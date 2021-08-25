@@ -25,7 +25,7 @@ export function SavedMarkersProvider({ children }: SavedMarkersProviderProps) {
       setSavedMarkers: React.Dispatch<React.SetStateAction<SavedMarker[]>>
     ) => {
       const result = (await AsyncStorage.getItem(SAVED_MARKERS)) ?? "";
-      const markers: SavedMarker[] = JSON.parse(result);
+      const markers: SavedMarker[] = !result ? [] : JSON.parse(result);
       setSavedMarkers(
         markers.filter((x) => x !== undefined && x.id !== undefined)
       );
