@@ -1,4 +1,5 @@
 export default {
-  home: "markers",
+  explore: "markers/explore",
+  myMarkers: "markers/mine",
   adminMarker: "admin/marker",
 };

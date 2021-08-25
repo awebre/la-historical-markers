@@ -14,30 +14,39 @@ import { SavedMarkersProvider } from "saved-markers/SavedMarkersContext";
 
 const Stack = createStackNavigator<RootParams>();
 const prefix = Linking.createURL("/");
+console.log(prefix);
 const Tab = createBottomTabNavigator();
 
 function Tabs() {
   return (
     <SavedMarkersProvider>
       <Tab.Navigator
-        tabBarOptions={{
-          activeTintColor: colors.primary,
-          style: { backgroundColor: colors.mediumBackground },
+        screenOptions={{
+          tabBarActiveTintColor: colors.primary,
+          tabBarStyle: [
+            {
+              backgroundColor: colors.mediumBackground,
+            },
+            null,
+          ],
+          headerShown: false,
         }}
       >
         <Tab.Screen
           name="Explore"
           component={ExploreScreen}
           options={{
+            tabBarLabel: "Explore",
             tabBarIcon: ({ color, size }) => (
               <FontAwesome5 name="compass" color={color} size={size} />
             ),
           }}
         />
         <Tab.Screen
-          name="My Markers"
+          name="MyMarkers"
           component={MyMarkersScreen}
           options={{
+            tabBarLabel: "My Markers",
             tabBarIcon: ({ color, size }) => (
               <FontAwesome5 name="map" color={color} size={size} />
             ),
@@ -52,10 +61,13 @@ export default function App() {
   const linking = {
     prefixes: [prefix],
     config: {
-      initialRouteName: "Explore",
+      initialRouteName: "Home",
       screens: {
-        Markers: {
-          path: routes.home,
+        Home: {
+          screens: {
+            Explore: routes.explore,
+            MyMarkers: routes.myMarkers,
+          },
         },
         Admin: {
           path: `${routes.adminMarker}/:markerId`,
@@ -65,7 +77,7 @@ export default function App() {
   };
   return (
     <NavigationContainer linking={linking}>
-      <Stack.Navigator initialRouteName="Home">
+      <Stack.Navigator>
         <Stack.Screen
           name="Home"
           component={Tabs}
