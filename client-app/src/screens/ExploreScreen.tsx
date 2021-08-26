@@ -5,7 +5,7 @@ import Toast from "react-native-easy-toast";
 import { Location, MarkerDto, MarkerType } from "types";
 import { MarkersSearchView, SubmitMarkerView } from "explore";
 import { useDebounce, useLocation, useMarkers } from "hooks";
-import { colors, Locations } from "utils";
+import { Locations } from "utils";
 import TermsAndConditionsModal from "terms/TermsAndConditionsModal";
 import {
   getMarkerColor,
@@ -149,8 +149,8 @@ export default function ExploreScreen() {
             setSelectedMarker={selectMarkerAndNavigate}
             setIsAdding={() => setIsAdding(true)}
             markersCardStyles={[
-              styles.card,
-              selectedMarker ? styles.viewCard : styles.searchCard,
+              tailwind("-mt-1 pb-4"),
+              selectedMarker ? styles.viewCard : styles.searchCard, //TODO: figure out how to do this with Tailwind
             ]}
           />
         )}
@@ -205,22 +205,10 @@ export default function ExploreScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.mediumBackground,
-    alignItems: "center",
-    justifyContent: "flex-start",
-  },
-  card: {
-    alignSelf: "stretch",
-    marginTop: -5,
-  },
   searchCard: {
-    paddingBottom: 15,
     maxHeight: "40%",
   },
   viewCard: {
-    paddingBottom: 15,
     maxHeight: "75%",
   },
   map: {

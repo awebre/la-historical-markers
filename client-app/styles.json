@@ -4303,6 +4303,15 @@
 	"max-h-full": {
 		"maxHeight": "100%"
 	},
+	"max-h-1/4": {
+		"maxHeight": "25%"
+	},
+	"max-h-1/2": {
+		"maxHeight": "50%"
+	},
+	"max-h-3/4": {
+		"maxHeight": "75%"
+	},
 	"min-h-0": {
 		"minHeight": 0
 	},
