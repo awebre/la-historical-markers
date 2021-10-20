@@ -65,7 +65,7 @@ If you'd like to run the functions in "watch" mode, you can run `dotnet watch ms
 
 ## Expo Mobile App
 
-The mobile app was created using Expo, so running it is as simple as making sure you have have Expo installed and runing `expo start`.
+The mobile app was created using Expo, so running it is as simple as making sure you have have Expo installed and running `expo start`.
 
 Note: A Google Maps Android SDK api key is required to get the MapView to display on Android. Please see expo documentation [MapView](https://docs.expo.io/versions/latest/sdk/map-view/) (aka react-native-maps). This api key will need to be added to `app.config.ts`, but **should not be committed to source control**.
 
