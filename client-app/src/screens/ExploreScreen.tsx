@@ -101,7 +101,7 @@ export default function ExploreScreen() {
       >
         {selectedMarker && (
           <LocationNavigationButton
-            style={styles.goButton}
+            style={tailwind("absolute top-1/4 right-4 -mt-20 z-10")}
             latitude={selectedMarker.latitude}
             longitude={selectedMarker.longitude}
           />
@@ -218,8 +218,6 @@ const styles = StyleSheet.create({
     height: "60%",
   },
   viewMap: { height: "25%" },
-  toast: {},
-  toastText: {},
   goButton: {
     marginTop: -75,
     top: "25%",

@@ -1,19 +1,11 @@
 import React from "react";
-import {
-  View,
-  FlatList,
-  Text,
-  StyleProp,
-  ViewStyle,
-  StyleSheet,
-  Button,
-} from "react-native";
-import { Card, headerTextStyle, FlatListItemSeparator } from "components";
+import { Text, StyleProp, ViewStyle, Button } from "react-native";
+import { Card, headerTextStyle } from "components";
 import { colors } from "utils";
 import { LoadableMarkers } from "types";
-import MarkerListItem from "../components/markers/MarkerListItem";
 import { MarkerDto } from "types";
 import { MarkersList } from "components/markers";
+import { tailwind } from "tailwind-util";
 
 interface MarkersCardProps extends LoadableMarkers {
   style: StyleProp<ViewStyle>;
@@ -30,16 +22,16 @@ export default function MarkersCard({
   setIsAdding,
 }: MarkersCardProps) {
   return (
-    <Card style={[styles.card, style]}>
-      <Card.Header style={styles.cardHeader}>
-        <Text style={styles.cardHeaderText}>Nearby Historical Markers</Text>
+    <Card style={style}>
+      <Card.Header>
+        <Text style={headerTextStyle}>Nearby Historical Markers</Text>
         {markers && (
           <Card.Badge
             text={`${markers.length} result${markers.length !== 1 ? "s" : ""}`}
           />
         )}
       </Card.Header>
-      <Card.Body style={styles.body}>
+      <Card.Body style={tailwind("p-0")}>
         <MarkersList
           isLoading={isLoading}
           markers={markers}
@@ -47,7 +39,7 @@ export default function MarkersCard({
           hasError={hasError}
         />
       </Card.Body>
-      <Card.Footer style={styles.footer}>
+      <Card.Footer style={tailwind("flex items-end")}>
         <Button
           title="Add a Marker"
           onPress={setIsAdding}
@@ -57,19 +49,3 @@ export default function MarkersCard({
     </Card>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {},
-  cardHeader: {},
-  cardHeaderText: { ...headerTextStyle },
-  listItem: {
-    padding: 15,
-  },
-  body: {
-    padding: 0,
-  },
-  footer: {
-    display: "flex",
-    alignItems: "flex-end",
-  },
-});
