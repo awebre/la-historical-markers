@@ -7,7 +7,7 @@ namespace LaHistoricalMarkers.Core.Security
     {
         public static string Generate()
         {
-            using (var randomNumberGenerator = new RNGCryptoServiceProvider())
+            using (var randomNumberGenerator = RandomNumberGenerator.Create())
             {
                 var randomBytes = new byte[8];
                 randomNumberGenerator.GetBytes(randomBytes);
