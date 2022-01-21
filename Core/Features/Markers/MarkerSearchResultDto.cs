@@ -1,11 +1,10 @@
-namespace LaHistoricalMarkers.Core.Features.Markers
+namespace LaHistoricalMarkers.Core.Features.Markers;
+
+public class MarkerSearchResultDto
 {
-    public class MarkerSearchResultDto
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        public string Description { get; set; }
-    }
+    public string Description { get; set; }
 }

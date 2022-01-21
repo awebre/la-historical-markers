@@ -1,9 +1,8 @@
-namespace LaHistoricalMarkers.Core.Features.Moderation
+namespace LaHistoricalMarkers.Core.Features.Moderation;
+
+public enum ApprovalResultType
 {
-    public enum ApprovalResultType
-    {
-        Accepted,
-        Rejected,
-        Unauthenticated
-    }
+    Accepted,
+    Rejected,
+    Unauthenticated
 }

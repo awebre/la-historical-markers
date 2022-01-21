@@ -1,12 +1,11 @@
 using System.Text.Json;
 
-namespace LaHistoricalMarkers.Config
+namespace LaHistoricalMarkers.Config;
+
+public static class DefaultJsonConfiguration
 {
-    public static class DefaultJsonConfiguration
+    public static JsonSerializerOptions SerializerOptions = new JsonSerializerOptions
     {
-        public static JsonSerializerOptions SerializerOptions = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        };
-    }
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    };
 }

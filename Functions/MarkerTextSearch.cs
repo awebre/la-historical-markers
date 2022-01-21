@@ -6,29 +6,28 @@ using System.Threading.Tasks;
 using LaHistoricalMarkers.Core.Features.Markers;
 using LaHistoricalMarkers.Functions.Extensions;
 
-namespace LaHistoricalMarkers.Functions
-{
-    public class MarkerTextSearch
-    {
-        private readonly MarkersService markersService;
-        public MarkerTextSearch(MarkersService markersService)
-        {
-            this.markersService = markersService;
-        }
+namespace LaHistoricalMarkers.Functions;
 
-        [Function("search-by-name")]
-        public async Task<HttpResponseData> Search([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "markers/search/{search}")] HttpRequestData req,
-            string search,
-            FunctionContext executionContext)
-        {
-            var query = HttpUtility.ParseQueryString(req.Url.Query);
-            var userLocation = query["userLocation"].Deserialize<UserLocationDto>();
-            var results = await markersService.GetMarkersBySearchTerm(search, userLocation);
-            var json = results.Serialize();
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            response.Headers.Add("Content-Type", "application/json; charset=utf-8");
-            response.WriteString(json);
-            return response;
-        }
+public class MarkerTextSearch
+{
+    private readonly MarkersService markersService;
+    public MarkerTextSearch(MarkersService markersService)
+    {
+        this.markersService = markersService;
+    }
+
+    [Function("search-by-name")]
+    public async Task<HttpResponseData> Search([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "markers/search/{search}")] HttpRequestData req,
+        string search,
+        FunctionContext executionContext)
+    {
+        var query = HttpUtility.ParseQueryString(req.Url.Query);
+        var userLocation = query["userLocation"].Deserialize<UserLocationDto>();
+        var results = await markersService.GetMarkersBySearchTerm(search, userLocation);
+        var json = results.Serialize();
+        var response = req.CreateResponse(HttpStatusCode.OK);
+        response.Headers.Add("Content-Type", "application/json; charset=utf-8");
+        response.WriteString(json);
+        return response;
     }
 }

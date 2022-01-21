@@ -1,8 +1,7 @@
-namespace LaHistoricalMarkers.Core.Features.Authentication
+namespace LaHistoricalMarkers.Core.Features.Authentication;
+
+public enum AuthResult
 {
-    public enum AuthResult
-    {
-        Allowed,
-        Denied
-    }
+    Allowed,
+    Denied
 }

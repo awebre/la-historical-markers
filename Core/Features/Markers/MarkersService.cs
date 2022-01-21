@@ -6,46 +6,46 @@ using Dapper;
 using LaHistoricalMarkers.Core.Data;
 using LaHistoricalMarkers.Core.Features.Authentication;
 
-namespace LaHistoricalMarkers.Core.Features.Markers
-{
-    public class MarkersService : BaseSqlService
-    {
-        private readonly OtpAuthService authService;
+namespace LaHistoricalMarkers.Core.Features.Markers;
 
-        public MarkersService(OtpAuthService authService, IConnectionStringProvider connectionProvider) : base(connectionProvider)
+public class MarkersService : BaseSqlService
+{
+    private readonly OtpAuthService authService;
+
+    public MarkersService(OtpAuthService authService, IConnectionStringProvider connectionProvider) : base(connectionProvider)
+    {
+        this.authService = authService;
+    }
+
+    public async Task<IEnumerable<MarkerDto>> GetMarkersByRegion(RegionDto region, UserLocationDto userLocation, MarkerType[] typeFilters = null)
+    {
+        //If no type filters are supplied then we assume that an older
+        //client is querying us (one that isn't filter-aware)
+        if (typeFilters == null || !typeFilters.Any())
         {
-            this.authService = authService;
+            typeFilters = Enum.GetValues<MarkerType>();
         }
 
-        public async Task<IEnumerable<MarkerDto>> GetMarkersByRegion(RegionDto region, UserLocationDto userLocation, MarkerType[] typeFilters = null)
-        {
-            //If no type filters are supplied then we assume that an older
-            //client is querying us (one that isn't filter-aware)
-            if (typeFilters == null || !typeFilters.Any())
-            {
-                typeFilters = Enum.GetValues<MarkerType>();
-            }
+        var latitude = region.Latitude;
+        var longitude = region.Longitude;
 
-            var latitude = region.Latitude;
-            var longitude = region.Longitude;
+        //deltas map to 1 degree and represent the total number of degree from edge to edge
+        //so we can calculate the lat/long of various edges by adding/subtracting half the delta
+        //Note: this is an assumption that SEEMS to work - it may need re-evaluation
+        var longitudeDelta = region.LongitudeDelta;
+        var latitudeDelta = region.LongitudeDelta;
 
-            //deltas map to 1 degree and represent the total number of degree from edge to edge
-            //so we can calculate the lat/long of various edges by adding/subtracting half the delta
-            //Note: this is an assumption that SEEMS to work - it may need re-evaluation
-            var longitudeDelta = region.LongitudeDelta;
-            var latitudeDelta = region.LongitudeDelta;
+        var topLat = (latitude + (latitudeDelta / 2)).ToString();
+        var bottomLat = (latitude - (latitudeDelta / 2)).ToString();
+        var leftLong = (longitude - (longitudeDelta / 2)).ToString();
+        var rightLong = (longitude + (longitudeDelta / 2)).ToString();
 
-            var topLat = (latitude + (latitudeDelta / 2)).ToString();
-            var bottomLat = (latitude - (latitudeDelta / 2)).ToString();
-            var leftLong = (longitude - (longitudeDelta / 2)).ToString();
-            var rightLong = (longitude + (longitudeDelta / 2)).ToString();
+        //user lat/long are used to calculate distance
+        //if no user lat/long is supplied, we'll use the center of the map
+        var userLatitude = userLocation?.Latitude ?? latitude;
+        var userLongitude = userLocation?.Longitude ?? longitude;
 
-            //user lat/long are used to calculate distance
-            //if no user lat/long is supplied, we'll use the center of the map
-            var userLatitude = userLocation?.Latitude ?? latitude;
-            var userLongitude = userLocation?.Longitude ?? longitude;
-
-            return (await QueryAsync<MarkerDto>(@"
+        return (await QueryAsync<MarkerDto>(@"
             SELECT TOP (1000) [Id]
                 ,[Name]
                 ,[Description]
@@ -73,11 +73,11 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 userLongitude,
                 typeFilters = typeFilters.Select(x => x.ToString())
             })).AsList();
-        }
+    }
 
-        public async Task<PendingSubmissionDto> AddMarkerSubmission(MarkerSubmissionDto submission, string fileHandle)
-        {
-            var id = await QuerySingleAsync<int>(@"
+    public async Task<PendingSubmissionDto> AddMarkerSubmission(MarkerSubmissionDto submission, string fileHandle)
+    {
+        var id = await QuerySingleAsync<int>(@"
             INSERT INTO [Marker] (
                 [Name], 
                 [Description], 
@@ -107,22 +107,22 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 type = submission.Type.ToString()
             });
 
-            return new PendingSubmissionDto
-            {
-                Id = id,
-                Name = submission.Name,
-                Description = submission.Description,
-                Latitude = submission.Latitude,
-                Longitude = submission.Longitude,
-                ImageFileName = fileHandle,
-                DeepLinkBaseUrl = submission.DeepLinkBaseUrl,
-                Type = submission.Type.ToString()
-            };
-        }
-
-        public async Task<MarkerDto> GetMarkerById(int id)
+        return new PendingSubmissionDto
         {
-            var marker = await QuerySingleOrDefaultAsync<MarkerDto>(@"
+            Id = id,
+            Name = submission.Name,
+            Description = submission.Description,
+            Latitude = submission.Latitude,
+            Longitude = submission.Longitude,
+            ImageFileName = fileHandle,
+            DeepLinkBaseUrl = submission.DeepLinkBaseUrl,
+            Type = submission.Type.ToString()
+        };
+    }
+
+    public async Task<MarkerDto> GetMarkerById(int id)
+    {
+        var marker = await QuerySingleOrDefaultAsync<MarkerDto>(@"
             SELECT TOP (1) [Id]
                 ,[Name]
                 ,[Description]
@@ -136,23 +136,23 @@ namespace LaHistoricalMarkers.Core.Features.Markers
             WHERE [Id] = @id
             ", new { id });
 
-            return marker;
+        return marker;
+    }
+
+    public async Task<EditMarkerResult> EditMarker(EditMarkerDto markerDto, string otp)
+    {
+        using var connection = GetConnection();
+        connection.Open();
+        using var transaction = connection.BeginTransaction();
+        var authResult = await authService.GetAuthResult(markerDto.Id, otp, transaction);
+
+        if (authResult == AuthResult.Denied)
+        {
+            transaction.Commit();
+            return EditMarkerResult.Unauthenticated;
         }
 
-        public async Task<EditMarkerResult> EditMarker(EditMarkerDto markerDto, string otp)
-        {
-            using var connection = GetConnection();
-            connection.Open();
-            using var transaction = connection.BeginTransaction();
-            var authResult = await authService.GetAuthResult(markerDto.Id, otp, transaction);
-
-            if (authResult == AuthResult.Denied)
-            {
-                transaction.Commit();
-                return EditMarkerResult.Unauthenticated;
-            }
-
-            connection.Execute(@"
+        connection.Execute(@"
             UPDATE [dbo].[Marker]
             SET 
                 [Name] = @name,
@@ -171,13 +171,13 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 type = markerDto.Type.ToString(),
                 isApproved = markerDto.IsApproved
             }, transaction);
-            transaction.Commit();
-            return EditMarkerResult.Succes;
-        }
+        transaction.Commit();
+        return EditMarkerResult.Succes;
+    }
 
-        public async Task<IEnumerable<MarkerDto>> GetMarkersBySearchTerm(string search, UserLocationDto userLocation)
-        {
-            return (await QueryAsync<MarkerDto>(@"
+    public async Task<IEnumerable<MarkerDto>> GetMarkersBySearchTerm(string search, UserLocationDto userLocation)
+    {
+        return (await QueryAsync<MarkerDto>(@"
             SELECT TOP (50)
                  [Id]
                 ,[Name]
@@ -198,6 +198,5 @@ namespace LaHistoricalMarkers.Core.Features.Markers
                 userLatitude = userLocation.Latitude,
                 userLongitude = userLocation.Longitude
             })).ToList();
-        }
     }
 }

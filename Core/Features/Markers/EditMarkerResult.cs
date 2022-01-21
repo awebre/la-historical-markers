@@ -1,8 +1,7 @@
-namespace LaHistoricalMarkers.Core.Features.Markers
+namespace LaHistoricalMarkers.Core.Features.Markers;
+
+public enum EditMarkerResult
 {
-    public enum EditMarkerResult
-    {
-        Unauthenticated,
-        Succes
-    }
+    Unauthenticated,
+    Succes
 }

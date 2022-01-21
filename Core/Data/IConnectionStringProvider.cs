@@ -1,7 +1,6 @@
-namespace LaHistoricalMarkers.Core.Data
+namespace LaHistoricalMarkers.Core.Data;
+
+public interface IConnectionStringProvider
 {
-    public interface IConnectionStringProvider
-    {
-        string GetConnectionString();
-    }
+    string GetConnectionString();
 }

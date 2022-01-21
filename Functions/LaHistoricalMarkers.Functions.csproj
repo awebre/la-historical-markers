@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>preview</LangVersion>
-    <AzureFunctionsVersion>v5</AzureFunctionsVersion>
+    <AzureFunctionsVersion>v4</AzureFunctionsVersion>
     <OutputType>Exe</OutputType>
     <_FunctionsSkipCleanOutput>true</_FunctionsSkipCleanOutput>
     <RootNamespace>LaHistoricalMarkers.Functions</RootNamespace>
@@ -33,6 +32,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core\LaHistoricalMarkerss.Core.csproj" />
+    <ProjectReference Include="..\Core\LaHistoricalMarkers.Core.csproj" />
   </ItemGroup>
 </Project>

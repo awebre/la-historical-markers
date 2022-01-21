@@ -10,58 +10,57 @@ using LaHistoricalMarkers.Functions.Extensions;
 using Microsoft.Extensions.Logging;
 using LaHistoricalMarkers.Core.Infrastructure;
 
-namespace LaHistoricalMarkers.Functions
+namespace LaHistoricalMarkers.Functions;
+
+public class SubmitMarkers
 {
-    public class SubmitMarkers
+    private readonly MarkersService markersService;
+    private readonly ImageStorageService imageStorageService;
+
+    public SubmitMarkers(MarkersService markersService, ImageStorageService imageStorageService)
     {
-        private readonly MarkersService markersService;
-        private readonly ImageStorageService imageStorageService;
+        this.markersService = markersService;
+        this.imageStorageService = imageStorageService;
+    }
 
-        public SubmitMarkers(MarkersService markersService, ImageStorageService imageStorageService)
+    [Function("submit-markers")]
+    public async Task<SubmissionResponse> Submit([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "markers")] HttpRequestData req,
+        FunctionContext context)
+    {
+        var logger = context.GetLogger("submit-markers");
+        using var streamReader = new StreamReader(req.Body);
+        var submission = streamReader.ReadToEnd().Deserialize<MarkerSubmissionDto>();
+        if (string.IsNullOrEmpty(submission.Name) || string.IsNullOrEmpty(submission.Description))
         {
-            this.markersService = markersService;
-            this.imageStorageService = imageStorageService;
-        }
-
-        [Function("submit-markers")]
-        public async Task<SubmissionResponse> Submit([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "markers")] HttpRequestData req,
-            FunctionContext context)
-        {
-            var logger = context.GetLogger("submit-markers");
-            using var streamReader = new StreamReader(req.Body);
-            var submission = streamReader.ReadToEnd().Deserialize<MarkerSubmissionDto>();
-            if (string.IsNullOrEmpty(submission.Name) || string.IsNullOrEmpty(submission.Description))
-            {
-                return new SubmissionResponse
-                {
-                    Response = req.CreateResponse(HttpStatusCode.BadRequest)
-                };
-            }
-
-            string fileHandle = null;
-            if (!string.IsNullOrEmpty(submission.Base64Image))
-            {
-                var fileBytes = Convert.FromBase64String(submission.Base64Image);
-                fileHandle = await imageStorageService.UploadFileAndGetHandle(fileBytes);
-            }
-
-            var pending = await markersService.AddMarkerSubmission(submission, fileHandle);
-            logger.LogInformation($"DeepLinkBaseUrl: {pending.DeepLinkBaseUrl}");
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            await response.WriteStringAsync(pending.Serialize());
-            response.Headers.Add("Content-Type", "application/json");
             return new SubmissionResponse
             {
-                QueueMessage = pending,
-                Response = response
+                Response = req.CreateResponse(HttpStatusCode.BadRequest)
             };
         }
-    }
-    public class SubmissionResponse
-    {
-        [QueueOutput(Queues.ApprovalEmailQueue)]
-        public PendingSubmissionDto QueueMessage { get; set; }
 
-        public HttpResponseData Response { get; set; }
+        string fileHandle = null;
+        if (!string.IsNullOrEmpty(submission.Base64Image))
+        {
+            var fileBytes = Convert.FromBase64String(submission.Base64Image);
+            fileHandle = await imageStorageService.UploadFileAndGetHandle(fileBytes);
+        }
+
+        var pending = await markersService.AddMarkerSubmission(submission, fileHandle);
+        logger.LogInformation($"DeepLinkBaseUrl: {pending.DeepLinkBaseUrl}");
+        var response = req.CreateResponse(HttpStatusCode.OK);
+        await response.WriteStringAsync(pending.Serialize());
+        response.Headers.Add("Content-Type", "application/json");
+        return new SubmissionResponse
+        {
+            QueueMessage = pending,
+            Response = response
+        };
     }
+}
+public class SubmissionResponse
+{
+    [QueueOutput(Queues.ApprovalEmailQueue)]
+    public PendingSubmissionDto QueueMessage { get; set; }
+
+    public HttpResponseData Response { get; set; }
 }

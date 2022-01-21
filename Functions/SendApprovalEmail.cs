@@ -5,25 +5,24 @@ using LaHistoricalMarkers.Core.Infrastructure;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace LaHistoricalMarkers.Functions
+namespace LaHistoricalMarkers.Functions;
+
+public class SendApprovalEmail
 {
-    public class SendApprovalEmail
+    private readonly ModerationService moderationService;
+
+    public SendApprovalEmail(ModerationService moderationService)
     {
-        private readonly ModerationService moderationService;
+        this.moderationService = moderationService;
+    }
 
-        public SendApprovalEmail(ModerationService moderationService)
-        {
-            this.moderationService = moderationService;
-        }
+    [Function("approval-email")]
+    public async Task Send([QueueTrigger(Queues.ApprovalEmailQueue, Connection = "AzureWebJobsStorage")] PendingSubmissionDto pending, FunctionContext context)
+    {
+        var logger = context.GetLogger("approval-email");
 
-        [Function("approval-email")]
-        public async Task Send([QueueTrigger(Queues.ApprovalEmailQueue, Connection = "AzureWebJobsStorage")] PendingSubmissionDto pending, FunctionContext context)
-        {
-            var logger = context.GetLogger("approval-email");
+        await moderationService.SendApprovalEmail(pending);
 
-            await moderationService.SendApprovalEmail(pending);
-
-            logger.LogInformation($"la-hm-approvals message proccessed:\nEmail sent.");
-        }
+        logger.LogInformation($"la-hm-approvals message proccessed:\nEmail sent.");
     }
 }

@@ -1,9 +1,8 @@
-namespace LaHistoricalMarkers.Core.Features.Markers
-{
-    public class UserLocationDto
-    {
-        public decimal Latitude { get; set; }
+namespace LaHistoricalMarkers.Core.Features.Markers;
 
-        public decimal Longitude { get; set; }
-    }
+public class UserLocationDto
+{
+    public decimal Latitude { get; set; }
+
+    public decimal Longitude { get; set; }
 }
