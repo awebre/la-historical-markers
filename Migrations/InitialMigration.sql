@@ -1,8 +1,8 @@
-BEGIN TRANSACTION
-
 IF DB_ID('LaHistoricalMarkers') IS NULL
     CREATE DATABASE [LaHistoricalMarkers];
 GO
+
+BEGIN TRANSACTION
 
 IF OBJECT_ID('LaHistoricalMarkers.dbo.Marker') IS NULL
     CREATE TABLE [LaHistoricalMarkers].[dbo].[Marker](
@@ -31,7 +31,7 @@ IF OBJECT_ID('LaHistoricalMarkers.dbo.MarkerAccess') IS NULL
         FOREIGN KEY ([OtpId]) REFERENCES [LaHistoricalMarkers].[dbo].[OneTimePassword]
     )
 
-IF COL_LENGTH('LaHistoricalMarkers.dbo.Marker', 'ImageFileName') IS NULL
+IF COL_LENGTH('LaHistoricalMarkers.dbo.Marker', 'ImageFileName') IS NOT NULL
     EXEC SP_RENAME 'LaHistoricalMarkers.dbo.Marker.ImageUrl', 'ImageFileName', 'COLUMN'
 
 IF COL_LENGTH('LaHistoricalMarkers.dbo.Marker', 'Type') IS NULL

@@ -1,14 +1,14 @@
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using LaHistoricalMarkers.Core.Data;
 using System;
-using LaHistoricalMarkers.Core.Features.Markers;
-using LaHistoricalMarkers.Core.Features.FileStorage;
-using LaHistoricalMarkers.Core.Features.Emails;
-using LaHistoricalMarkers.Core.Features.Moderation;
+using LaHistoricalMarkers.Core.Data;
 using LaHistoricalMarkers.Core.Features.Authentication;
+using LaHistoricalMarkers.Core.Features.Emails;
+using LaHistoricalMarkers.Core.Features.FileStorage;
+using LaHistoricalMarkers.Core.Features.Markers;
+using LaHistoricalMarkers.Core.Features.Moderation;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
-namespace LaHistoricalMarkers;
+namespace LaHistoricalMarkers.Functions;
 
 public class Program
 {
