@@ -32,9 +32,41 @@ public class OtpAuthService : BaseSqlService
         return false;
     }
 
+    public async Task<bool> IsOtpValidForMarkerId(int markerId, string otp)
+    {
+        using var connection = GetConnection();
+        connection.Open();
+        var transaction = connection.BeginTransaction();
+
+        var authResult = await GetAuthResult(markerId, otp, transaction);
+        return authResult is AuthResult.Allowed;
+    }
+
     public async Task<AuthResult> GetAuthResult(int markerId, string otp, IDbTransaction transaction)
     {
+
         var connection = transaction.Connection;
+
+        var otpId = await GetOtpId(markerId, otp, transaction, connection);
+
+        if (!otpId.HasValue)
+        {
+            return AuthResult.Denied;
+        }
+
+        await connection.ExecuteAsync(@"
+            DELETE FROM [LaHistoricalMarkers].[dbo].[MarkerAccess]
+            WHERE [OtpId] = @otpId", new { otpId = otpId.Value }, transaction);
+
+        await connection.ExecuteAsync(@"
+            DELETE FROM [LaHistoricalMarkers].[dbo].[OneTimePassword]
+            WHERE [Id] = @otpId", new { otpId = otpId.Value }, transaction);
+
+        return AuthResult.Allowed;
+    }
+    private static async Task<int?> GetOtpId(int markerId, string otp, IDbTransaction transaction, IDbConnection connection)
+    {
+
         var otpId = await connection.QueryFirstOrDefaultAsync<int?>(@"
             SELECT otp.Id
                 FROM [LaHistoricalMarkers].[dbo].[OneTimePassword] otp
@@ -42,21 +74,7 @@ public class OtpAuthService : BaseSqlService
                 ON otp.Id = access.OtpId
                 WHERE access.MarkerId = @markerId AND otp.Value = @otp",
             new { markerId, otp }, transaction);
-
-        if (!otpId.HasValue)
-        {
-            return AuthResult.Denied;
-        }
-
-        connection.Execute(@"
-            DELETE FROM [LaHistoricalMarkers].[dbo].[MarkerAccess]
-            WHERE [OtpId] = @otpId", new { otpId = otpId.Value }, transaction);
-
-        connection.Execute(@"
-            DELETE FROM [LaHistoricalMarkers].[dbo].[OneTimePassword]
-            WHERE [Id] = @otpId", new { otpId = otpId.Value }, transaction);
-
-        return AuthResult.Allowed;
+        return otpId;
     }
 
     /// <summary>

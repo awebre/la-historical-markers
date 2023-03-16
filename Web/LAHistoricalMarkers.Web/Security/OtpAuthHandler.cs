@@ -33,7 +33,7 @@ public class OtpAuthHandler : AuthenticationHandler<OtpAuthOptions>
             return AuthenticateResult.Fail("OTP invalid");
         }
 
-        var otpClaim = new Claim(OtpAuthOptions.OtpClaim, requestOtp);
+        var otpClaim = new Claim(OtpAuthOptions.OtpClaimType, requestOtp);
         var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { otpClaim }, "otp-principal"));
 
         var ticket = new AuthenticationTicket(principal, Scheme.Name);

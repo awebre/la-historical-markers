@@ -6,5 +6,5 @@ public class OtpAuthOptions : AuthenticationSchemeOptions
 {
     public static string Scheme = "OTP Auth";
 
-    public static string OtpClaim = "otp";
+    public static string OtpClaimType = "otp";
 }
