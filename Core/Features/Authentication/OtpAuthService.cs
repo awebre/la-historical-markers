@@ -12,6 +12,26 @@ public class OtpAuthService : BaseSqlService
     {
     }
 
+    public async Task<bool> IsOtpValid(string otp)
+    {
+        using var connection = GetConnection();
+        connection.Open();
+        using var transaction = connection.BeginTransaction();
+        var otpId = await connection.QueryFirstOrDefaultAsync<int?>(@"
+            SELECT otp.Id
+                FROM [LaHistoricalMarkers].[dbo].[OneTimePassword] otp
+                WHERE otp.Value = @otp",
+            new { otp }, transaction);
+
+        if (otpId.HasValue)
+        {
+            //The OTP exists so they should at least be allowed to hit the requested endpoint
+            return true;
+        }
+
+        return false;
+    }
+
     public async Task<AuthResult> GetAuthResult(int markerId, string otp, IDbTransaction transaction)
     {
         var connection = transaction.Connection;
@@ -39,9 +59,9 @@ public class OtpAuthService : BaseSqlService
         return AuthResult.Allowed;
     }
 
-    ///<summary>
-    /// Gets the current valid OTP for the specified marker or generates one, if none exists
-    ///</summary>
+    /// <summary>
+    ///     Gets the current valid OTP for the specified marker or generates one, if none exists
+    /// </summary>
     public async Task<string> GetOtpForMarker(int markerId, IDbTransaction transaction = null)
     {
         var connection = transaction.Connection;
@@ -51,7 +71,10 @@ public class OtpAuthService : BaseSqlService
                 RIGHT JOIN [LaHistoricalMarkers].[dbo].[MarkerAccess] access
                 ON otp.Id = access.Id
                 WHERE access.MarkerId = @markerId",
-            new { markerId = markerId }, transaction);
+            new
+            {
+                markerId,
+            }, transaction);
 
         if (string.IsNullOrEmpty(otp))
         {
@@ -71,7 +94,10 @@ public class OtpAuthService : BaseSqlService
                 VALUES (
                     @markerId,
                     @otpId
-                )", new { markerId = markerId, otpId }, transaction);
+                )", new
+            {
+                markerId, otpId,
+            }, transaction);
         }
 
         return otp;
