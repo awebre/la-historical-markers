@@ -1,0 +1,31 @@
+name: Publish Container Image
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    name: Build and Publish Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: paulhatch/semantic-version@v5.0.2
+        id: version
+        with:
+          # The prefix to use to identify tags
+          tag_prefix: "v"
+          major_pattern: "(MAJOR)"
+          major_regexp_flags: ""
+          minor_pattern: "(MINOR)"
+          version_format: "${major}.${minor}.${patch}-prerelease${increment}"
+          # Named version, will be used as suffix for name version tag
+          namespace: api
+          # Prevents pre-v1.0.0 version from automatically incrementing the major version.
+          # If enabled, when the major version is 0, major releases will be treated as minor and minor as patch. Note that the version_type output is unchanged.
+          enable_prerelease_mode: true
+      - name: Build and Tag Image
+        run: docker build -f ./Web/LAHistoricalMarkers.Web/Dockerfile . -t awebre/la-historical-markers:${{ steps.version.output.version }}
