@@ -34,8 +34,12 @@ jobs:
             github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: 'refs/tags/${{ steps.version-api.outputs.version }}',
+              ref: 'refs/tags/${{ steps.version-api.outputs.version_tag }}',
               sha: context.sha
             })
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u awebre --password-stdin
       - name: Build and Tag Image
         run: docker build -f ./Web/LAHistoricalMarkers.Web/Dockerfile . -t awebre/la-historical-markers:${{ steps.version-api.outputs.version }}
+      - name: Push Image
+        run: docker push awebre/la-historical-markers:${{ steps.version-api.outputs.version }}
