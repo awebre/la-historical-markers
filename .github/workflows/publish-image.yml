@@ -1,4 +1,4 @@
-name: Publish Container Image
+name: Build and Deploy
 on:
   push:
     branches:
@@ -43,3 +43,10 @@ jobs:
         run: docker build -f ./Web/LAHistoricalMarkers.Web/Dockerfile . -t awebre/la-historical-markers:${{ steps.version-api.outputs.version }}
       - name: Push Image
         run: docker push awebre/la-historical-markers:${{ steps.version-api.outputs.version }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: deploy
+        run: az login
