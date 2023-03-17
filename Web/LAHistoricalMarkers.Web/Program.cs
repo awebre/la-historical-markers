@@ -3,6 +3,7 @@ using FastEndpoints.Swagger;
 using LaHistoricalMarkers.Core.Data;
 using LaHistoricalMarkers.Core.Features.Authentication;
 using LaHistoricalMarkers.Core.Features.Markers;
+using LAHistoricalMarkers.Web.Endpoints;
 using LAHistoricalMarkers.Web.Security;
 using LAHistoricalMarkers.Web.Security.Policies;
 using Microsoft.AspNetCore.Authorization;
@@ -16,7 +17,10 @@ builder.Services.AddScoped<MarkersService>();
 
 
 builder.Services.AddFastEndpoints();
-builder.Services.AddSwaggerDoc();
+builder.Services.AddSwaggerDoc(s =>
+{
+    s.EndpointFilter(e => e.EndpointTags?.Contains(EndpointTagNames.PublicApi) is true);
+});
 
 //Add custom OTP auth scheme
 builder.Services

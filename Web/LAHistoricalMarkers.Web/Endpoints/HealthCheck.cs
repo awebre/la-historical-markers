@@ -6,12 +6,13 @@ public class HealthCheck : EndpointWithoutRequest<string>
 {
     public override void Configure()
     {
-        Get("/");
+        Get("/api");
         AllowAnonymous();
+        Tags(EndpointTagNames.PublicApi);
     }
 
     public override Task<string> ExecuteAsync(CancellationToken ct)
     {
-        return Task.FromResult("We did it!");
+        return Task.FromResult("Welcome to Louisiana Historical Markers!");
     }
 }

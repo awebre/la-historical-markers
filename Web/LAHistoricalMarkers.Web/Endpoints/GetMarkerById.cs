@@ -1,10 +1,9 @@
 using FastEndpoints;
 using LaHistoricalMarkers.Core.Features.Markers;
-using LAHistoricalMarkers.Web.Security.Policies;
 
 namespace LAHistoricalMarkers.Web.Endpoints;
 
-public class GetMarkerById : Endpoint<MarkerByIdRequest, MarkerByIdResponse>
+public class GetMarkerById : Endpoint<MarkerByIdRequest, MarkerDto>
 {
     private readonly MarkersService markersService;
     public GetMarkerById(MarkersService markersService)
@@ -14,25 +13,16 @@ public class GetMarkerById : Endpoint<MarkerByIdRequest, MarkerByIdResponse>
 
     public override void Configure()
     {
-        Get("/markers/{id}");
-        //TODO: this endpoint doesn't actually need auth,
-        //this was just a test
-        Policies(CustomPolicies.MarkerAccess);
+        Get("/api/markers/{id}");
+        AllowAnonymous();
+        Tags(EndpointTagNames.PublicApi);
     }
 
-    public override async Task<MarkerByIdResponse> ExecuteAsync(MarkerByIdRequest req, CancellationToken ct)
+    public override async Task<MarkerDto> ExecuteAsync(MarkerByIdRequest req, CancellationToken ct)
     {
         var marker = await markersService.GetMarkerById(req.Id);
-        return new MarkerByIdResponse
-        {
-            Id = marker.Id,
-        };
+        return marker;
     }
-}
-
-public class MarkerByIdResponse
-{
-    public int Id { get; set; }
 }
 
 public class MarkerByIdRequest
