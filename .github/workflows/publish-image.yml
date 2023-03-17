@@ -54,11 +54,13 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - name: "Az CLI login"
+      - name: az login (federated identity)
         uses: azure/login@v1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Enable Extension Installation
+        run: az config set extension.use_dynamic_install=yes_without_prompt
       - name: Create Revision
         run: az containerapp revision copy -n lahm-prod -g lahistoricalmarkersprod -i awebre/la-historical-markers:${{ needs.publish.outputs.image-tag }}
