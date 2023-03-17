@@ -61,4 +61,4 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Create Revision
-        run: az containerapp revision copy -n lahm-prod -g lahistoricalmarkersprod -i awebre/la-historical-markers:${{ needs.publish.outputs.image-tag }}"
+        run: az containerapp revision copy -n lahm-prod -g lahistoricalmarkersprod -i awebre/la-historical-markers:${{ needs.publish.outputs.image-tag }}
