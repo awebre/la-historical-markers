@@ -4,10 +4,16 @@ on:
     branches:
       - main
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   publish:
     name: Build and Publish Image
     runs-on: ubuntu-latest
+    outputs:
+      image-tag: ${{ steps.version-api.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -45,8 +51,16 @@ jobs:
         run: docker push awebre/la-historical-markers:${{ steps.version-api.outputs.version }}
 
   deploy:
+    name: Deploy API
+    needs: publish
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - name: deploy
-        run: az login
+      - name: "Az CLI login"
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID
+      - name: test
+        run: echo "${{ needs.jobs.publish.image-tag }}"
