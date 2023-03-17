@@ -4,6 +4,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaHistoricalMarkers.Core", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LAHistoricalMarkers.Web", "Web\LAHistoricalMarkers.Web\LAHistoricalMarkers.Web.csproj", "{839341B9-941A-4C7D-99BA-F3F4FDC4A827}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{D57689EE-DFF6-4BA9-8E2E-1107A3AAE5C2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{ED8A8303-9D30-40FE-B11B-4F173789B08A}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\publish-image.yml = .github\workflows\publish-image.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +25,8 @@ Global
 		{839341B9-941A-4C7D-99BA-F3F4FDC4A827}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{839341B9-941A-4C7D-99BA-F3F4FDC4A827}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{839341B9-941A-4C7D-99BA-F3F4FDC4A827}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{ED8A8303-9D30-40FE-B11B-4F173789B08A} = {D57689EE-DFF6-4BA9-8E2E-1107A3AAE5C2}
 	EndGlobalSection
 EndGlobal
