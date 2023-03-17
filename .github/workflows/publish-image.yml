@@ -14,7 +14,7 @@ jobs:
         with:
           fetch-depth: 0
       - uses: paulhatch/semantic-version@v5.0.2
-        id: version
+        id: version-api
         with:
           # The prefix to use to identify tags
           tag_prefix: "v"
@@ -27,5 +27,15 @@ jobs:
           # Prevents pre-v1.0.0 version from automatically incrementing the major version.
           # If enabled, when the major version is 0, major releases will be treated as minor and minor as patch. Note that the version_type output is unchanged.
           enable_prerelease_mode: true
+      - name: Create Version Tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ steps.version-api.outputs.version }}',
+              sha: context.sha
+            })
       - name: Build and Tag Image
-        run: docker build -f ./Web/LAHistoricalMarkers.Web/Dockerfile . -t awebre/la-historical-markers:${{ steps.version.output.version }}
+        run: docker build -f ./Web/LAHistoricalMarkers.Web/Dockerfile . -t awebre/la-historical-markers:${{ steps.version-api.outputs.version }}
