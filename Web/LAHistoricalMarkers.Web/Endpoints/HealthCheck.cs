@@ -1,4 +1,5 @@
 using FastEndpoints;
+using LAHistoricalMarkers.Web.Endpoints.Metadata;
 
 namespace LAHistoricalMarkers.Web.Endpoints;
 

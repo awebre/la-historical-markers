@@ -4,6 +4,7 @@ using LaHistoricalMarkers.Core.Data;
 using LaHistoricalMarkers.Core.Features.Authentication;
 using LaHistoricalMarkers.Core.Features.Markers;
 using LAHistoricalMarkers.Web.Endpoints;
+using LAHistoricalMarkers.Web.Endpoints.Metadata;
 using LAHistoricalMarkers.Web.Security;
 using LAHistoricalMarkers.Web.Security.Policies;
 using Microsoft.AspNetCore.Authorization;
