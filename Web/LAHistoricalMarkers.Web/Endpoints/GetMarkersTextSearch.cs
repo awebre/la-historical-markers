@@ -31,5 +31,5 @@ public class MarkerTextSearchRequest
     public string Search { get; set; }
 
     [QueryParam]
-    public UserLocationDto UserLocation { get; set; }
+    public UserLocationDto? UserLocation { get; set; }
 }

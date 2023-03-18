@@ -30,11 +30,11 @@ public class GetMarkersByRegion : Endpoint<MarkersByRegionRequest, IEnumerable<M
 public class MarkersByRegionRequest
 {
     [QueryParam]
-    public RegionDto Region { get; set; }
+    public RegionDto? Region { get; set; }
 
     [QueryParam]
-    public UserLocationDto UserLocation { get; set; }
+    public UserLocationDto? UserLocation { get; set; }
 
     [QueryParam]
-    public MarkerType[] TypeFilters { get; set; }
+    public MarkerType[]? TypeFilters { get; set; }
 }
