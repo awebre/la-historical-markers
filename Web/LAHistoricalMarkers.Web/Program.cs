@@ -2,8 +2,10 @@ using FastEndpoints;
 using FastEndpoints.Swagger;
 using LaHistoricalMarkers.Core.Data;
 using LaHistoricalMarkers.Core.Features.Authentication;
+using LaHistoricalMarkers.Core.Features.Emails;
 using LaHistoricalMarkers.Core.Features.FileStorage;
 using LaHistoricalMarkers.Core.Features.Markers;
+using LaHistoricalMarkers.Core.Features.Moderation;
 using LaHistoricalMarkers.Core.Infrastructure;
 using LAHistoricalMarkers.Core.Settings;
 using LAHistoricalMarkers.Web.Endpoints.Configuration;
@@ -18,6 +20,7 @@ builder.Services.AddSingleton<IConnectionStringProvider>(_ => new SqlConnectionS
 builder.Services.AddScoped<OtpAuthService>();
 builder.Services.AddScoped<MarkersService>();
 builder.Services.AddScoped<QueueService>();
+builder.Services.AddScoped<ModerationService>();
 
 //Bind settings from config
 builder.Services.AddSingleton<StorageSettings>(services => services.GetRequiredService<IConfiguration>().GetSection(nameof(StorageSettings)).Get<StorageSettings>());
@@ -33,11 +36,30 @@ builder.Services.AddScoped<ImageStorageService>(s =>
     return new ImageStorageService(storageSettings.Uri, storageSettings.Account, storageSettings.Key, storageSettings.Container);
 });
 
+builder.Services.AddScoped<SendGridEmailService>(s =>
+{
+    var config = s.GetService<IConfiguration>();
+    if (config is null)
+    {
+        throw new Exception("IConfiguration was not registered");
+    }
+    return new SendGridEmailService(config.GetSection("SendGrid").Value, config.GetSection("FromEmail").Value);
+});
+
 
 builder.Services.AddFastEndpoints();
 builder.Services.AddSwaggerDoc(s =>
 {
-    s.EndpointFilter(e => e.EndpointTags?.Contains(EndpointTagNames.PublicApi) is true);
+    s.EndpointFilter(e =>
+    {
+        //Locally, we want the ability to test all endpoints via Swagger
+        if (builder.Environment.IsEnvironment("local"))
+        {
+            return true;
+        }
+
+        return e.EndpointTags?.Contains(EndpointTagNames.PublicApi) is true;
+    });
 }, shortSchemaNames: true);
 
 //Add custom OTP auth scheme

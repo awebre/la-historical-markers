@@ -37,8 +37,11 @@ export default function AdminScreen({ route, navigation }: Props) {
       setSubmitting(true);
       const { id, ...rest } = markerDto || {};
       const queryParams = queryString.stringify({ otp });
-      const resp = await fetch(`${url}/api/marker/${id}?${queryParams}`, {
-        method: "POST",
+      const resp = await fetch(`${url}/api/markers/${id}?${queryParams}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ ...rest }),
       });
 

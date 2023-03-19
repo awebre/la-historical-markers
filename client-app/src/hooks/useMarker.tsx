@@ -9,7 +9,7 @@ interface MarkerByIdRequest {
 export default function useMarkers(request: MarkerByIdRequest): LoadableMarker {
   const { id } = request;
   const { data, error } = useSwr<MarkerDto, boolean>(
-    `${url}/api/marker/${id}`,
+    `${url}/api/markers/${id}`,
     fetcher
   );
   return {

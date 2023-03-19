@@ -6,7 +6,7 @@ public class OtpHealthCheck : EndpointWithoutRequest<string>
 {
     public override void Configure()
     {
-        Get("/api/otp");
+        Get("otp");
     }
 
     public override Task<string> ExecuteAsync(CancellationToken ct)
