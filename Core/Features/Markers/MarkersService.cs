@@ -35,10 +35,10 @@ public class MarkersService : BaseSqlService
         var longitudeDelta = region.LongitudeDelta;
         var latitudeDelta = region.LongitudeDelta;
 
-        var topLat = (latitude + (latitudeDelta / 2)).ToString();
-        var bottomLat = (latitude - (latitudeDelta / 2)).ToString();
-        var leftLong = (longitude - (longitudeDelta / 2)).ToString();
-        var rightLong = (longitude + (longitudeDelta / 2)).ToString();
+        var topLat = (latitude + latitudeDelta / 2).ToString();
+        var bottomLat = (latitude - latitudeDelta / 2).ToString();
+        var leftLong = (longitude - longitudeDelta / 2).ToString();
+        var rightLong = (longitude + longitudeDelta / 2).ToString();
 
         //user lat/long are used to calculate distance
         //if no user lat/long is supplied, we'll use the center of the map
@@ -71,7 +71,7 @@ public class MarkersService : BaseSqlService
                 rightLong,
                 userLatitude,
                 userLongitude,
-                typeFilters = typeFilters.Select(x => x.ToString())
+                typeFilters = typeFilters.Select(x => x.ToString()),
             })).AsList();
     }
 
@@ -104,7 +104,7 @@ public class MarkersService : BaseSqlService
                 latitude = submission.Latitude,
                 longitude = submission.Longitude,
                 imageFileName = fileHandle,
-                type = submission.Type.ToString()
+                type = submission.Type.ToString(),
             });
 
         return new PendingSubmissionDto
@@ -116,7 +116,7 @@ public class MarkersService : BaseSqlService
             Longitude = submission.Longitude,
             ImageFileName = fileHandle,
             DeepLinkBaseUrl = submission.DeepLinkBaseUrl,
-            Type = submission.Type.ToString()
+            Type = submission.Type.ToString(),
         };
     }
 
@@ -169,7 +169,7 @@ public class MarkersService : BaseSqlService
                 latitude = markerDto.Latitude,
                 longitude = markerDto.Longitude,
                 type = markerDto.Type.ToString(),
-                isApproved = markerDto.IsApproved
+                isApproved = markerDto.IsApproved,
             }, transaction);
         transaction.Commit();
         return EditMarkerResult.Succes;
@@ -196,7 +196,7 @@ public class MarkersService : BaseSqlService
             {
                 search = $"%{search}%",
                 userLatitude = userLocation.Latitude,
-                userLongitude = userLocation.Longitude
+                userLongitude = userLocation.Longitude,
             })).ToList();
     }
 }

@@ -1,10 +1,9 @@
-using FastEndpoints;
 using LaHistoricalMarkers.Core.Features.Markers;
-using LAHistoricalMarkers.Web.Endpoints.Metadata;
+using LAHistoricalMarkers.Web.Endpoints.Configuration;
 
 namespace LAHistoricalMarkers.Web.Endpoints;
 
-public class GetMarkerById : Endpoint<MarkerByIdRequest, MarkerDto>
+public class GetMarkerById : PublicApiEndpoint<MarkerByIdRequest, MarkerDto>
 {
     private readonly MarkersService markersService;
     public GetMarkerById(MarkersService markersService)
@@ -14,9 +13,8 @@ public class GetMarkerById : Endpoint<MarkerByIdRequest, MarkerDto>
 
     public override void Configure()
     {
-        Get("/api/markers/{id}");
-        AllowAnonymous();
-        Tags(EndpointTagNames.PublicApi);
+        Get("/markers/{id}");
+        base.Configure();
     }
 
     public override async Task<MarkerDto> ExecuteAsync(MarkerByIdRequest req, CancellationToken ct)

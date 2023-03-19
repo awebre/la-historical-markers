@@ -2,9 +2,11 @@ using FastEndpoints;
 using FastEndpoints.Swagger;
 using LaHistoricalMarkers.Core.Data;
 using LaHistoricalMarkers.Core.Features.Authentication;
+using LaHistoricalMarkers.Core.Features.FileStorage;
 using LaHistoricalMarkers.Core.Features.Markers;
-using LAHistoricalMarkers.Web.Endpoints;
-using LAHistoricalMarkers.Web.Endpoints.Metadata;
+using LaHistoricalMarkers.Core.Infrastructure;
+using LAHistoricalMarkers.Core.Settings;
+using LAHistoricalMarkers.Web.Endpoints.Configuration;
 using LAHistoricalMarkers.Web.Security;
 using LAHistoricalMarkers.Web.Security.Policies;
 using Microsoft.AspNetCore.Authorization;
@@ -15,6 +17,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<IConnectionStringProvider>(_ => new SqlConnectionStringProvider(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<OtpAuthService>();
 builder.Services.AddScoped<MarkersService>();
+builder.Services.AddScoped<QueueService>();
+
+//Bind settings from config
+builder.Services.AddSingleton<StorageSettings>(services => services.GetRequiredService<IConfiguration>().GetSection(nameof(StorageSettings)).Get<StorageSettings>());
+builder.Services.AddSingleton<QueueSettings>(services => services.GetRequiredService<IConfiguration>().GetSection(nameof(QueueSettings)).Get<QueueSettings>());
+
+builder.Services.AddScoped<ImageStorageService>(s =>
+{
+    var storageSettings = s.GetService<StorageSettings>();
+    if (storageSettings is null)
+    {
+        throw new Exception($"{nameof(StorageSettings)} must be populated via Configuration");
+    }
+    return new ImageStorageService(storageSettings.Uri, storageSettings.Account, storageSettings.Key, storageSettings.Container);
+});
 
 
 builder.Services.AddFastEndpoints();
@@ -36,6 +53,9 @@ builder.Services.AddSingleton<IAuthorizationHandler, MarkerAccessHandler>();
 
 var app = builder.Build();
 app.UseAuthorization();
-app.UseFastEndpoints();
+app.UseFastEndpoints(c =>
+{
+    c.Endpoints.RoutePrefix = "api";
+});
 app.UseSwaggerGen();
 app.Run();

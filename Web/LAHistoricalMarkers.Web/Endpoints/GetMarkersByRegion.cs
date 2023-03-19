@@ -1,10 +1,10 @@
 using FastEndpoints;
 using LaHistoricalMarkers.Core.Features.Markers;
-using LAHistoricalMarkers.Web.Endpoints.Metadata;
+using LAHistoricalMarkers.Web.Endpoints.Configuration;
 
 namespace LAHistoricalMarkers.Web.Endpoints;
 
-public class GetMarkersByRegion : Endpoint<MarkersByRegionRequest, IEnumerable<MarkerDto>>
+public class GetMarkersByRegion : PublicApiEndpoint<MarkersByRegionRequest, IEnumerable<MarkerDto>>
 {
     private readonly MarkersService markersService;
     public GetMarkersByRegion(MarkersService markersService)
@@ -15,9 +15,8 @@ public class GetMarkersByRegion : Endpoint<MarkersByRegionRequest, IEnumerable<M
 
     public override void Configure()
     {
-        Get("/api/markers");
-        AllowAnonymous();
-        Tags(EndpointTagNames.PublicApi);
+        Get("/markers");
+        base.Configure();
     }
 
     public override async Task<IEnumerable<MarkerDto>> ExecuteAsync(MarkersByRegionRequest req, CancellationToken ct)

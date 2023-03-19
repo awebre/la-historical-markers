@@ -102,6 +102,9 @@ export default function SubmitMarkerView({
             description,
             deepLinkBaseUrl: deepLink,
           }),
+          headers: {
+            "Content-Type": "application/json",
+          },
         });
         if (resp.ok) {
           setIsSubmitting(false);

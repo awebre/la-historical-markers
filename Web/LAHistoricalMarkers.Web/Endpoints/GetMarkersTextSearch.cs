@@ -1,10 +1,10 @@
 using FastEndpoints;
 using LaHistoricalMarkers.Core.Features.Markers;
-using LAHistoricalMarkers.Web.Endpoints.Metadata;
+using LAHistoricalMarkers.Web.Endpoints.Configuration;
 
 namespace LAHistoricalMarkers.Web.Endpoints;
 
-public class GetMarkersTextSearch : Endpoint<MarkerTextSearchRequest, IEnumerable<MarkerDto>>
+public class GetMarkersTextSearch : PublicApiEndpoint<MarkerTextSearchRequest, IEnumerable<MarkerDto>>
 {
     private readonly MarkersService markersService;
     public GetMarkersTextSearch(MarkersService markersService)
@@ -14,9 +14,8 @@ public class GetMarkersTextSearch : Endpoint<MarkerTextSearchRequest, IEnumerabl
 
     public override void Configure()
     {
-        Get("/api/markers/search/{search}");
-        AllowAnonymous();
-        Tags(EndpointTagNames.PublicApi);
+        Get("/markers/search/{search}");
+        base.Configure();
     }
 
     public override async Task<IEnumerable<MarkerDto>> ExecuteAsync(MarkerTextSearchRequest req, CancellationToken ct)

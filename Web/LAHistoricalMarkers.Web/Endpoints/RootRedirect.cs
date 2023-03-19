@@ -8,6 +8,7 @@ public class RootRedirect : EndpointWithoutRequest
     {
         Get("");
         AllowAnonymous();
+        RoutePrefixOverride("");
     }
     public override Task HandleAsync(CancellationToken ct)
     {

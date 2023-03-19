@@ -59,6 +59,9 @@ export default function ReportMarkerModal({
               setIsSubmitting(true);
               try {
                 const resp = await fetch(`${url}/api/markers/report`, {
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
                   method: "post",
                   body: JSON.stringify({ markerId, report }),
                 });

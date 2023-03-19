@@ -1,18 +1,17 @@
 using FastEndpoints;
-using LAHistoricalMarkers.Web.Endpoints.Metadata;
+using LAHistoricalMarkers.Web.Endpoints.Configuration;
 
 namespace LAHistoricalMarkers.Web.Endpoints;
 
-public class HealthCheck : EndpointWithoutRequest<string>
+public class HealthCheck : PublicApiEndpoint<EmptyRequest, string>
 {
     public override void Configure()
     {
-        Get("/api");
-        AllowAnonymous();
-        Tags(EndpointTagNames.PublicApi);
+        Get("");
+        base.Configure();
     }
 
-    public override Task<string> ExecuteAsync(CancellationToken ct)
+    public override Task<string> ExecuteAsync(EmptyRequest req, CancellationToken ct)
     {
         return Task.FromResult("Welcome to Louisiana Historical Markers!");
     }

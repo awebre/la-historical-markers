@@ -1,4 +1,4 @@
-namespace LAHistoricalMarkers.Web.Endpoints.Metadata;
+namespace LAHistoricalMarkers.Web.Endpoints.Configuration;
 
 public class EndpointTagNames
 {

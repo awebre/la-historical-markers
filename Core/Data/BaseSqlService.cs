@@ -1,20 +1,23 @@
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Dapper;
+using Microsoft.Data.SqlClient;
 
 namespace LaHistoricalMarkers.Core.Data;
 
 public class BaseSqlService
 {
-    private string connectionString;
+    private readonly string connectionString;
     public BaseSqlService(IConnectionStringProvider connectionProvider)
     {
         connectionString = connectionProvider.GetConnectionString();
     }
 
-    public IDbConnection GetConnection() => new SqlConnection(connectionString);
+    public IDbConnection GetConnection()
+    {
+        return new SqlConnection(connectionString);
+    }
 
     protected async Task<IEnumerable<T>> QueryAsync<T>(string sql, object param)
     {
