@@ -4,6 +4,16 @@ The purpose of the project is to create a crowd-sourced database of Louisiana's 
 
 For the uninitiated, LA Historical Markers are brown, roadside signs that mark a historical structure, person, or place. They can be found across Louisiana and there appears to be no current, definitive, and exhaustive list of these signs, their contents, and their current locations.
 
+# New Life
+
+Relying so heavily on Azure Functions has caused this project to languish. Unfortunately, the state of development with Azure Functions is such that migrating to newer versions is painful and critical changes are slow to appear anyway. We still do not have an easy mechanism for file uploads after 2 years of waiting. Due to a renewed personal interest in the project, I have decided it is time for a change.
+
+So the below documentation is for the "old" version of the backend. At the current moment, a new version is being formed, which should work with the existing mobile codebase with minimal changes. This "v2" api will rely on Azure Container Apps to achieve the limited budget footprint previously achieved via Azure Functions. The rest of the app will likely look the same (Azure SQL + Storage Blobs and Queue).
+
+Once we have released an update to the mobile app with the new backend, the Azure Functions will be retired and removed from this codebase. No new fixes are coming to Azure Functions. So long as they continue to work we will likely leave them up, but they will likely be taken down the second they become an issue.
+
+I promise this readme will update once the new API is stable.
+
 # Architecture
 
 In an attempt to minimize cost, this project consists of a SQL Server, Azure Functions, Azure Storage, and a React Native client.
