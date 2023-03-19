@@ -38,7 +38,7 @@ builder.Services.AddFastEndpoints();
 builder.Services.AddSwaggerDoc(s =>
 {
     s.EndpointFilter(e => e.EndpointTags?.Contains(EndpointTagNames.PublicApi) is true);
-});
+}, shortSchemaNames: true);
 
 //Add custom OTP auth scheme
 builder.Services
@@ -56,6 +56,7 @@ app.UseAuthorization();
 app.UseFastEndpoints(c =>
 {
     c.Endpoints.RoutePrefix = "api";
+    c.Endpoints.ShortNames = true;
 });
 app.UseSwaggerGen();
 app.Run();
