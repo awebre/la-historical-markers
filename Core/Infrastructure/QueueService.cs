@@ -21,17 +21,18 @@ public class QueueService
 
     public async Task EnqueueApprovalEmailMessage(PendingSubmissionDto message)
     {
-        await SendMessage(message, Queues.ApprovalEmailQueue);
+        await SendMessage(message, queueSettings.ApprovalEmailQueue);
     }
 
     public async Task EnqueueUserReportEmailMessage(UserReportDto message)
     {
-        await SendMessage(message, Queues.UserReportEmailQueue);
+        await SendMessage(message, queueSettings.UserReportEmailQueue);
     }
 
     private async Task SendMessage<T>(T message, string queueName)
     {
         var queueClient = GetQueueClient(queueName);
+        await queueClient.CreateIfNotExistsAsync();
         var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
         await queueClient.SendMessageAsync(Convert.ToBase64String(bytes));
     }
