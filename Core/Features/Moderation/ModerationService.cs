@@ -5,19 +5,23 @@ using LaHistoricalMarkers.Core.Data;
 using LaHistoricalMarkers.Core.Features.Authentication;
 using LaHistoricalMarkers.Core.Features.Emails;
 using LaHistoricalMarkers.Core.Features.Markers;
+using LAHistoricalMarkers.Core.Settings;
 
 namespace LaHistoricalMarkers.Core.Features.Moderation;
 
 public class ModerationService : BaseSqlService
 {
-    private readonly SendGridEmailService emailService;
     private readonly OtpAuthService authService;
+    private readonly SendGridEmailService emailService;
+    private readonly NotificationSettings notificationSettings;
 
     public ModerationService(
+        NotificationSettings notificationSettings,
         SendGridEmailService emailService,
         OtpAuthService authService,
         IConnectionStringProvider connectionProvider) : base(connectionProvider)
     {
+        this.notificationSettings = notificationSettings;
         this.emailService = emailService;
         this.authService = authService;
     }
@@ -29,11 +33,11 @@ public class ModerationService : BaseSqlService
         using var transaction = connection.BeginTransaction();
         var otp = await authService.GetOtpForMarker(pending.Id, transaction);
 
-        var tos = Environment.GetEnvironmentVariable("ToEmails").Split(",");
-        var templateId = Environment.GetEnvironmentVariable("Template");
+        var tos = notificationSettings.ToEmails.Split(",");
+        var templateId = notificationSettings.Template;
         await emailService.SendTemplatedEmail(tos, templateId, new ApprovalRequestDto(pending)
         {
-            Otp = otp
+            Otp = otp,
         });
 
         transaction.Commit();

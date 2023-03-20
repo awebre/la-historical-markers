@@ -2,8 +2,10 @@ using System;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Azure;
 using Azure.Identity;
 using Azure.Storage.Queues;
+using Azure.Storage.Queues.Models;
 using LaHistoricalMarkers.Core.Features.Markers;
 using LaHistoricalMarkers.Core.Features.Moderation;
 using LAHistoricalMarkers.Core.Settings;
@@ -19,14 +21,45 @@ public class QueueService
         this.queueSettings = queueSettings;
     }
 
-    public async Task EnqueueApprovalEmailMessage(PendingSubmissionDto message)
+    public async Task EnqueueApprovalEmailMessage(PendingSubmissionDto message, bool poison = false)
     {
-        await SendMessage(message, queueSettings.ApprovalEmailQueue);
+        if (poison)
+        {
+            await SendMessage(message, $"{queueSettings.ApprovalEmailQueue}-poison");
+        }
+        else
+        {
+            await SendMessage(message, queueSettings.ApprovalEmailQueue);
+        }
     }
 
-    public async Task EnqueueUserReportEmailMessage(UserReportDto message)
+    public async Task EnqueueUserReportEmailMessage(UserReportDto message, bool poison = false)
     {
-        await SendMessage(message, queueSettings.UserReportEmailQueue);
+        if (poison)
+        {
+            await SendMessage(message, $"{queueSettings.UserReportEmailQueue}-poison");
+        }
+        else
+        {
+            await SendMessage(message, queueSettings.UserReportEmailQueue);
+        }
+    }
+
+    public Task<Response<QueueMessage>> DequeueApprovalEmailMessage()
+    {
+        return DequeueMessage(queueSettings.ApprovalEmailQueue);
+    }
+
+    public Task<Response<QueueMessage>> DequeueUserReportEmailMessage()
+    {
+        return DequeueMessage(queueSettings.UserReportEmailQueue);
+    }
+
+    private async Task<Response<QueueMessage>> DequeueMessage(string queueName)
+    {
+        var queueClient = GetQueueClient(queueName);
+        await queueClient.CreateIfNotExistsAsync();
+        return await queueClient.ReceiveMessageAsync();
     }
 
     private async Task SendMessage<T>(T message, string queueName)
@@ -39,6 +72,10 @@ public class QueueService
 
     private QueueClient GetQueueClient(string queueName)
     {
+        var options = new QueueClientOptions
+        {
+            MessageEncoding = QueueMessageEncoding.Base64,
+        };
         return new QueueClient(new Uri(queueSettings.Uri, queueName), new DefaultAzureCredential());
     }
 }

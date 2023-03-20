@@ -17,4 +17,8 @@
         <Link>.dockerignore</Link>
       </Content>
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Core\LaHistoricalMarkers.Core.csproj" />
+    </ItemGroup>
 </Project>
