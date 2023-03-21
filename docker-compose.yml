@@ -5,11 +5,26 @@ services:
       context: .
       dockerfile: ./Web/LAHistoricalMarkers.Web/Dockerfile
     ports:
-      - "80:5001"
-  sql:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    ports:
-      - "1433:1433"
+      - "5001:80"
+      - "5002:443"
     environment:
-      SA_PASSWORD: "Password01!"
-      ACCEPT_EULA: "Y"
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_ENVIRONMENT=local
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnet.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+    volumes:
+      - "./dev-certs:/https"
+
+  approvalqueue:
+    build:
+      context: .
+      dockerfile: ./LAHistoricalMarkers.ApprovalQueue/Dockerfile
+    environment:
+      - DOTNET_ENVIRONMENT=local
+  # sql:
+  #   image: mcr.microsoft.com/mssql/server:2022-latest
+  #   ports:
+  #     - "1433:1433"
+  #   environment:
+  #     SA_PASSWORD: "Password01!"
+  #     ACCEPT_EULA: "Y"

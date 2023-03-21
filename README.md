@@ -8,13 +8,63 @@ For the uninitiated, LA Historical Markers are brown, roadside signs that mark a
 
 Relying so heavily on Azure Functions has caused this project to languish. Unfortunately, the state of development with Azure Functions is such that migrating to newer versions is painful and critical changes are slow to appear anyway. We still do not have an easy mechanism for file uploads after 2 years of waiting. Due to a renewed personal interest in the project, I have decided it is time for a change.
 
-So the below documentation is for the "old" version of the backend. At the current moment, a new version is being formed, which should work with the existing mobile codebase with minimal changes. This "v2" api will rely on Azure Container Apps to achieve the limited budget footprint previously achieved via Azure Functions. The rest of the app will likely look the same (Azure SQL + Storage Blobs and Queue).
+So the below documentation is split in two: the new documentation and the legacy documentation. At the current moment, a new version is being formed, which should work with the existing mobile codebase with minimal changes. The "new" documentation is a work in progress and will change as this latest effort develops.
 
-Once we have released an update to the mobile app with the new backend, the Azure Functions will be retired and removed from this codebase. No new fixes are coming to Azure Functions. So long as they continue to work we will likely leave them up, but they will likely be taken down the second they become an issue.
+The "new" api will rely on Azure Container Apps to achieve the limited budget footprint previously achieved via Azure Functions. The rest of the app will likely look the same (Azure SQL + Storage Blobs and Queue). Once we have released an update to the mobile app with the new backend, the Azure Functions will be retired and removed from this codebase. No new fixes are coming to Azure Functions. So long as they continue to work we will likely leave them up, but they will likely be taken down the second they become an issue.
 
-I promise this readme will update once the new API is stable.
+# Current README (Work In Progress)
 
-# Architecture
+## Architecture
+
+This project utilizes Azure Container Apps to reduce cost by scaling to 0. It also enables a custom Azure Store Queue processing system via a couple of console apps and KEDA scaling rules.
+
+There are two data stores, Azure SQL and Azure Storage Blobs/Queues. This project relies on Spatial Data Types, which means that **it does work with Azure SQL Edge (the only version of Azure/MS SQL that supports arm).** Azure Storage Blobs are used to store images and Azure Storage Queues are used to process notifications.
+
+## Setup
+
+### SQL Server
+
+Currently, I am developing against the production SQL Server instance. The tables and schema can _probably_ be seeded using `Migrations/InitialMigration.sql`, but I make no guarantees there.
+
+### Backend
+
+The backend is a combination of an ASP.NET Core web api (utilizing FastEndpoints) and console apps for processing queues. Currently, each of these apps needs the required `appsettings.local.json` for local development:
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "<YOUR_SQL_SERVER_CONNECTION_STRING>"
+  },
+  "SendGrid": "<YOUR_SENDGRID_API_KEY",
+  "FromEmail": "<FROM_EMAIL>",
+  "ToEmails": "<TO_EMAIL>",
+  "Template": "<SENDGRID_EMAIL_TEMPLATE",
+  "StorageSettings": {
+    "Key": "<STORAGE_KEY>",
+    "Account": "lahmphotos",
+    "Uri": "<STORAGE_URI>"
+  },
+  "QueueSettings": {
+    "Uri": "<QUEUE_URI>"
+  }
+}
+```
+
+With those settings in place, you're ready to runt he app locally. For convenience, there is a `docker-compose.yml` file that can be used to run all of the dotnet apps at once. Hopefully this will be expanded to include local SQL and Azurite.
+
+In order for SSL to work with `docker-compose.yml`, there are a few steps to set up.
+
+Install, trust, and export a dev cert to the `/dev-certs` folder from the root of this project:
+
+```pwsh
+ dotnet dev-certs https -ep ./dev-certs/aspnet.pfx --trust -p password
+```
+
+That cert will get copied over and used in the docker container. Note that if you change the password, you will need to edit the `docker-compose.yml` file.
+
+# Legacy README
+
+## Architecture
 
 In an attempt to minimize cost, this project consists of a SQL Server, Azure Functions, Azure Storage, and a React Native client.
 
@@ -25,13 +75,13 @@ Azure Functions are used to query the SQL Server and take actions such as sendin
 Azure Storage Queues are used for communication between functions (this gives us the ability to retry via data kept in poison queues).
 The React Native (Expo) calls out to the Azure Functions and "things happen."
 
-# Set Up
+## Set Up
 
-## SQL Server
+### SQL Server
 
 With SQL Server installed and an instance running, you can run `Migrations/InitialMigration.sql` against your current instance. This should create the necessary Database, Table(s), and seed some initial data. For now, additional migrations can be added directly to this file, but long term we will probably need to break this out to multiple files and ensure some kind of order of operations.
 
-## Azure Functions Back End
+### Azure Functions Back End
 
 **Note:** this project targets .NET 5. As such, the .NET 5 SDKs will need to be installed. This has far reaching implications, as it is the first .NET release to run in an isolated process within Azure Functions (more on that [here](https://techcommunity.microsoft.com/t5/apps-on-azure/net-on-azure-functions-roadmap/ba-p/2197916) and [here](https://docs.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide)).
 
@@ -73,7 +123,7 @@ With these components installed and the settings file added (and updated), you s
 Note: you can also run the functions from within the root of the repository itself by simply clicking run.
 If you'd like to run the functions in "watch" mode, you can run `dotnet watch msbuild /t:RunFunctions` in the `Functions` folder.
 
-## Expo Mobile App
+### Expo Mobile App
 
 The mobile app was created using Expo, so running it is as simple as making sure you have have Expo installed and running `expo start`.
 

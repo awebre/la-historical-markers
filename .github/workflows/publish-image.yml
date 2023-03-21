@@ -6,15 +6,18 @@ on:
 
 jobs:
   publish:
-    name: Build and Publish Image
+    name: Build and Publish
     runs-on: ubuntu-latest
     outputs:
-      image-tag: ${{ steps.version-api.outputs.version }}
+      api-tag: ${{ steps.version-api.outputs.version }}
+      workers-tag: ${{steps.version-workers.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      
+      # version and publish the API
       - uses: paulhatch/semantic-version@v5.0.2
         id: version-api
         with:
@@ -29,7 +32,7 @@ jobs:
           # Prevents pre-v1.0.0 version from automatically incrementing the major version.
           # If enabled, when the major version is 0, major releases will be treated as minor and minor as patch. Note that the version_type output is unchanged.
           enable_prerelease_mode: true
-      - name: Create Version Tag
+      - name: Create Version Tag for API
         uses: actions/github-script@v5
         with:
           script: |
@@ -45,6 +48,36 @@ jobs:
         run: docker build -f ./Web/LAHistoricalMarkers.Web/Dockerfile . -t awebre/la-historical-markers:${{ steps.version-api.outputs.version }}
       - name: Push Image
         run: docker push awebre/la-historical-markers:${{ steps.version-api.outputs.version }}
+      
+      # version and publish the Queue Workers s
+      - uses: paulhatch/semantic-version@v5.0.2
+        id: version-workers
+        with:
+          # The prefix to use to identify tags
+          tag_prefix: "v"
+          major_pattern: "(MAJOR)"
+          major_regexp_flags: ""
+          minor_pattern: "(MINOR)"
+          version_format: "${major}.${minor}.${patch}-prerelease${increment}"
+          # Named version, will be used as suffix for name version tag
+          namespace: workers
+          # Prevents pre-v1.0.0 version from automatically incrementing the major version.
+          # If enabled, when the major version is 0, major releases will be treated as minor and minor as patch. Note that the version_type output is unchanged.
+          enable_prerelease_mode: true
+      - name: Create Version Tag for Workers
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ steps.version-workers.outputs.version_tag }}',
+              sha: context.sha
+            })
+      - name: Build and Tag Image
+        run: docker build -f ./LAHistoricalMarkers.QueueWorkers/Dockerfile . -t awebre/lahm-queue-workers:${{ steps.version-workers.outputs.version }}
+      - name: Push Image
+        run: docker push awebre/lahm-workers:${{ steps.version-workers.outputs.version }}
 
   deploy:
     name: Deploy API
@@ -62,5 +95,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Enable Extension Installation
         run: az config set extension.use_dynamic_install=yes_without_prompt
-      - name: Create Revision
-        run: az containerapp revision copy -n lahm-prod -g lahistoricalmarkersprod -i awebre/la-historical-markers:${{ needs.publish.outputs.image-tag }}
+      - name: Create API Revision
+        run: az containerapp revision copy -n lahm-prod -g lahistoricalmarkersprod -i awebre/la-historical-markers:${{ needs.publish.outputs.api-tag }}
+      - name: Create Worker Revision
+        run: az containerapp revision copy -n lahm-workers-prod -g lahistoricalmarkersprod -i awebre/lahm-queue-workers:${{ needs.publish.outputs.workers-tag }}
