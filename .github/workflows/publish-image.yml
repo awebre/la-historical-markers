@@ -95,6 +95,8 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Enable Extension Installation
         run: az config set extension.use_dynamic_install=yes_without_prompt
+      - name: test
+        run: az containerapp list --query "[].name"
       - name: Create API Revision
         run: az containerapp revision copy -n lahm-prod -g lahistoricalmarkersprod -i awebre/la-historical-markers:${{ needs.publish.outputs.api-tag }}
       - name: Create Worker Revision
