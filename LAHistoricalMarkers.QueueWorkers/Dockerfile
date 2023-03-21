@@ -6,11 +6,11 @@ WORKDIR /src
 COPY ["LAHistoricalMarkers.ApprovalQueue/LAHistoricalMarkers.ApprovalQueue.csproj", "LAHistoricalMarkers.ApprovalQueue/"]
 RUN dotnet restore "LAHistoricalMarkers.ApprovalQueue/LAHistoricalMarkers.ApprovalQueue.csproj"
 COPY . .
-WORKDIR "/src/LAHistoricalMarkers.ApprovalQueue"
-RUN dotnet build "LAHistoricalMarkers.ApprovalQueue.csproj" -c Release -o /app/build
+WORKDIR "/src/LAHistoricalMarkers.QueueWorkers"
+RUN dotnet build "LAHistoricalMarkers.QueueWorkers.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "LAHistoricalMarkers.ApprovalQueue.csproj" -c Release -o /app/publish
+RUN dotnet publish "LAHistoricalMarkers.QueueWorkers.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
