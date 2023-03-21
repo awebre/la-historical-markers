@@ -77,7 +77,7 @@ jobs:
       - name: Build and Tag Image
         run: docker build -f ./LAHistoricalMarkers.QueueWorkers/Dockerfile . -t awebre/lahm-queue-workers:${{ steps.version-workers.outputs.version }}
       - name: Push Image
-        run: docker push awebre/lahm-workers:${{ steps.version-workers.outputs.version }}
+        run: docker push awebre/lahm-queue-workers:${{ steps.version-workers.outputs.version }}
 
   deploy:
     name: Deploy API
