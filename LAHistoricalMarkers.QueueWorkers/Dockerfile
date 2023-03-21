@@ -3,8 +3,8 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["LAHistoricalMarkers.ApprovalQueue/LAHistoricalMarkers.ApprovalQueue.csproj", "LAHistoricalMarkers.ApprovalQueue/"]
-RUN dotnet restore "LAHistoricalMarkers.ApprovalQueue/LAHistoricalMarkers.ApprovalQueue.csproj"
+COPY ["LAHistoricalMarkers.QueueWorkers/LAHistoricalMarkers.QueueWorkers.csproj", "LAHistoricalMarkers.QueueWorkers/"]
+RUN dotnet restore "LAHistoricalMarkers.QueueWorkers/LAHistoricalMarkers.QueueWorkers.csproj"
 COPY . .
 WORKDIR "/src/LAHistoricalMarkers.QueueWorkers"
 RUN dotnet build "LAHistoricalMarkers.QueueWorkers.csproj" -c Release -o /app/build
@@ -15,4 +15,4 @@ RUN dotnet publish "LAHistoricalMarkers.QueueWorkers.csproj" -c Release -o /app/
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "LAHistoricalMarkers.ApprovalQueue.dll"]
+ENTRYPOINT ["dotnet", "LAHistoricalMarkers.QueueWorkers.dll"]
