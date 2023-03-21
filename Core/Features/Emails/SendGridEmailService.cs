@@ -15,7 +15,7 @@ public class SendGridEmailService
         this.fromEmail = fromEmail;
     }
 
-    public async Task SendTemplatedEmail<T>(string[] tos, string templateId, T data)
+    public async Task<bool> SendTemplatedEmail<T>(string[] tos, string templateId, T data)
     {
         var client = GetClient();
         var message = GetDefaultMessage();
@@ -26,10 +26,11 @@ public class SendGridEmailService
             message.AddTo(to);
         }
 
-        await client.SendEmailAsync(message);
+        var response = await client.SendEmailAsync(message);
+        return response.IsSuccessStatusCode;
     }
 
-    public async Task SendEmail(string[] tos, string subject, string content)
+    public async Task<bool> SendEmail(string[] tos, string subject, string content)
     {
         var client = GetClient();
         var message = GetDefaultMessage();
@@ -40,7 +41,8 @@ public class SendGridEmailService
             message.AddTo(to);
         }
 
-        await client.SendEmailAsync(message);
+        var result = await client.SendEmailAsync(message);
+        return result.IsSuccessStatusCode;
     }
 
     private SendGridClient GetClient()

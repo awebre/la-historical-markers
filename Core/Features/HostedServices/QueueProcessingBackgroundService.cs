@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Storage.Queues.Models;
+using LaHistoricalMarkers.Core.Infrastructure;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -13,19 +14,36 @@ namespace LaHistoricalMarkers.Core.Features.HostedServices;
 public abstract class QueueProcessingBackgroundService<TQueueMessage> : BackgroundService
 {
     private readonly ILogger<QueueProcessingBackgroundService<TQueueMessage>> logger;
-    public QueueProcessingBackgroundService(ILogger<QueueProcessingBackgroundService<TQueueMessage>> logger)
+    private readonly QueueService queueService;
+    public QueueProcessingBackgroundService(
+        QueueService queueService,
+        ILogger<QueueProcessingBackgroundService<TQueueMessage>> logger)
     {
+        this.queueService = queueService;
         this.logger = logger;
-
     }
 
-    public abstract string WorkerName { get; }
+    protected abstract string WorkerName { get; }
 
-    public abstract Task<Response<QueueMessage>> GetQueueMessage();
 
-    public abstract Task ProcessQueueData(TQueueMessage messageData);
+    public string QueueName { get; init; }
 
-    public abstract Task SendToPoisonQueue(TQueueMessage messageData);
+    protected virtual Task<Response<QueueMessage>> GetQueueMessage()
+    {
+        return queueService.DequeueMessage(QueueName);
+    }
+
+    protected abstract Task<bool> ProcessQueueData(TQueueMessage messageData);
+
+    protected virtual Task SendToPoisonQueue(TQueueMessage messageData)
+    {
+        return queueService.SendMessage(messageData, QueueName, true);
+    }
+
+    protected virtual Task DeleteFromQueue(string messageId, string popReceipt)
+    {
+        return queueService.DeleteMessageFromQueue(messageId, popReceipt, QueueName);
+    }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -56,11 +74,16 @@ public abstract class QueueProcessingBackgroundService<TQueueMessage> : Backgrou
             {
                 logger.LogWarning("{name}: Sending to poison queue", WorkerName);
                 await SendToPoisonQueue(pending);
+                await DeleteFromQueue(response.Value.MessageId, response.Value.PopReceipt);
             }
             else
             {
                 logger.LogInformation("{name}: Processing message", WorkerName);
-                await ProcessQueueData(pending);
+                var successful = await ProcessQueueData(pending);
+                if (successful)
+                {
+                    await DeleteFromQueue(response.Value.MessageId, response.Value.PopReceipt);
+                }
             }
         }
         logger.LogInformation("{name} worker ending...", WorkerName);

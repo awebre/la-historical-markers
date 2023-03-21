@@ -4,7 +4,7 @@ using LaHistoricalMarkers.Core.Features.Emails;
 using LaHistoricalMarkers.Core.Features.Moderation;
 using LaHistoricalMarkers.Core.Infrastructure;
 using LAHistoricalMarkers.Core.Settings;
-using LAHistoricalMarkers.QueueWorkers;
+using LAHistoricalMarkers.QueueWorkers.Workers;
 
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
@@ -31,6 +31,7 @@ var host = Host.CreateDefaultBuilder(args)
         });
 
         services.AddHostedService<ApprovalQueueWorker>();
+        services.AddHostedService<UserReportQueueWorker>();
     })
     .Build();
 

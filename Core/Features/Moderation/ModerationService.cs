@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Dapper;
 using LaHistoricalMarkers.Core.Data;
@@ -26,7 +25,7 @@ public class ModerationService : BaseSqlService
         this.authService = authService;
     }
 
-    public async Task SendApprovalEmail(PendingSubmissionDto pending)
+    public async Task<bool> SendApprovalEmail(PendingSubmissionDto pending)
     {
         using var connection = GetConnection();
         connection.Open();
@@ -35,12 +34,13 @@ public class ModerationService : BaseSqlService
 
         var tos = notificationSettings.ToEmails.Split(",");
         var templateId = notificationSettings.Template;
-        await emailService.SendTemplatedEmail(tos, templateId, new ApprovalRequestDto(pending)
+        var successful = await emailService.SendTemplatedEmail(tos, templateId, new ApprovalRequestDto(pending)
         {
             Otp = otp,
         });
 
         transaction.Commit();
+        return successful;
     }
 
     public async Task<ApprovalResultType> ApproveOrReject(bool approved, int markerId, string otp)
@@ -66,17 +66,19 @@ public class ModerationService : BaseSqlService
         return approved ? ApprovalResultType.Accepted : ApprovalResultType.Rejected;
     }
 
-    public async Task SendUserReportEmail(UserReportDto reportDto)
+    public async Task<bool> SendUserReportEmail(UserReportDto reportDto)
     {
         using var connection = GetConnection();
         connection.Open();
         using var transaction = connection.BeginTransaction();
         var otp = await authService.GetOtpForMarker(reportDto.MarkerId, transaction);
 
-        var tos = Environment.GetEnvironmentVariable("ToEmails").Split(",");
+        var tos = notificationSettings.ToEmails.Split(",");
         var content = $"The following marker was reported: {reportDto.MarkerId}\n\nThe user reports:\n{reportDto.Report}\n\nlahm://admin/marker/{reportDto.MarkerId}?otp={otp}";
-        await emailService.SendEmail(tos, "User Report", content);
+        var successful = await emailService.SendEmail(tos, "User Report", content);
 
         transaction.Commit();
+
+        return successful;
     }
 }
