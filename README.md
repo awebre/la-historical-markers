@@ -28,7 +28,7 @@ Currently, I am developing against the production SQL Server instance. The table
 
 ### Backend
 
-The backend is a combination of an ASP.NET Core web api (utilizing FastEndpoints) and console apps for processing queues. Currently, each of these apps needs the required `appsettings.local.json` for local development:
+The backend is a combination of an ASP.NET Core web api (utilizing FastEndpoints) and a console app for processing queues. Currently, each of these apps needs the required `appsettings.local.json` for local development:
 
 ```json
 {
@@ -50,7 +50,7 @@ The backend is a combination of an ASP.NET Core web api (utilizing FastEndpoints
 }
 ```
 
-With those settings in place, you're ready to runt he app locally. For convenience, there is a `docker-compose.yml` file that can be used to run all of the dotnet apps at once. Hopefully this will be expanded to include local SQL and Azurite.
+With those settings in place, you're ready to run the app locally. For convenience, there is a `docker-compose.yml` file that can be used to run all of the dotnet apps at once. Hopefully this will be expanded to include local SQL and Azurite.
 
 In order for SSL to work with `docker-compose.yml`, there are a few steps to set up.
 
