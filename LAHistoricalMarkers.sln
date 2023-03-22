@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaHistoricalMarkers.Core", "Core\LaHistoricalMarkers.Core.csproj", "{8A5BE7B9-FF09-4E93-930E-87CDACE88E92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LAHistoricalMarkers.Web", "Web\LAHistoricalMarkers.Web\LAHistoricalMarkers.Web.csproj", "{839341B9-941A-4C7D-99BA-F3F4FDC4A827}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LAHistoricalMarkers.Web", "Web\LAHistoricalMarkers.Web.csproj", "{839341B9-941A-4C7D-99BA-F3F4FDC4A827}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{D57689EE-DFF6-4BA9-8E2E-1107A3AAE5C2}"
 EndProject
@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\publish-image.yml = .github\workflows\publish-image.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LAHistoricalMarkers.QueueWorkers", "LAHistoricalMarkers.QueueWorkers\LAHistoricalMarkers.QueueWorkers.csproj", "{D6AA10AB-460C-43D2-98F5-FC43D6090E2A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LAHistoricalMarkers.QueueWorkers", "QueueWorkers\LAHistoricalMarkers.QueueWorkers.csproj", "{D6AA10AB-460C-43D2-98F5-FC43D6090E2A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

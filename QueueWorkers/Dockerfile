@@ -3,8 +3,8 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["LAHistoricalMarkers.QueueWorkers/LAHistoricalMarkers.QueueWorkers.csproj", "LAHistoricalMarkers.QueueWorkers/"]
-RUN dotnet restore "LAHistoricalMarkers.QueueWorkers/LAHistoricalMarkers.QueueWorkers.csproj"
+COPY [".QueueWorkers/LAHistoricalMarkers.QueueWorkers.csproj", "QueueWorkers/"]
+RUN dotnet restore "QueueWorkers/LAHistoricalMarkers.QueueWorkers.csproj"
 COPY . .
 WORKDIR "/src/LAHistoricalMarkers.QueueWorkers"
 RUN dotnet build "LAHistoricalMarkers.QueueWorkers.csproj" -c Release -o /app/build
