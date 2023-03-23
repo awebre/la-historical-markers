@@ -37,14 +37,7 @@ export default {
       },
       package: "com.austinwebre.lahistoricalmarkers",
       versionCode: parseInt(process.env.BUILD_NUMBER ?? "0"),
-      permissions: [
-        "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION",
-        "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE",
-        "QUERY_ALL_PACKAGES",
-      ],
+      permissions: ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION", "CAMERA"],
       config: {
         googleMaps: {
           apiKey: process.env.GOOGLE_MAPS_API_KEY,
