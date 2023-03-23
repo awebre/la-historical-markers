@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>WebC Example</title>
+    <link webc:keep href="/style.css" rel="stylesheet" />
+  </head>
+  <body class="mx-4 my-4 sm:mx-8 bg-brown-light">
+    <page-header></page-header>
+    <page-body> Welcome to LA Historical Markers! </page-body>
+    <page-footer></page-footer>
+  </body>
+</html>

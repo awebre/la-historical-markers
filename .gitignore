@@ -344,3 +344,6 @@ __azurite_db*
 
 # Don't include dev certs for Docker
 /dev-certs
+
+#eleventy
+/Pages/_site
