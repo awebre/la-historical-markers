@@ -1,12 +1,13 @@
-name: Build and Publish lahistoricalmarkers.com
+name: Public Site
 on:
   push:
     branches:
       - main
     paths:
-      - Pages/**
-    paths-ignore:
-      - Pages/site/**
+      - Pages/*
+      - Pages/img/**
+      - Pages/styles/**
+      - Pages/src/**
   pull_request:
     branches:
       - main
@@ -19,8 +20,6 @@ jobs:
       CI_COMMIT_AUTHOR: GitHub Actions
     steps:
       - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.WORKFLOW_GIT_ACCESS_TOKEN }}
 
       # Build steps
       - uses: actions/setup-node@v3
