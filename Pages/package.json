@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "start": "npx eleventy --serve --watch & npx tailwindcss -i styles/tailwind.css -c styles/tailwind.config.js -o _site/style.css --watch",
-    "build": "ELEVENTY_PRODUCTION=true eleventy && NODE_ENV=production npx tailwindcss -i styles/tailwind.css -c styles/tailwind.config.js -o _site/style.css --minify"
+    "build": "ELEVENTY_PRODUCTION=true eleventy && NODE_ENV=production npx tailwindcss -i styles/tailwind.css -c styles/tailwind.config.js -o site/style.css --minify"
   },
   "author": "Austin Webre",
   "license": "ISC",

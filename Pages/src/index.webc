@@ -1,13 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>WebC Example</title>
-    <link webc:keep href="/style.css" rel="stylesheet" />
-  </head>
-  <body class="mx-4 my-4 sm:mx-8 bg-brown-light">
-    <page-header></page-header>
-    <page-body> Welcome to LA Historical Markers! </page-body>
-    <page-footer></page-footer>
-  </body>
-</html>
+<page @title="LAHM: LA Historical Markers">
+  <page-body>
+    <div class="flex justify-center rounded-xl">
+      <img
+        src="/img/screenshot.png"
+        class="mx-6 border-2 border-black shadow-xl rounded-xl h-96"
+      />
+      <img
+        src="/img/screenshot2.png"
+        class="hidden mx-6 border-2 border-black shadow-xl sm:block rounded-xl h-96"
+      />
+      <img
+        src="/img/screenshot3.png"
+        class="hidden mx-6 border-2 border-black shadow-xl md:block rounded-xl h-96"
+      />
+    </div>
+    <h1 class="text-lg font-semibold">Welcome to LA Historical Markers!</h1>
+    <br />
+    <p>
+      We created the LAHM app in order to discover and promote the history of
+      the State of Louisiana. Dating back to at least the 1950's, the Louisiana
+      Historical Markers Program allows private individuals and groups to
+      nominate and commission a marker commemorating events that are important
+      to the state, nation or region. Because of the long history of this
+      program, the location and condition of many of these markers are unknown.
+    </p>
+    <br />
+    <p>
+      The goal of this app is to enable the communities that care about these
+      signs to maintain a public data set containing the location and contents
+      of the various signs. If you're interested in becoming part of this
+      community, you can find the app on the
+      <standard-link
+        @href="https://apps.apple.com/us/app/la-historical-markers/id1560753200"
+        @target="_new"
+        >Apple App Store</standard-link
+      >
+      and
+      <standard-link
+        @href="https://play.google.com/store/apps/details?id=com.austinwebre.lahistoricalmarkers"
+        @target="_new"
+        >Google Play Store</standard-link
+      >
+    </p>
+    <br />
+    <p>
+      Have suggestions or feedback? Open a discussion
+      <standard-link
+        @href="https://github.com/awebre/la-historical-markers/discussions"
+        @target="_new"
+        >on our GitHub</standard-link
+      >
+      or contact
+      <standard-link @href="mailto:dev@lahistoricalmarkers.com"
+        >dev@lahistoricalmarkers.com</standard-link
+      >.
+    </p>
+  </page-body>
+  <page-footer></page-footer>
+</page>

@@ -1,0 +1,46 @@
+<page @title="LAHM: Privacy Policy">
+  <page-body>
+    <h1 class="text-lg font-semibold">Privacy Policy</h1>
+    <br />
+    <p>
+      LA Historical Markers (also known as LAHM) does not collect any
+      information about you or your devices, does not seek to associate any
+      information that is collected with any individual end user, and only
+      requests access to those device permissions which are strictly necessary
+      for the app to function. Where possible, LAHM offers users with options to
+      contribute to the crowd-sourcing of marker details without requiring
+      potentially invasive permissions such as fine location data or camera
+      access.
+    </p>
+    <br />
+    <p>
+      The use of location data within LAHM is restricted to functionality
+      related to discovery and authorship of markers. Your location may be used
+      to search for nearby markers, calculate distances between markers, and to
+      pinpoint the location of a new marker that you are authoring. In cases
+      where location data is used for search or distance calculations, this data
+      <b class="font-bold">is not</b> associated with any device or user
+      information and <b class="font-bold">is not</b> stored or cached. In cases
+      where location data is used as part of the submission of a new marker,
+      this data <b class="font-bold">will be stored</b>, though it is not
+      associated with any device or user information.
+    </p>
+    <br />
+    <p>
+      LAHM does store user-entered data, which is subject to a review and
+      moderation process. User entered data includes the titles, descriptions,
+      images and coordinates of signs submitted through the app. This
+      information is submitted with complete anonymity - no device or user
+      information is stored alongside this user-entered content.
+    </p>
+    <br />
+    <p>
+      If you believe LAHM to be in violation of the above policies, or if you
+      have other questions or concerns about this policy, you may contact
+      <standard-link @href="mailto:dev@lahistoricalmarkers.com"
+        >dev@lahistoricalmarkers.com</standard-link
+      >
+    </p>
+  </page-body>
+  <page-footer></page-footer>
+</page>

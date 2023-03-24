@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+const contentRoot = process.env.ELEVENTY_PRODUCTION ? "site" : "_site";
 module.exports = {
-  content: ["./_site/**/*.{html,webc}"],
+  content: [`./${contentRoot}/**/*.{html,webc}`],
   theme: {
     extend: {
       colors: {

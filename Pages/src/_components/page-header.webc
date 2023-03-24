@@ -1,3 +1,6 @@
-<header class="w-full p-2 text-lg text-white sm:p-4 rounded-t-md bg-brown">
-  LA Historical Markers
+<header class="flex flex-col w-full p-2 text-lg text-white sm:flex-row sm:p-4 rounded-t-md bg-brown">
+    <a href="/">
+        <img src="/img/logo.png" class="h-10" />
+    </a>
+  <a href="/" class="flex flex-col justify-center hover:cursor-pointer">LA Historical Markers</div>
 </header>
