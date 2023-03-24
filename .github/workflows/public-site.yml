@@ -20,8 +20,6 @@ jobs:
       CI_COMMIT_AUTHOR: GitHub Actions
     steps:
       - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.WORKFLOW_GIT_ACCESS_TOKEN }}
 
       # Build steps
       - uses: actions/setup-node@v3
