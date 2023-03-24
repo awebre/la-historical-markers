@@ -1,12 +1,13 @@
-name: Build and Publish lahistoricalmarkers.com
+name: Public Site
 on:
   push:
     branches:
       - main
     paths:
-      - Pages/**
-    paths-ignore:
-      - Pages/site/**
+      - Pages/*
+      - Pages/img/**
+      - Pages/styles/**
+      - Pages/src/**
   pull_request:
     branches:
       - main
