@@ -42,4 +42,4 @@ jobs:
           git config --global user.email "awebre@users.noreply.github.com"
           git add Pages/site
           git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
-          git push
+          git push --force
