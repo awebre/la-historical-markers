@@ -1,6 +1,7 @@
 using LaHistoricalMarkers.Core.Data;
 using LaHistoricalMarkers.Core.Features.Authentication;
 using LaHistoricalMarkers.Core.Features.Emails;
+using LaHistoricalMarkers.Core.Features.Feedback;
 using LaHistoricalMarkers.Core.Features.Moderation;
 using LaHistoricalMarkers.Core.Infrastructure;
 using LAHistoricalMarkers.Core.Settings;
@@ -14,6 +15,7 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<QueueSettings>(s => s.GetRequiredService<IConfiguration>().GetSection(nameof(QueueSettings)).Get<QueueSettings>());
         services.AddScoped<QueueService>();
         services.AddScoped<ModerationService>();
+        services.AddScoped<UserFeedbackService>();
 
         //Bind settings from config
         services.AddSingleton<StorageSettings>(services => services.GetRequiredService<IConfiguration>().GetSection(nameof(StorageSettings)).Get<StorageSettings>());
