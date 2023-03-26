@@ -25,7 +25,7 @@ public class UserFeedbackService
 
         var tos = notificationSettings.ToEmails.Split(",");
         var content = $"You have new feedback from {(string.IsNullOrEmpty(feedbackDto.Email) ? "a user" : feedbackDto.Email)}:\n\n";
-        content += feedbackDto;
+        content += feedbackDto.Feedback;
         var successful = await emailService.SendEmail(tos, "User Feedback", content);
         return successful;
     }
