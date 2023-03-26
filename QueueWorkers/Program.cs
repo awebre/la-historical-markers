@@ -32,6 +32,7 @@ var host = Host.CreateDefaultBuilder(args)
 
         services.AddHostedService<ApprovalQueueWorker>();
         services.AddHostedService<UserReportQueueWorker>();
+        services.AddHostedService<UserFeedbackQueueWorker>();
     })
     .Build();
 
