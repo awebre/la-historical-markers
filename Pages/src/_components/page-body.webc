@@ -1,3 +1,0 @@
-<div class="w-full p-2 bg-white sm:p-4">
-  <slot></slot>
-</div>

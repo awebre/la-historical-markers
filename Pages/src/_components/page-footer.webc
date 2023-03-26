@@ -1,7 +1,0 @@
-<footer
-  class="justify-center w-full h-12 p-12 shadow-md sm:p-4 bg-slate-100 rounded-b-md"
->
-  <a href="/privacy-policy" class="text-red-500 hover:underline"
-    >Privacy Policy</a
-  >
-</footer>

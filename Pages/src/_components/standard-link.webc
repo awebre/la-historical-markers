@@ -1,3 +1,0 @@
-<a :href="href" :target="target" class="text-brown hover:underline"
-  ><slot></slot
-></a>

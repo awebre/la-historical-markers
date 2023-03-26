@@ -347,3 +347,6 @@ __azurite_db*
 
 #eleventy
 /Pages/_site
+
+#OS
+.DS_Store
