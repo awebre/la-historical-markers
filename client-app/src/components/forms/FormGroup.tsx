@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 0,
     display: "flex",
-    borderWidth: 1,
+    borderWidth: 2,
     borderRadius: 5,
     borderColor: colors.primary,
     margin: 5,

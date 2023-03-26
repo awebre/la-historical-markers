@@ -1,40 +1,74 @@
 import { ScrollView } from "react-native-gesture-handler";
-import { Linking, Text, View } from "react-native";
+import { KeyboardAvoidingView, Linking, Text, View } from "react-native";
 import { getColor, tailwind } from "tailwind-util";
 import { StatusBar } from "expo-status-bar";
 import { FontAwesome } from "@expo/vector-icons";
 import { A } from "@expo/html-elements";
-import { colors } from "utils";
-const privacyPolicy = "https://lahistoricalmarkers.com/privacy-policy";
-const homepage = "https://lahistoricalmarkers.com";
+import classnames from "classnames";
+import Constants from "expo-constants";
+import FeedbackForm from "settings/FeedbackForm";
+
+const { websiteUrl, privacyPolicyUrl, githubUrl } =
+  Constants.expoConfig?.extra ?? {};
 export default function SettingScreen({}) {
   return (
-    <ScrollView style={tailwind("bg-brown-light h-full pt-16 px-5")}>
-      <StatusBar style="dark" />
-      <Text style={tailwind("text-3xl font-bold")}>Links</Text>
-      <View style={tailwind("border-b-2 border-brown mb-10")} />
-      <View
-        style={tailwind("flex flex-row items-center justify-between mb-5")}
-        onTouchEnd={() => Linking.openURL(homepage)}
-      >
-        <A href={homepage} style={tailwind("text-lg")}>
-          Our Website
-        </A>
-        <FontAwesome name="external-link" size={20} />
-      </View>
-      <View
-        style={tailwind("flex flex-row items-center justify-between")}
-        onTouchEnd={() => Linking.openURL(privacyPolicy)}
-      >
-        <A href={privacyPolicy} style={tailwind("text-lg text-red-500")}>
-          Privacy Policy
-        </A>
-        <FontAwesome
-          name="external-link"
-          size={20}
-          color={getColor("red-500")}
+    <KeyboardAvoidingView behavior="position">
+      <ScrollView style={tailwind("bg-brown-light h-full pt-8 px-5")}>
+        <StatusBar style="dark" />
+        <Heading text="Links" />
+        <LinkItem text="Our Website" url={websiteUrl} icon="laptop" />
+        <LinkItem text="Source Code on GitHub" url={githubUrl} icon="github" />
+        <LinkItem
+          text="Privacy Policy"
+          url={privacyPolicyUrl}
+          color={"red"}
+          icon="legal"
         />
-      </View>
-    </ScrollView>
+        <Heading text="Feedback" />
+        <FeedbackForm />
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
+
+interface LinkItemProps {
+  color?: "red" | "black";
+  text: string;
+  url: string;
+  icon: "laptop" | "github" | "legal";
+}
+const LinkItem = ({ text, url, icon, color = "black" }: LinkItemProps) => (
+  <View
+    style={tailwind("flex flex-row items-center justify-between mb-5")}
+    onTouchEnd={() => Linking.openURL(url)}
+  >
+    <View style={tailwind("flex flex-row items-center")}>
+      <FontAwesome
+        name={icon}
+        style={tailwind("mr-4 w-5")}
+        size={20}
+        color={color === "black" ? "black" : getColor(`${color}-500`)}
+      />
+      <A
+        href={url}
+        style={tailwind(
+          classnames("text-lg", { "text-red-500": color === "red" })
+        )}
+      >
+        <Text>{text}</Text>
+      </A>
+    </View>
+    <FontAwesome
+      name="external-link"
+      size={20}
+      color={color === "black" ? "black" : getColor(`${color}-500`)}
+    />
+  </View>
+);
+
+const Heading = ({ text }: { text: string }) => (
+  <View style={tailwind("mt-8")}>
+    <Text style={tailwind("text-3xl font-bold")}>{text}</Text>
+    <View style={tailwind("border-b-2 border-brown mb-5")} />
+  </View>
+);

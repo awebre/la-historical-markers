@@ -74,7 +74,7 @@ export function Typeahead({
 const styles = StyleSheet.create({
   input: {
     width: Dimensions.get("window").width - 20,
-    borderWidth: 1,
+    borderWidth: 2,
     borderRadius: 5,
     borderColor: colors.primary,
     backgroundColor: colors.lightBackground,

@@ -32,7 +32,7 @@ export default function MarkerSelector({
         style={{
           inputIOSContainer: {
             borderRadius: 5,
-            borderWidth: 1,
+            borderWidth: 2,
             borderColor: colors.primary,
             margin: 5,
             padding: 5,

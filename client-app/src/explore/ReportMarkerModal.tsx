@@ -8,6 +8,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
 } from "react-native";
+import { tailwind } from "tailwind-util";
 import { colors, url } from "utils";
 
 type ReportMarkerModalProps = {
@@ -38,7 +39,9 @@ export default function ReportMarkerModal({
           </Text>
         )}
         <TextInput
-          style={styles.input}
+          style={tailwind(
+            "border-2 w-full rounded-md m-1.5 p-1.5 border-brown max-h-64 h-24"
+          )}
           multiline
           value={report}
           onChangeText={(text) => setReport(text)}
@@ -104,14 +107,5 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-evenly",
-  },
-  input: {
-    width: "100%",
-    maxHeight: 250,
-    borderWidth: 1,
-    borderRadius: 5,
-    borderColor: colors.primary,
-    margin: 5,
-    padding: 5,
   },
 });

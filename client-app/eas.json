@@ -22,7 +22,10 @@
       },
       "env": {
         "BUILD_NUMBER": "36",
-        "VERSION": "1.5"
+        "VERSION": "1.5",
+        "API_URL": "https://api.lahistoricalmarkers.com",
+        "PHOTOS_URL": "https://photos.lahistoricalmarkers.com/marker-photos",
+        "GITHUB_URL": "https://github.com/awebre/la-historical-markers"
       }
     }
   },

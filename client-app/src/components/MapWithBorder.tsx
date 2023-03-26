@@ -21,7 +21,7 @@ export default React.forwardRef<MapView, Props>(
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: colors.accent,
     borderRadius: 10,
     overflow: "hidden",

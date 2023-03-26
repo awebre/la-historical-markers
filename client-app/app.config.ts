@@ -50,6 +50,9 @@ export default {
       },
       apiUrl: process.env.API_URL,
       photosUrl: process.env.PHOTOS_URL,
+      websiteUrl: process.env.WEBSITE_URL,
+      privacyPolicyUrl: process.env.PRIVACY_POLICY_URL,
+      githubUrl: process.env.GITHUB_URL,
     },
   },
 };

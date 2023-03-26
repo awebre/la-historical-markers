@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
   category: {
     margin: 10,
     borderRadius: 5,
-    borderWidth: 1,
+    borderWidth: 2,
     flex: 1,
     borderColor: colors.darkGrey,
     minWidth: 100,
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: Dimensions.get("window").width - 20,
-    borderWidth: 1,
+    borderWidth: 2,
     borderRadius: 5,
     borderColor: colors.primary,
     backgroundColor: colors.lightBackground,
