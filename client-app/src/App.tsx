@@ -1,20 +1,17 @@
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import { LinkingOptions, NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import {
-  createBottomTabNavigator,
-  BottomTabBar,
-} from "@react-navigation/bottom-tabs";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesome5 } from "@expo/vector-icons";
 import * as Linking from "expo-linking";
 import { ExploreScreen, AdminScreen, MyMarkersScreen } from "screens";
 import { RootParams } from "types";
 import { colors, routes } from "utils";
 import { SavedMarkersProvider } from "saved-markers/SavedMarkersContext";
+import SettingScreen from "screens/SettingScreen";
 
 const Stack = createStackNavigator<RootParams>();
 const prefix = Linking.createURL("/");
-console.log(prefix);
 const Tab = createBottomTabNavigator();
 
 function Tabs() {
@@ -52,13 +49,23 @@ function Tabs() {
             ),
           }}
         />
+        <Tab.Screen
+          name="More"
+          component={SettingScreen}
+          options={{
+            tabBarLabel: "More",
+            tabBarIcon: ({ color, size }) => (
+              <FontAwesome5 name="ellipsis-h" color={color} size={size} />
+            ),
+          }}
+        />
       </Tab.Navigator>
     </SavedMarkersProvider>
   );
 }
 
 export default function App() {
-  const linking = {
+  const linking: LinkingOptions<{ Home: any; Admin: any }> = {
     prefixes: [prefix],
     config: {
       initialRouteName: "Home",
@@ -67,6 +74,7 @@ export default function App() {
           screens: {
             Explore: routes.explore,
             MyMarkers: routes.myMarkers,
+            More: routes.more,
           },
         },
         Admin: {

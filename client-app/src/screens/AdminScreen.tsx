@@ -21,6 +21,7 @@ import { photosUrl } from "utils/urls";
 import { Marker } from "react-native-maps";
 import MapWithBorder from "components/MapWithBorder";
 import LocationNavigationButton from "components/LocationNavigationButton";
+import { StatusBar } from "expo-status-bar";
 
 type Props = StackScreenProps<RootParams, "Admin">;
 
@@ -72,6 +73,7 @@ export default function AdminScreen({ route, navigation }: Props) {
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="position">
       <DismissKeyboard>
         <>
+          <StatusBar style="light" />
           <ScrollView style={styles.scrollview}>
             <View style={styles.scrollContent}>
               {!!error && (

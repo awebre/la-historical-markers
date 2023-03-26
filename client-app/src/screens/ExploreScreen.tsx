@@ -15,6 +15,7 @@ import { MarkerFilter } from "components/markers";
 import LocationNavigationButton from "components/LocationNavigationButton";
 import MarkerSearchBar from "explore/MarkerSearchBar";
 import { tailwind } from "tailwind-util";
+import { StatusBar } from "expo-status-bar";
 
 const allFilters = [
   {
@@ -89,6 +90,7 @@ export default function ExploreScreen() {
 
   return (
     <>
+      <StatusBar style="light" />
       {!selectedMarker && !isAdding && (
         <>
           <MarkerFilter filters={filters} setFilters={setFilters} />

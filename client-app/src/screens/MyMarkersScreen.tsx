@@ -5,8 +5,8 @@ import { getMarkerColor } from "components/markers/utils";
 import { useSavedMarkers } from "hooks";
 import { SavedMarkerModal, SavedMarkerStats } from "saved-markers";
 import { SavedMarker, SavedMarkerCategory } from "types";
-import { colors, Locations } from "utils";
-import { tailwind } from "tailwind-util";
+import { Locations } from "utils";
+import { StatusBar } from "expo-status-bar";
 
 const initialRegion = {
   ...Locations.center,
@@ -19,12 +19,12 @@ export default function MyMarkersScreen() {
     null
   );
   const [modalVisible, setModalVisible] = useState(false);
-  const [categoryFilters, setCategoryFilters] =
-    useState<SavedMarkerCategory[]>();
   const { markers } = useSavedMarkers();
 
   return (
     <>
+      <StatusBar style="light" />
+
       {selectedMarker && (
         <SavedMarkerModal
           marker={selectedMarker}

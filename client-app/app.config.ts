@@ -1,4 +1,4 @@
-//increase this for build version bumps (internal to app stores)
+import "dotenv/config";
 export default {
   name: "client-app",
   displayName: "LA Markers",
@@ -48,6 +48,8 @@ export default {
       eas: {
         projectId: "04c2ee8a-e8a3-4c98-b06e-772e30346c96",
       },
+      apiUrl: process.env.API_URL,
+      photosUrl: process.env.PHOTOS_URL,
     },
   },
 };

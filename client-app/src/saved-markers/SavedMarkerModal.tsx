@@ -17,7 +17,6 @@ import { CustomCategory, SavedMarker, SavedMarkerCategory } from "types";
 import { colors } from "utils";
 import { useSavedMarkers } from "hooks";
 import { getIconFromCategory, getLabel } from "./utils";
-import { DismissKeyboard } from "components";
 import { Typeahead } from "components/forms";
 
 type SavedMarkerModalProps = {
