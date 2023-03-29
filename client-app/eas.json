@@ -21,7 +21,7 @@
         "resourceClass": "m-medium"
       },
       "env": {
-        "BUILD_NUMBER": "37",
+        "BUILD_NUMBER": "38",
         "VERSION": "1.5",
         "API_URL": "https://api.lahistoricalmarkers.com",
         "PHOTOS_URL": "https://photos.lahistoricalmarkers.com/marker-photos",
