@@ -22,6 +22,8 @@ builder.Services.AddScoped<MarkersService>();
 builder.Services.AddScoped<QueueService>();
 builder.Services.AddScoped<ModerationService>();
 
+builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblyContaining<MarkerDto>());
+
 //Bind settings from config
 builder.Services.AddSingleton<StorageSettings>(services => services.GetRequiredService<IConfiguration>().GetSection(nameof(StorageSettings)).Get<StorageSettings>());
 builder.Services.AddSingleton<QueueSettings>(services => services.GetRequiredService<IConfiguration>().GetSection(nameof(QueueSettings)).Get<QueueSettings>());
