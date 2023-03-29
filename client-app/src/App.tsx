@@ -9,6 +9,8 @@ import { RootParams } from "types";
 import { colors, routes } from "utils";
 import { SavedMarkersProvider } from "saved-markers/SavedMarkersContext";
 import SettingScreen from "screens/SettingScreen";
+import { TailwindProvider } from "tailwind-rn";
+import utilities from "../tailwind.json";
 
 const Stack = createStackNavigator<RootParams>();
 const prefix = Linking.createURL("/");
@@ -84,23 +86,25 @@ export default function App() {
     },
   };
   return (
-    <NavigationContainer linking={linking}>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Home"
-          component={Tabs}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Admin"
-          component={AdminScreen}
-          options={{
-            headerTitle: "Edit Marker",
-            headerTintColor: colors.lightText,
-            headerStyle: { backgroundColor: colors.primary },
-          }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <TailwindProvider utilities={utilities}>
+      <NavigationContainer linking={linking}>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Home"
+            component={Tabs}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Admin"
+            component={AdminScreen}
+            options={{
+              headerTitle: "Edit Marker",
+              headerTintColor: colors.lightText,
+              headerStyle: { backgroundColor: colors.primary },
+            }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </TailwindProvider>
   );
 }

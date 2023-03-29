@@ -5,7 +5,7 @@ import { colors } from "utils";
 import { LoadableMarkers } from "types";
 import { MarkerDto } from "types";
 import { MarkersList } from "components/markers";
-import { tailwind } from "tailwind-util";
+import { useTailwind } from "tailwind-rn";
 
 interface MarkersCardProps extends LoadableMarkers {
   style: StyleProp<ViewStyle>;
@@ -21,6 +21,7 @@ export default function MarkersCard({
   setSelectedMarker,
   setIsAdding,
 }: MarkersCardProps) {
+  const tailwind = useTailwind();
   return (
     <Card style={style}>
       <Card.Header>

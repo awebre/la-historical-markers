@@ -5,7 +5,9 @@
     "ios": "react-native run-ios",
     "web": "expo start --web",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "build:tailwind": "tailwindcss --input input.css --output tailwind.css --no-autoprefixer && tailwind-rn",
+    "dev:tailwind": "concurrently \"tailwindcss --input input.css --output tailwind.css --no-autoprefixer --watch\" \"tailwind-rn --watch\""
   },
   "dependencies": {
     "@expo/html-elements": "^0.4.1",
@@ -43,7 +45,7 @@
     "react-native-svg": "13.4.0",
     "react-native-web": "^0.18.12",
     "swr": "^2.1.1",
-    "tailwind-rn": "^3.0.1"
+    "tailwind-rn": "^4.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.21.3",
@@ -52,8 +54,9 @@
     "@types/react-native": "^0.70.13",
     "autoprefixer": "^10.4.14",
     "babel-preset-expo": "^9.3.1",
+    "concurrently": "^8.0.1",
     "postcss": "^8.4.21",
-    "tailwindcss": "^2.2.19",
+    "tailwindcss": "^3.3.0",
     "typescript": "^4.9.5"
   },
   "jest": {

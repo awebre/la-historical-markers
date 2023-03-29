@@ -1,13 +1,15 @@
 import { FormGroup } from "components/forms";
 import { useState } from "react";
-import { View, Text, TextInput, Button } from "react-native";
-import { getColor, tailwind } from "tailwind-util";
+import { Button, Text, TextInput, View } from "react-native";
+import { useTailwind } from "tailwind-rn";
 import { url } from "utils";
 
 export default function FeedbackForm() {
   const [feedback, setFeedback] = useState("");
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const tailwind = useTailwind();
+  const { color: red }: any = tailwind("text-red-500");
 
   return (
     <View>
@@ -15,7 +17,7 @@ export default function FeedbackForm() {
       <Text style={tailwind("text-lg")}>We'd love to hear from you.</Text>
       <FormGroup
         label="Email (Optional):"
-        value={email}
+        value={email ?? undefined}
         onChangeText={setEmail}
         containerStyle={{ flexDirection: "column" }}
         placeholder="dev@lahistoricalmarkers.com"
@@ -51,7 +53,7 @@ export default function FeedbackForm() {
             setIsSubmitting(false);
           }
         }}
-        color={getColor("red-500")}
+        color={red}
       />
     </View>
   );

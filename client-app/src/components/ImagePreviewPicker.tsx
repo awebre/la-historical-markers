@@ -36,9 +36,8 @@ export default function ImagePreviewPicker({
         text: "Camera Roll",
         onPress: async () => {
           if (Platform.OS !== "web") {
-            const {
-              status,
-            } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            const { status } =
+              await ImagePicker.requestMediaLibraryPermissionsAsync();
             if (status !== "granted") {
               alert("Camera roll permissions are required to select an image.");
             }
@@ -47,7 +46,7 @@ export default function ImagePreviewPicker({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             exif: false,
           });
-          if (!result.cancelled) {
+          if (!result.canceled) {
             const { uri, width, height } = result;
             setImage({ uri, width, height });
           }
@@ -64,9 +63,12 @@ export default function ImagePreviewPicker({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             exif: false,
           });
-          if (!result.cancelled) {
-            const { uri, width, height } = result;
-            setImage({ uri, width, height });
+          if (!result.canceled) {
+            const image = result.assets.at(0);
+            if (image) {
+              const { uri, width, height } = image;
+              setImage({ uri, width, height });
+            }
           }
         },
       },

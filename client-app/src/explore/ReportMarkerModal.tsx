@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import {
+  Button,
+  KeyboardAvoidingView,
   Modal,
   StyleSheet,
   Text,
-  View,
-  Button,
   TextInput,
-  KeyboardAvoidingView,
+  View,
 } from "react-native";
-import { tailwind } from "tailwind-util";
+import { useTailwind } from "tailwind-rn";
 import { colors, url } from "utils";
 
 type ReportMarkerModalProps = {
@@ -25,6 +25,7 @@ export default function ReportMarkerModal({
   const [report, setReport] = useState("");
   const [error, setError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const tailwind = useTailwind();
   return (
     <Modal visible={isVisible}>
       <KeyboardAvoidingView style={styles.content} behavior="padding">

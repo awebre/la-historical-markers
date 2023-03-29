@@ -1,6 +1,5 @@
 module.exports = {
-  purge: [],
-  darkMode: false, // or 'media' or 'class'
+  content: ["./src/**/*.{jsx,tsx}"],
   theme: {
     extend: {
       colors: {
@@ -18,8 +17,6 @@ module.exports = {
       },
     },
   },
-  variants: {
-    extend: {},
-  },
   plugins: [],
+  corePlugins: require("tailwind-rn/unsupported-core-plugins"),
 };

@@ -8,6 +8,7 @@ import {
   Dimensions,
   ScrollView,
 } from "react-native";
+import { useTailwind } from "tailwind-rn";
 import { colors } from "utils";
 
 interface BaseTutorialProps {
@@ -23,7 +24,12 @@ interface TutorialHeaderProps {
 const Tutorial: React.FC<BaseTutorialProps> & TutorialSubComponents = ({
   style,
   children,
-}) => <View style={[styles.tutorial, style]}>{children}</View>;
+}) => {
+  const tailwind = useTailwind();
+  return (
+    <View style={[tailwind("pt-16"), styles.tutorial, style]}>{children}</View>
+  );
+};
 
 const Header: React.FC<TutorialHeaderProps> = ({ style, text }) => (
   <View style={[styles.header, style]}>
@@ -37,9 +43,14 @@ const Content: React.FC<BaseTutorialProps> = ({ style, children }) => (
   </ScrollView>
 );
 
-const Footer: React.FC<BaseTutorialProps> = ({ style, children }) => (
-  <View style={[styles.footer, style]}>{children}</View>
-);
+const Footer: React.FC<BaseTutorialProps> = ({ style, children }) => {
+  const tailwind = useTailwind();
+  return (
+    <View style={[tailwind("flex flex-row justify-between py-4"), style]}>
+      {children}
+    </View>
+  );
+};
 
 type TutorialSubComponents = {
   Header: typeof Header;
@@ -58,7 +69,6 @@ const styles = StyleSheet.create({
     height: "100%",
     display: "flex",
     justifyContent: "flex-start",
-    paddingTop: 100,
     paddingLeft: 20,
     paddingRight: 20,
     paddingBottom: 20,
@@ -76,11 +86,5 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: "center",
     justifyContent: "center",
-  },
-  footer: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingBottom: 25,
   },
 });

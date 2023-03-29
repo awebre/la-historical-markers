@@ -14,7 +14,7 @@ import {
 import { MarkerFilter } from "components/markers";
 import LocationNavigationButton from "components/LocationNavigationButton";
 import MarkerSearchBar from "explore/MarkerSearchBar";
-import { tailwind } from "tailwind-util";
+import { useTailwind } from "tailwind-rn";
 import { StatusBar } from "expo-status-bar";
 
 const allFilters = [
@@ -31,6 +31,7 @@ const allFilters = [
 ];
 
 export default function ExploreScreen() {
+  const tailwind = useTailwind();
   const [region, setRegion] = useState({
     ...Locations.center,
     latitudeDelta: 5,
