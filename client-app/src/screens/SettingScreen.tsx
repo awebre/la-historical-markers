@@ -1,17 +1,22 @@
-import { A } from "@expo/html-elements";
-import { FontAwesome } from "@expo/vector-icons";
 import classnames from "classnames";
 import Constants from "expo-constants";
 import { StatusBar } from "expo-status-bar";
+import { useRef } from "react";
 import { KeyboardAvoidingView, Linking, Text, View } from "react-native";
+import Toast from "react-native-easy-toast";
 import { ScrollView } from "react-native-gesture-handler";
 import FeedbackForm from "settings/FeedbackForm";
 import { useTailwind } from "tailwind-rn";
+
+import { A } from "@expo/html-elements";
+import { FontAwesome } from "@expo/vector-icons";
 
 const { websiteUrl, privacyPolicyUrl, githubUrl } =
   Constants.expoConfig?.extra ?? {};
 export default function SettingScreen({}) {
   const tailwind = useTailwind();
+  const toast = useRef<Toast>(null);
+
   return (
     <KeyboardAvoidingView behavior="position">
       <ScrollView style={tailwind("bg-brown-light h-full pt-8 px-5")}>
@@ -26,8 +31,13 @@ export default function SettingScreen({}) {
           icon="legal"
         />
         <Heading text="Feedback" />
-        <FeedbackForm />
+        <FeedbackForm
+          onSuccess={() =>
+            toast.current?.show("Thanks for your feedback!", 3000)
+          }
+        />
       </ScrollView>
+      <Toast ref={toast} />
     </KeyboardAvoidingView>
   );
 }

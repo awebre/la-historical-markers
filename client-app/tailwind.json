@@ -65,6 +65,11 @@
 			"marginTop": 32
 		}
 	},
+	"mb-10": {
+		"style": {
+			"marginBottom": 40
+		}
+	},
 	"flex": {
 		"style": {
 			"display": "flex"
