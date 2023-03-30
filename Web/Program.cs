@@ -1,5 +1,6 @@
 using FastEndpoints;
 using FastEndpoints.Swagger;
+using LaHistoricalMarkers.Core.Behaviors;
 using LaHistoricalMarkers.Core.Data;
 using LaHistoricalMarkers.Core.Features.Authentication;
 using LaHistoricalMarkers.Core.Features.Emails;
@@ -11,6 +12,7 @@ using LAHistoricalMarkers.Core.Settings;
 using LAHistoricalMarkers.Web.Endpoints.Configuration;
 using LAHistoricalMarkers.Web.Security;
 using LAHistoricalMarkers.Web.Security.Policies;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +24,8 @@ builder.Services.AddScoped<MarkersService>();
 builder.Services.AddScoped<QueueService>();
 builder.Services.AddScoped<ModerationService>();
 
-builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblyContaining<MarkerDto>());
+builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblyContaining<MarkerDto>())
+    .AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionScopePipelineBehavior<,>));
 
 //Bind settings from config
 builder.Services.AddSingleton<StorageSettings>(services => services.GetRequiredService<IConfiguration>().GetSection(nameof(StorageSettings)).Get<StorageSettings>());

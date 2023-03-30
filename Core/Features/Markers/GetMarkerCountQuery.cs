@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using Dapper;
 using LaHistoricalMarkers.Core.Data;
 using MediatR;
@@ -22,11 +23,11 @@ public class GetMarkerCountQueryHandler : IRequestHandler<GetMarkerCountQuery, i
     public async Task<int> Handle(GetMarkerCountQuery request, CancellationToken cancellationToken)
     {
         await using var connection = new SqlConnection(connectionStringProvider.GetConnectionString());
-        await using var transaction = connection.BeginTransaction();
+        await connection.OpenAsync(cancellationToken);
         var count = await connection.ExecuteScalarAsync<int>(@"
 SELECT COUNT(*) FROM [LaHistoricalMarkers].[dbo].[Marker]
 WHERE [IsApproved] = 1
-", transaction);
+");
 
         return count;
     }
