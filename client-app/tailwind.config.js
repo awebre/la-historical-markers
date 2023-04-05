@@ -8,6 +8,9 @@ module.exports = {
           light: "#ecd9c6",
           DEFAULT: "#996633",
         },
+        gold: {
+          DEFAULT: "#dab574",
+        },
       },
       maxHeight: {
         0: "0",
