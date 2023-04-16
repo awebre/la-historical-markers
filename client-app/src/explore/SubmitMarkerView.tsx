@@ -48,6 +48,7 @@ export default function SubmitMarkerView({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [images, setImages] = useState<ImageSource[] | null>(null);
+  const [fileGuids, setFileGuids] = useState<string[]>([]);
   const [location, setLocation] = useState<Location | null>(null);
   const [name, setName] = useState<string | null>(null);
   const [description, setDescription] = useState<string | null>(null);
@@ -180,6 +181,8 @@ export default function SubmitMarkerView({
                 images={images}
                 setImages={setImages}
                 disabled={isSubmitting}
+                fileGuids={fileGuids}
+                setFileGuids={setFileGuids}
               />
             </View>
             {location?.latitude && location?.longitude ? (
@@ -255,6 +258,7 @@ export default function SubmitMarkerView({
           </Tutorial>
         </KeyboardAvoidingView>
       </Modal>
+      {/* This should really be a context, shouldn't it */}
       <SubmissionTutorialModal
         type={type}
         setType={setType}
@@ -272,6 +276,8 @@ export default function SubmitMarkerView({
         useDeviceLocation={useDeviceLocation}
         toggleDeviceLocation={toggleDeviceLocation}
         setLocation={manuallyUpdateMarkerLocation}
+        fileGuids={fileGuids}
+        setFileGuids={setFileGuids}
       />
     </View>
   );

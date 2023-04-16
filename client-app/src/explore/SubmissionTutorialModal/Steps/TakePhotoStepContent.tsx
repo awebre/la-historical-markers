@@ -6,15 +6,19 @@ import { useTailwind } from "tailwind-rn";
 import { StepContentProps } from "./types";
 
 export default function TakePhotoStepContent({
-  images: image,
-  setImages: setImage,
+  images,
+  setImages,
+  fileGuids,
+  setFileGuids,
 }: StepContentProps) {
   const tailwind = useTailwind();
   return (
     <View>
       <ImagePreviewPicker
-        images={image}
-        setImages={setImage}
+        fileGuids={fileGuids}
+        setFileGuids={setFileGuids}
+        images={images}
+        setImages={setImages}
         imageHeight={Dimensions.get("window").height - 600}
       />
       <Text style={tailwind("text-lg pt-2")}>

@@ -12,13 +12,16 @@ interface ImagePreviewPickerProps {
   setImages: (Images: ImageSource[] | null) => void;
   disabled?: boolean;
   imageHeight?: number;
+  fileGuids: string[];
+  setFileGuids: (guids: string[]) => void;
 }
 
 export default function ImagePreviewPicker({
-  images: images,
-  setImages: setImages,
+  images,
+  setImages,
+  fileGuids,
+  setFileGuids,
   disabled = false,
-  imageHeight = 150,
 }: ImagePreviewPickerProps) {
   const tailwind = useTailwind();
 
@@ -72,14 +75,15 @@ export default function ImagePreviewPicker({
     ]);
   }
 
-  function setPhotoGuid(uri: string, guid: string) {
-    const updatedImages =
-      images?.map((i) => (i.uri === uri ? { ...i, guid } : i)) ?? [];
-    setImages(updatedImages);
+  function setPhotoGuid(guid: string) {
+    setFileGuids([...fileGuids, guid]);
   }
 
-  function removePhoto(uri: string) {
+  function removePhoto(uri: string, guid?: string) {
     setImages(images?.filter((i) => i.uri !== uri) ?? []);
+    if (!guid) {
+      setFileGuids(fileGuids.filter((g) => g !== guid));
+    }
   }
 
   return (
@@ -103,14 +107,6 @@ export default function ImagePreviewPicker({
           color={colors.accent}
           disabled={disabled}
         />
-        {images && (
-          <Button
-            title="Remove All Images"
-            onPress={() => setImages(null)}
-            color={colors.alert}
-            disabled={disabled}
-          />
-        )}
       </View>
     </>
   );

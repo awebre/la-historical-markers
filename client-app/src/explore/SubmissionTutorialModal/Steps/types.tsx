@@ -12,6 +12,8 @@ interface StepContentProps extends LocationContentProps {
   setImages: (image: ImageSource[] | null) => void;
   useDeviceLocation: boolean;
   toggleDeviceLocation: () => void;
+  fileGuids: string[];
+  setFileGuids: (guids: string[]) => void;
 }
 
 interface LocationContentProps {

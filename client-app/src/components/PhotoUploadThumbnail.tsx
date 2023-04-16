@@ -12,12 +12,13 @@ import { FontAwesome } from "@expo/vector-icons";
 
 export interface PhotoUploadThumbnail extends ImageSource {
   setPhotoGuid: (uri: string, guid: string) => void;
-  removePhoto: (uri: string) => void;
+  removePhoto: (uri: string, guid?: string) => void;
 }
 
 export default function PhotoUploadThumbnail(props: PhotoUploadThumbnail) {
   const tailwind = useTailwind();
-  const { uri, guid, setPhotoGuid, removePhoto } = props;
+  const { uri, setPhotoGuid, removePhoto } = props;
+  const [guid, setGuid] = useState<string>("");
   const [hasError, setHasError] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -67,7 +68,7 @@ export default function PhotoUploadThumbnail(props: PhotoUploadThumbnail) {
         });
       }
     } finally {
-      removePhoto(uri);
+      removePhoto(uri, guid);
     }
   }
 
@@ -101,7 +102,7 @@ export default function PhotoUploadThumbnail(props: PhotoUploadThumbnail) {
 
       if (response.ok) {
         const photoResponse: PostPhotoResponse = await response.json();
-        setPhotoGuid(uri, photoResponse.photoGuid);
+        setGuid(photoResponse.photoGuid);
         console.log(photoResponse.photoGuid);
         setHasError(false);
       } else {
