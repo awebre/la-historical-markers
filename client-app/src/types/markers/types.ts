@@ -21,11 +21,18 @@ export enum MarkerType {
   other,
 }
 
-export interface ImageSource {
+export interface MarkerPhotoUpload {
   uri: string;
   height: number;
   width: number;
+  guid?: string | undefined;
 }
+
+export interface PostPhotoResponse
+{
+    photoGuid: string;
+}
+
 
 export type LoadableMarkers = {
   markers: MarkerDto[] | undefined;

@@ -2,7 +2,7 @@ using FastEndpoints;
 using LaHistoricalMarkers.Core.Features.Markers;
 using LAHistoricalMarkers.Web.Endpoints.Configuration;
 
-namespace LAHistoricalMarkers.Web.Endpoints;
+namespace LAHistoricalMarkers.Web.Endpoints.Markers;
 
 public class GetMarkersByRegion : PublicApiEndpoint<MarkersByRegionRequest, IEnumerable<MarkerDto>>
 {

@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { Modal, Text, View, Button, KeyboardAvoidingView } from "react-native";
 import { Tutorial } from "components";
+import React, { useState } from "react";
+import { Button, KeyboardAvoidingView, Modal, Text, View } from "react-native";
 import { colors } from "utils";
+
 import steps from "./Steps";
 import * as stepHelpers from "./Steps/helpers";
 import { StepContentProps } from "./Steps/types";
@@ -24,8 +25,8 @@ export default function SubmissionTutorialModal({
   setName,
   description,
   setDescription,
-  image,
-  setImage,
+  images: image,
+  setImages: setImage,
   useDeviceLocation,
   toggleDeviceLocation,
   setLocation,
@@ -45,33 +46,34 @@ export default function SubmissionTutorialModal({
     setCurrentStep(steps[0]);
     close();
   }
+  const { HeaderContent } = currentStep;
   return (
     <Modal visible={visible}>
       <KeyboardAvoidingView behavior="position">
         <Tutorial>
-          <Tutorial.Header text={currentStep.heading} />
+          <Tutorial.Header text={currentStep.heading}>
+            {HeaderContent && <HeaderContent />}
+          </Tutorial.Header>
           <Tutorial.Content>
-            <View>
-              <currentStep.Content
-                type={type}
-                setType={setType}
-                requestLocation={requestLocation}
-                location={location}
-                name={name}
-                setName={setName}
-                description={description}
-                setDescription={setDescription}
-                image={image}
-                setImage={setImage}
-                useDeviceLocation={useDeviceLocation}
-                toggleDeviceLocation={toggleDeviceLocation}
-                setLocation={setLocation}
-              />
-              <Text style={{ fontSize: 14, paddingTop: 20 }}>
-                Click Skip to jump to the end and complete the submission
-                manually.
-              </Text>
-            </View>
+            <currentStep.Content
+              type={type}
+              setType={setType}
+              requestLocation={requestLocation}
+              location={location}
+              name={name}
+              setName={setName}
+              description={description}
+              setDescription={setDescription}
+              images={image}
+              setImages={setImage}
+              useDeviceLocation={useDeviceLocation}
+              toggleDeviceLocation={toggleDeviceLocation}
+              setLocation={setLocation}
+            />
+            <Text style={{ fontSize: 14, paddingTop: 20 }}>
+              Click Skip to jump to the end and complete the submission
+              manually.
+            </Text>
           </Tutorial.Content>
           <Tutorial.Footer>
             <Button

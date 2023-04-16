@@ -1,7 +1,7 @@
 using LaHistoricalMarkers.Core.Features.Markers;
 using LAHistoricalMarkers.Web.Endpoints.Configuration;
 
-namespace LAHistoricalMarkers.Web.Endpoints;
+namespace LAHistoricalMarkers.Web.Endpoints.Markers;
 
 public class GetMarkerById : PublicApiEndpoint<MarkerByIdRequest, MarkerDto>
 {

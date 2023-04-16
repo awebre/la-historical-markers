@@ -1,37 +1,29 @@
-import React, { useEffect, useState } from "react";
-import { Alert, Platform, View, Button, Image, StyleSheet } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import React from "react";
+import { Alert, Button, Platform, StyleSheet, View } from "react-native";
+import { useTailwind } from "tailwind-rn";
 import { ImageSource } from "types";
 import { colors } from "utils";
 
+import PhotoUploadThumbnail from "./PhotoUploadThumbnail";
+
 interface ImagePreviewPickerProps {
-  image: ImageSource | null;
-  setImage: (image: ImageSource | null) => void;
+  images: ImageSource[] | null;
+  setImages: (Images: ImageSource[] | null) => void;
   disabled?: boolean;
   imageHeight?: number;
 }
 
 export default function ImagePreviewPicker({
-  image,
-  setImage,
+  images: images,
+  setImages: setImages,
   disabled = false,
   imageHeight = 150,
 }: ImagePreviewPickerProps) {
-  const [imageWidth, setImageWidth] = useState<number>(0);
-
-  useEffect(() => {
-    //TODO: this should also handle a maxWidth
-    if (image !== null) {
-      const widthByHeight = image.width / image.height;
-      const newWidth = widthByHeight * imageHeight;
-      if (newWidth !== imageWidth) {
-        setImageWidth(newWidth);
-      }
-    }
-  }, [image, imageHeight]);
+  const tailwind = useTailwind();
 
   async function pickImage() {
-    Alert.alert("Select Image", "How would you like to select the image?", [
+    Alert.alert("Select Images", "How would you like to select your images?", [
       {
         text: "Camera Roll",
         onPress: async () => {
@@ -44,11 +36,14 @@ export default function ImagePreviewPicker({
           }
           const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsMultipleSelection: true,
+            selectionLimit: 10,
+            orderedSelection: true,
             exif: false,
           });
           if (!result.canceled) {
-            const { uri, width, height } = result;
-            setImage({ uri, width, height });
+            const existingImages = images ?? [];
+            setImages(existingImages.concat(result.assets));
           }
         },
       },
@@ -61,13 +56,15 @@ export default function ImagePreviewPicker({
           }
           const result = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsMultipleSelection: true,
+            selectionLimit: 10,
+            orderedSelection: true,
             exif: false,
           });
           if (!result.canceled) {
-            const image = result.assets.at(0);
-            if (image) {
-              const { uri, width, height } = image;
-              setImage({ uri, width, height });
+            if (result.assets) {
+              const existingImages = images ?? [];
+              setImages(existingImages.concat(result.assets));
             }
           }
         },
@@ -75,27 +72,41 @@ export default function ImagePreviewPicker({
     ]);
   }
 
+  function setPhotoGuid(uri: string, guid: string) {
+    const updatedImages =
+      images?.map((i) => (i.uri === uri ? { ...i, guid } : i)) ?? [];
+    setImages(updatedImages);
+  }
+
+  function removePhoto(uri: string) {
+    setImages(images?.filter((i) => i.uri !== uri) ?? []);
+  }
+
   return (
     <>
-      <View style={styles.thumbnailContainer}>
-        {image && (
-          <Image
-            source={image}
-            style={{ height: imageHeight, width: imageWidth }}
-          />
-        )}
+      <View style={tailwind("flex flex-row flex-wrap justify-evenly mt-4")}>
+        {images &&
+          images.map((i) => (
+            <PhotoUploadThumbnail
+              key={i.uri}
+              {...i}
+              setPhotoGuid={setPhotoGuid}
+              removePhoto={removePhoto}
+            />
+          ))}
       </View>
+
       <View style={styles.imageButtonContainer}>
         <Button
-          title={`${!image ? "Add" : "Update"} Image`}
+          title={"Add Images"}
           onPress={pickImage}
           color={colors.accent}
           disabled={disabled}
         />
-        {image && (
+        {images && (
           <Button
-            title="Clear Image"
-            onPress={() => setImage(null)}
+            title="Remove All Images"
+            onPress={() => setImages(null)}
             color={colors.alert}
             disabled={disabled}
           />

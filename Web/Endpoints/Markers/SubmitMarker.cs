@@ -6,7 +6,7 @@ using LaHistoricalMarkers.Core.Infrastructure;
 using LAHistoricalMarkers.Core.Settings;
 using LAHistoricalMarkers.Web.Endpoints.Configuration;
 
-namespace LAHistoricalMarkers.Web.Endpoints;
+namespace LAHistoricalMarkers.Web.Endpoints.Markers;
 
 public class SubmitMarker : PublicApiEndpoint<MarkerSubmissionRequest, PendingSubmissionDto>
 {
