@@ -248,6 +248,7 @@ export default function SubmitMarkerView({
                 title="Save"
                 onPress={() => setIsModalVisible(false)}
                 color={colors.primary}
+                disabled={photos.some((p) => p.uploadState === "pending")}
               />
             </Tutorial.Footer>
           </Tutorial>

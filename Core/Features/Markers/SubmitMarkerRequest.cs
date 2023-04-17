@@ -52,7 +52,7 @@ public class SubmitMarkerRequestHandler : IRequestHandler<SubmitMarkerRequest, P
         else
         {
             var fileGuid = request.ImageGuids.FirstOrDefault();
-            fileHandle = fileGuid == Guid.Empty ? null : fileGuid.ToString();
+            fileHandle = fileGuid == Guid.Empty ? null : $"{fileGuid.ToString()}.png";
         }
 
         await using var connection = new SqlConnection(connectionStringProvider.GetConnectionString());
