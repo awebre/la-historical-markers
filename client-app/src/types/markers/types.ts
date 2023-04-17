@@ -26,6 +26,7 @@ export interface MarkerPhotoUpload {
   height: number;
   width: number;
   guid?: string | undefined;
+  uploadState: "pending" | "uploading" | "success" | "error"
 }
 
 export interface PostPhotoResponse

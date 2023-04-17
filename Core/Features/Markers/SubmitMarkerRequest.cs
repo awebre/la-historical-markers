@@ -23,7 +23,7 @@ public class SubmitMarkerRequestHandler : IRequestHandler<SubmitMarkerRequest, P
 {
     private readonly IConnectionStringProvider connectionStringProvider;
     private readonly ImageStorageService imageStorageService;
-    private readonly ILogger logger;
+    private readonly ILogger<SubmitMarkerRequest> logger;
     private readonly QueueService queueService;
     private readonly QueueSettings queueSettings;
 
@@ -32,7 +32,7 @@ public class SubmitMarkerRequestHandler : IRequestHandler<SubmitMarkerRequest, P
         IConnectionStringProvider connectionStringProvider,
         QueueService queueService,
         QueueSettings queueSettings,
-        ILogger logger)
+        ILogger<SubmitMarkerRequest> logger)
     {
         this.imageStorageService = imageStorageService;
         this.connectionStringProvider = connectionStringProvider;
@@ -43,7 +43,7 @@ public class SubmitMarkerRequestHandler : IRequestHandler<SubmitMarkerRequest, P
 
     public async Task<PendingSubmissionDto> Handle(SubmitMarkerRequest request, CancellationToken cancellationToken)
     {
-        string? fileHandle = null;
+        string fileHandle = null;
         if (!string.IsNullOrEmpty(request.Base64Image))
         {
             var fileBytes = Convert.FromBase64String(request.Base64Image);

@@ -6,9 +6,9 @@ import {
   Tutorial,
 } from "components";
 import LocationEntrySwitch from "components/location";
-import * as ImageManipulator from "expo-image-manipulator";
 import * as Linking from "expo-linking";
 import { useLocation, useSavedMarkers } from "hooks";
+import { usePhotoSelectionContext } from "photos/PhotoSelectionContext";
 import React, { useEffect, useState } from "react";
 import {
   Button,
@@ -21,7 +21,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { ImageSource, Location, MarkerDto, MarkerType } from "types";
+import { Location, MarkerDto, MarkerType } from "types";
 import { colors, confirm, routes, url } from "utils";
 
 import MarkerForm from "./MarkerForm";
@@ -47,14 +47,13 @@ export default function SubmitMarkerView({
   const [useDeviceLocation, setUseDeviceLocation] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [images, setImages] = useState<ImageSource[] | null>(null);
-  const [fileGuids, setFileGuids] = useState<string[]>([]);
   const [location, setLocation] = useState<Location | null>(null);
   const [name, setName] = useState<string | null>(null);
   const [description, setDescription] = useState<string | null>(null);
   const [type, setType] = useState<MarkerType>(MarkerType.official);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { addMarker } = useSavedMarkers();
+  const { photos } = usePhotoSelectionContext();
 
   const { updateLocation, permissionGranted } = useLocation({
     setLocation: (location) => {
@@ -85,7 +84,9 @@ export default function SubmitMarkerView({
         const resp = await fetch(`${url}/api/markers`, {
           method: "post",
           body: JSON.stringify({
-            imageGuids: images?.map((x) => x.guid) ?? [],
+            imageGuids: photos
+              .filter((p) => p.guid !== undefined)
+              .map((p) => p.guid),
             ...location,
             type,
             name,
@@ -177,13 +178,7 @@ export default function SubmitMarkerView({
                   onPress={() => setIsModalVisible(true)}
                 />
               )}
-              <ImagePreviewPicker
-                images={images}
-                setImages={setImages}
-                disabled={isSubmitting}
-                fileGuids={fileGuids}
-                setFileGuids={setFileGuids}
-              />
+              <ImagePreviewPicker />
             </View>
             {location?.latitude && location?.longitude ? (
               <MarkerForm
@@ -271,13 +266,9 @@ export default function SubmitMarkerView({
         requestLocation={updateLocation}
         cancel={onCancel}
         close={() => setTutorialVisible(false)}
-        images={images}
-        setImages={setImages}
         useDeviceLocation={useDeviceLocation}
         toggleDeviceLocation={toggleDeviceLocation}
         setLocation={manuallyUpdateMarkerLocation}
-        fileGuids={fileGuids}
-        setFileGuids={setFileGuids}
       />
     </View>
   );

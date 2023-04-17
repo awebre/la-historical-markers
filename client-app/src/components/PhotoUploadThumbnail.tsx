@@ -1,7 +1,8 @@
 import classNames from "classnames";
 import { Image } from "expo-image";
 import * as ImageManipulator from "expo-image-manipulator";
-import { useEffect, useRef, useState } from "react";
+import { usePhotoSelectionContext } from "photos/PhotoSelectionContext";
+import { useEffect } from "react";
 import { Alert, View } from "react-native";
 import { useTailwind } from "tailwind-rn";
 import { ImageSource } from "types";
@@ -10,21 +11,12 @@ import { url } from "utils";
 
 import { FontAwesome } from "@expo/vector-icons";
 
-export interface PhotoUploadThumbnail extends ImageSource {
-  setPhotoGuid: (uri: string, guid: string) => void;
-  removePhoto: (uri: string, guid?: string) => void;
-}
+export interface PhotoUploadThumbnail extends ImageSource {}
 
 export default function PhotoUploadThumbnail(props: PhotoUploadThumbnail) {
   const tailwind = useTailwind();
-  const { uri, setPhotoGuid, removePhoto } = props;
-  const [guid, setGuid] = useState<string>("");
-  const [hasError, setHasError] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    uploadPhoto();
-  }, [uri]);
+  const { uri, guid, uploadState } = props;
+  const { uploadPhoto, removePhoto } = usePhotoSelectionContext();
 
   return (
     <View
@@ -38,9 +30,13 @@ export default function PhotoUploadThumbnail(props: PhotoUploadThumbnail) {
         source={props}
         enableLiveTextInteraction={true}
       />
-      {hasError && <IconBadge icon="warning" onPress={handleError} />}
-      {isLoading && <IconBadge icon="refresh" />}
-      {(guid || hasError) && <IconBadge icon="trash" onPress={promptDelete} />}
+      {uploadState === "error" && (
+        <IconBadge icon="warning" onPress={handleError} />
+      )}
+      {uploadState === "uploading" && <IconBadge icon="refresh" />}
+      {uploadState !== "uploading" && (
+        <IconBadge icon="trash" onPress={promptDelete} />
+      )}
     </View>
   );
 
@@ -48,7 +44,7 @@ export default function PhotoUploadThumbnail(props: PhotoUploadThumbnail) {
     Alert.alert(
       "Photo Upload Issue",
       "We were unable to successfully upload your photo. Would you like to try again?",
-      [{ text: "Cancel" }, { text: "Retry", onPress: () => uploadPhoto() }]
+      [{ text: "Cancel" }, { text: "Retry", onPress: () => uploadPhoto(props) }]
     );
   }
 
@@ -68,50 +64,7 @@ export default function PhotoUploadThumbnail(props: PhotoUploadThumbnail) {
         });
       }
     } finally {
-      removePhoto(uri, guid);
-    }
-  }
-
-  async function uploadPhoto() {
-    if (!uri || !!guid) {
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      const png = await ImageManipulator.manipulateAsync(
-        uri,
-        [{ resize: { height: props.height > 1000 ? 1000 : props.height } }],
-        {
-          format: ImageManipulator.SaveFormat.PNG,
-          compress: 0,
-        }
-      );
-
-      const filename = png.uri.split("/").pop();
-      const formData = new FormData();
-      formData.append("file", {
-        type: "img/png",
-        uri: png.uri,
-        name: filename,
-      } as unknown as Blob);
-      const response = await fetch(`${url}/api/marker-photos`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (response.ok) {
-        const photoResponse: PostPhotoResponse = await response.json();
-        setGuid(photoResponse.photoGuid);
-        console.log(photoResponse.photoGuid);
-        setHasError(false);
-      } else {
-        setHasError(true);
-      }
-    } catch {
-      setHasError(true);
-    } finally {
-      setIsLoading(false);
+      removePhoto(props);
     }
   }
 }

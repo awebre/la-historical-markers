@@ -25,13 +25,9 @@ export default function SubmissionTutorialModal({
   setName,
   description,
   setDescription,
-  images: image,
-  setImages: setImage,
   useDeviceLocation,
   toggleDeviceLocation,
   setLocation,
-  fileGuids,
-  setFileGuids,
 }: SubmissionTutorialModalProps) {
   const [currentStep, setCurrentStep] = useState(steps[0]);
   function goToNextStep() {
@@ -66,13 +62,9 @@ export default function SubmissionTutorialModal({
               setName={setName}
               description={description}
               setDescription={setDescription}
-              images={image}
-              setImages={setImage}
               useDeviceLocation={useDeviceLocation}
               toggleDeviceLocation={toggleDeviceLocation}
               setLocation={setLocation}
-              fileGuids={fileGuids}
-              setFileGuids={setFileGuids}
             />
             <Text style={{ fontSize: 14, paddingTop: 20 }}>
               Click Skip to jump to the end and complete the submission

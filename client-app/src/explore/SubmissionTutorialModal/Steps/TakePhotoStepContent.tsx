@@ -1,26 +1,13 @@
 import { ImagePreviewPicker } from "components";
 import React from "react";
-import { Dimensions, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useTailwind } from "tailwind-rn";
 
-import { StepContentProps } from "./types";
-
-export default function TakePhotoStepContent({
-  images,
-  setImages,
-  fileGuids,
-  setFileGuids,
-}: StepContentProps) {
+export default function TakePhotoStepContent() {
   const tailwind = useTailwind();
   return (
     <View>
-      <ImagePreviewPicker
-        fileGuids={fileGuids}
-        setFileGuids={setFileGuids}
-        images={images}
-        setImages={setImages}
-        imageHeight={Dimensions.get("window").height - 600}
-      />
+      <ImagePreviewPicker />
       <Text style={tailwind("text-lg pt-2")}>
         If you don't have an image or can't safely take a photo of the marker,
         that's okay! Just hit Next.

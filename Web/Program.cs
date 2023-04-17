@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 var builder = WebApplication.CreateBuilder(args);
 
 //Register custom services
+builder.Services.AddLogging();
 builder.Services.AddSingleton<IConnectionStringProvider>(s =>
     new SqlConnectionStringProvider(s.GetRequiredService<IConfiguration>().GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<OtpAuthService>();
