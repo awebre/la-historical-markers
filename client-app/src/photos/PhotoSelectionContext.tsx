@@ -102,7 +102,7 @@ export function PhotoSelectionProvider({
     try {
       const png = await ImageManipulator.manipulateAsync(
         image.uri,
-        [{ resize: { height: image.height > 1000 ? 1000 : image.height } }],
+        [{ resize: { height: image.height > 1000 ? 1000 : image.height } }], //TODO: probably want to pick the larger dimension and pair that one down instead of assuming vertical?
         {
           format: ImageManipulator.SaveFormat.PNG,
           compress: 0,
