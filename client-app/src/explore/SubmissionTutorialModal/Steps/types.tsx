@@ -8,8 +8,6 @@ interface StepContentProps extends LocationContentProps {
   description: string | null;
   setDescription: (description: string | null) => void;
   requestLocation: () => void;
-  image: ImageSource | null;
-  setImage: (image: ImageSource | null) => void;
   useDeviceLocation: boolean;
   toggleDeviceLocation: () => void;
 }

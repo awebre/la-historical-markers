@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace LaHistoricalMarkers.Core.Features.Markers;
 
@@ -23,4 +24,11 @@ public class MarkerDto
     public decimal Distance { get; set; }
 
     public MarkerType Type { get; set; }
+
+    public List<MarkerPhotoDto> Photos { get; set; } = new();
+}
+
+public record MarkerPhotoDto(string FileGuid, int MarkerId)
+{
+    public string FileName => $"{FileGuid.ToLower()}.png";
 }

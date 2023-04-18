@@ -1,12 +1,12 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import {
-  StyleProp,
-  StyleSheet,
-  ViewStyle,
-  View,
-  Text,
   Dimensions,
   ScrollView,
+  StyleProp,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
 } from "react-native";
 import { useTailwind } from "tailwind-rn";
 import { colors } from "utils";
@@ -19,6 +19,7 @@ interface BaseTutorialProps {
 interface TutorialHeaderProps {
   style?: StyleProp<ViewStyle>;
   text: string;
+  children?: ReactNode | undefined;
 }
 
 const Tutorial: React.FC<BaseTutorialProps> & TutorialSubComponents = ({
@@ -31,9 +32,10 @@ const Tutorial: React.FC<BaseTutorialProps> & TutorialSubComponents = ({
   );
 };
 
-const Header: React.FC<TutorialHeaderProps> = ({ style, text }) => (
+const Header: React.FC<TutorialHeaderProps> = ({ style, text, children }) => (
   <View style={[styles.header, style]}>
     <Text style={[styles.heading]}>{text}</Text>
+    {children}
   </View>
 );
 

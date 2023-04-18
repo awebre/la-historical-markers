@@ -18,7 +18,7 @@ The "new" api will rely on Azure Container Apps to achieve the limited budget fo
 
 This project utilizes Azure Container Apps to reduce cost by scaling to 0. It also enables a custom Azure Store Queue processing system via a couple of console apps and KEDA scaling rules.
 
-There are two data stores, Azure SQL and Azure Storage Blobs/Queues. This project relies on Spatial Data Types, which means that **it does work with Azure SQL Edge (the only version of Azure/MS SQL that supports arm).** Azure Storage Blobs are used to store images and Azure Storage Queues are used to process notifications.
+There are two data stores, Azure SQL and Azure Storage Blobs/Queues. This project relies on Spatial Data Types, which means that **it does NOT work with Azure SQL Edge**(the only version of Azure/MS SQL that supports ARM). Azure Storage Blobs are used to store images and Azure Storage Queues are used to process notifications.
 
 ## Setup
 

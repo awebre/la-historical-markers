@@ -18,7 +18,9 @@ using Microsoft.AspNetCore.Authorization;
 var builder = WebApplication.CreateBuilder(args);
 
 //Register custom services
-builder.Services.AddSingleton<IConnectionStringProvider>(s => new SqlConnectionStringProvider(s.GetRequiredService<IConfiguration>().GetConnectionString("DefaultConnection")));
+builder.Services.AddLogging();
+builder.Services.AddSingleton<IConnectionStringProvider>(s =>
+    new SqlConnectionStringProvider(s.GetRequiredService<IConfiguration>().GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<OtpAuthService>();
 builder.Services.AddScoped<MarkersService>();
 builder.Services.AddScoped<QueueService>();
@@ -28,28 +30,25 @@ builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblyContain
     .AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionScopePipelineBehavior<,>));
 
 //Bind settings from config
-builder.Services.AddSingleton<StorageSettings>(services => services.GetRequiredService<IConfiguration>().GetSection(nameof(StorageSettings)).Get<StorageSettings>());
-builder.Services.AddSingleton<QueueSettings>(services => services.GetRequiredService<IConfiguration>().GetSection(nameof(QueueSettings)).Get<QueueSettings>());
-builder.Services.AddSingleton<NotificationSettings>(services => services.GetRequiredService<IConfiguration>().GetSection(nameof(NotificationSettings)).Get<NotificationSettings>());
+builder.Services.AddSingleton<StorageSettings>(services =>
+    services.GetRequiredService<IConfiguration>().GetSection(nameof(StorageSettings)).Get<StorageSettings>());
+builder.Services.AddSingleton<QueueSettings>(services =>
+    services.GetRequiredService<IConfiguration>().GetSection(nameof(QueueSettings)).Get<QueueSettings>());
+builder.Services.AddSingleton<NotificationSettings>(services =>
+    services.GetRequiredService<IConfiguration>().GetSection(nameof(NotificationSettings)).Get<NotificationSettings>());
 
 builder.Services.AddScoped<ImageStorageService>(s =>
 {
     var storageSettings = s.GetService<StorageSettings>();
-    if (storageSettings is null)
-    {
-        throw new Exception($"{nameof(StorageSettings)} must be populated via Configuration");
-    }
-    return new ImageStorageService(storageSettings.Uri, storageSettings.Account, storageSettings.Key, storageSettings.Container);
+    if (storageSettings is null) throw new Exception($"{nameof(StorageSettings)} must be populated via Configuration");
+    return new ImageStorageService(storageSettings);
 });
 
 //TODO: this app doesn't actually use sendgrid, so we need to decouple things a little better
 builder.Services.AddScoped<SendGridEmailService>(s =>
 {
     var config = s.GetService<IConfiguration>();
-    if (config is null)
-    {
-        throw new Exception("IConfiguration was not registered");
-    }
+    if (config is null) throw new Exception("IConfiguration was not registered");
     return new SendGridEmailService(config.GetSection("SendGrid").Value, config.GetSection("FromEmail").Value);
 });
 
@@ -60,10 +59,7 @@ builder.Services.AddSwaggerDoc(s =>
     s.EndpointFilter(e =>
     {
         //Locally, we want the ability to test all endpoints via Swagger
-        if (builder.Environment.IsEnvironment("local"))
-        {
-            return true;
-        }
+        if (builder.Environment.IsEnvironment("local")) return true;
 
         return e.EndpointTags?.Contains(EndpointTagNames.PublicApi) is true;
     });
@@ -76,7 +72,8 @@ builder.Services
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy(CustomPolicies.MarkerAccess, policy => policy.Requirements.Add(new MarkerAccessPolicyRequirement()));
+    options.AddPolicy(CustomPolicies.MarkerAccess,
+        policy => policy.Requirements.Add(new MarkerAccessPolicyRequirement()));
 });
 builder.Services.AddSingleton<IAuthorizationHandler, MarkerAccessHandler>();
 

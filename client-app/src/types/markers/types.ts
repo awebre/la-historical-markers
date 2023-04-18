@@ -14,18 +14,32 @@ export type MarkerDto = {
   createdTimestamp: Date;
   distance: number;
   type: MarkerType;
+  photos: MarkerPhotoDto[];
 } & Location;
+
+export interface MarkerPhotoDto {
+  fileGuid: string;
+  fileName: string;
+}
 
 export enum MarkerType {
   official,
   other,
 }
 
-export interface ImageSource {
+export interface MarkerPhotoUpload {
   uri: string;
   height: number;
   width: number;
+  guid?: string | undefined;
+  uploadState: "pending" | "uploading" | "success" | "error"
 }
+
+export interface PostPhotoResponse
+{
+    photoGuid: string;
+}
+
 
 export type LoadableMarkers = {
   markers: MarkerDto[] | undefined;

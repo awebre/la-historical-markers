@@ -1,23 +1,23 @@
 import {
+  Authored,
+  CustomCategory,
+  ForLater,
+  LoadableMarker,
+  LoadableMarkers,
   Location,
   MarkerDto,
-  ImageSource,
+  MarkerPhotoUpload,
   MarkerType,
-  LoadableMarkers,
-  LoadableMarker,
   SavedMarker,
   SavedMarkerCategory,
-  CustomCategory,
   Visited,
-  Authored,
-  ForLater,
 } from "./markers/types";
 import { RootParams } from "./navigation/types";
 
 export {
   Location,
   MarkerDto,
-  ImageSource,
+  MarkerPhotoUpload as ImageSource,
   MarkerType,
   LoadableMarkers,
   LoadableMarker,

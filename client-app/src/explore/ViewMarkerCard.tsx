@@ -1,21 +1,23 @@
+import { Card, headerTextStyle, PhotoCarousel } from "components";
+import { Image } from "expo-image";
+import { useSavedMarkers } from "hooks";
 import React, { useState } from "react";
 import {
-  Text,
-  ScrollView,
-  View,
-  StyleSheet,
   Button,
-  Image,
+  ScrollView,
   StyleProp,
+  StyleSheet,
+  Text,
+  View,
   ViewStyle,
 } from "react-native";
-import { Card, headerTextStyle } from "components";
+import { SavedMarkerModal } from "saved-markers";
+import { useTailwind } from "tailwind-rn";
 import { MarkerDto } from "types";
 import { colors, humanizedDistance } from "utils";
 import { photosUrl } from "utils/urls";
+
 import ReportMarkerModal from "./ReportMarkerModal";
-import { useSavedMarkers } from "hooks";
-import { SavedMarkerModal } from "saved-markers";
 
 interface ViewMarkerCardProps {
   style: StyleProp<ViewStyle>;
@@ -32,6 +34,7 @@ export default function ViewMarkerCard({
   const [saveMarkerVisible, setSaveMarkerVisible] = useState(false);
   const { markers: savedMarkers } = useSavedMarkers();
   const savedMarker = savedMarkers.find((m) => m.id === marker.id);
+  const tailwind = useTailwind();
   return (
     <Card style={[styles.card, style]}>
       <Card.Header style={styles.cardHeader}>
@@ -42,19 +45,18 @@ export default function ViewMarkerCard({
       </Card.Header>
       <Card.Body>
         <ScrollView>
-          {marker.imageFileName && (
-            <Image
-              source={{
-                uri: `${photosUrl}/${marker.imageFileName}`,
-              }}
-              style={{
-                width: "100%",
-                aspectRatio: 1,
-                resizeMode: "contain",
-                marginBottom: 10,
-              }}
-            />
-          )}
+          <PhotoCarousel
+            photos={
+              marker.photos.length === 0
+                ? [
+                    {
+                      fileName: marker.imageFileName ?? "",
+                      fileGuid: marker.imageFileName ?? "",
+                    },
+                  ]
+                : marker.photos
+            }
+          />
           <Text>{marker.description}</Text>
         </ScrollView>
       </Card.Body>

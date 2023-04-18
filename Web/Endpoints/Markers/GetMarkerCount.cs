@@ -3,7 +3,7 @@ using LaHistoricalMarkers.Core.Features.Markers;
 using LAHistoricalMarkers.Web.Endpoints.Configuration;
 using MediatR;
 
-namespace LAHistoricalMarkers.Web.Endpoints;
+namespace LAHistoricalMarkers.Web.Endpoints.Markers;
 
 public class GetMarkerCount : PublicApiEndpoint<EmptyRequest, int>
 {

@@ -1,21 +1,22 @@
-import React, { useState, useRef, useEffect } from "react";
-import { StyleSheet, Dimensions, KeyboardAvoidingView } from "react-native";
-import MapView, { Marker } from "react-native-maps";
-import Toast from "react-native-easy-toast";
-import { Location, MarkerDto, MarkerType } from "types";
-import { MarkersSearchView, SubmitMarkerView } from "explore";
-import { useDebounce, useLocation, useMarkers } from "hooks";
-import { Locations } from "utils";
-import TermsAndConditionsModal from "terms/TermsAndConditionsModal";
+import LocationNavigationButton from "components/LocationNavigationButton";
+import { MarkerFilter } from "components/markers";
 import {
   getMarkerColor,
   getMarkerTypeDescription,
 } from "components/markers/utils";
-import { MarkerFilter } from "components/markers";
-import LocationNavigationButton from "components/LocationNavigationButton";
+import { MarkersSearchView, SubmitMarkerView } from "explore";
 import MarkerSearchBar from "explore/MarkerSearchBar";
-import { useTailwind } from "tailwind-rn";
 import { StatusBar } from "expo-status-bar";
+import { useDebounce, useLocation, useMarkers } from "hooks";
+import { PhotoSelectionProvider } from "photos";
+import React, { useEffect, useRef, useState } from "react";
+import { Dimensions, KeyboardAvoidingView, StyleSheet } from "react-native";
+import Toast from "react-native-easy-toast";
+import MapView, { Marker } from "react-native-maps";
+import { useTailwind } from "tailwind-rn";
+import TermsAndConditionsModal from "terms/TermsAndConditionsModal";
+import { Location, MarkerDto, MarkerType } from "types";
+import { Locations } from "utils";
 
 const allFilters = [
   {
@@ -158,22 +159,24 @@ export default function ExploreScreen() {
           />
         )}
         {isAdding && (
-          <SubmitMarkerView
-            cardStyles={styles.viewCard}
-            cancel={() => {
-              setIsAdding(false);
-              setNewMarker(null);
-            }}
-            onSuccess={(name) => {
-              setIsAdding(false);
-              toast.current?.show(
-                `We received your submission of ${name}`,
-                3000
-              );
-              setNewMarker(null);
-            }}
-            updateMapMarker={setNewMarkerAndNavigate}
-          />
+          <PhotoSelectionProvider>
+            <SubmitMarkerView
+              cardStyles={styles.viewCard}
+              cancel={() => {
+                setIsAdding(false);
+                setNewMarker(null);
+              }}
+              onSuccess={(name) => {
+                setIsAdding(false);
+                toast.current?.show(
+                  `We received your submission of ${name}`,
+                  3000
+                );
+                setNewMarker(null);
+              }}
+              updateMapMarker={setNewMarkerAndNavigate}
+            />
+          </PhotoSelectionProvider>
         )}
         <Toast ref={toast} />
         <TermsAndConditionsModal />

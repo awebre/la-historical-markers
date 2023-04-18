@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import {
   Dimensions,
   StyleProp,
@@ -6,11 +6,13 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons";
 import { colors } from "utils";
+
+import { FontAwesome5 } from "@expo/vector-icons";
 
 type SearchBarProps = {
   style?: StyleProp<ViewStyle>;
+  children?: ReactNode | undefined;
 };
 
 const SearchBar: React.FC<SearchBarProps> = ({ style, children }) => {

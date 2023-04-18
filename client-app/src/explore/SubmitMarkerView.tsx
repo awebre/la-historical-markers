@@ -1,16 +1,3 @@
-import React, { useEffect, useState } from "react";
-import {
-  StyleProp,
-  Text,
-  ViewStyle,
-  StyleSheet,
-  Button,
-  ScrollView,
-  View,
-  Modal,
-} from "react-native";
-import * as ImageManipulator from "expo-image-manipulator";
-import * as Linking from "expo-linking";
 import {
   Alert,
   Card,
@@ -18,14 +5,28 @@ import {
   ImagePreviewPicker,
   Tutorial,
 } from "components";
-import { colors, confirm, routes, url } from "utils";
-import { useLocation, useSavedMarkers } from "hooks";
-import { ImageSource, Location, MarkerDto, MarkerType } from "types";
-import SubmissionTutorialModal from "./SubmissionTutorialModal/SubmissionTutorialModal";
-import MarkerForm from "./MarkerForm";
 import LocationEntrySwitch from "components/location";
+import * as Linking from "expo-linking";
+import { useLocation, useSavedMarkers } from "hooks";
+import { usePhotoSelectionContext } from "photos/PhotoSelectionContext";
+import React, { useEffect, useState } from "react";
+import {
+  Button,
+  KeyboardAvoidingView,
+  Modal,
+  ScrollView,
+  StyleProp,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+} from "react-native";
+import { Location, MarkerDto, MarkerType } from "types";
+import { colors, confirm, routes, url } from "utils";
+
+import MarkerForm from "./MarkerForm";
 import ManualLocationStepContent from "./SubmissionTutorialModal/Steps/ManualLocationStepContent";
-import { KeyboardAvoidingView } from "react-native";
+import SubmissionTutorialModal from "./SubmissionTutorialModal/SubmissionTutorialModal";
 
 interface SubmitMarkerViewProps {
   cardStyles: StyleProp<ViewStyle>;
@@ -46,13 +47,13 @@ export default function SubmitMarkerView({
   const [useDeviceLocation, setUseDeviceLocation] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [image, setImage] = useState<ImageSource | null>(null);
   const [location, setLocation] = useState<Location | null>(null);
   const [name, setName] = useState<string | null>(null);
   const [description, setDescription] = useState<string | null>(null);
   const [type, setType] = useState<MarkerType>(MarkerType.official);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { addMarker } = useSavedMarkers();
+  const { photos } = usePhotoSelectionContext();
 
   const { updateLocation, permissionGranted } = useLocation({
     setLocation: (location) => {
@@ -80,22 +81,12 @@ export default function SubmitMarkerView({
     setIsSubmitting(true);
     if (location && name && description) {
       try {
-        let base64Image;
-        const localUri = image?.uri;
-        if (localUri) {
-          const { base64 } = await ImageManipulator.manipulateAsync(
-            localUri,
-            [{ resize: { height: 500 } }],
-            { format: ImageManipulator.SaveFormat.PNG, base64: true }
-          );
-
-          base64Image = base64;
-        }
-
         const resp = await fetch(`${url}/api/markers`, {
           method: "post",
           body: JSON.stringify({
-            base64Image,
+            imageGuids: photos
+              .filter((p) => p.guid !== undefined)
+              .map((p) => p.guid),
             ...location,
             type,
             name,
@@ -187,11 +178,7 @@ export default function SubmitMarkerView({
                   onPress={() => setIsModalVisible(true)}
                 />
               )}
-              <ImagePreviewPicker
-                image={image}
-                setImage={setImage}
-                disabled={isSubmitting}
-              />
+              <ImagePreviewPicker />
             </View>
             {location?.latitude && location?.longitude ? (
               <MarkerForm
@@ -261,11 +248,13 @@ export default function SubmitMarkerView({
                 title="Save"
                 onPress={() => setIsModalVisible(false)}
                 color={colors.primary}
+                disabled={photos.some((p) => p.uploadState === "pending")}
               />
             </Tutorial.Footer>
           </Tutorial>
         </KeyboardAvoidingView>
       </Modal>
+      {/* This should really be a context, shouldn't it */}
       <SubmissionTutorialModal
         type={type}
         setType={setType}
@@ -278,8 +267,6 @@ export default function SubmitMarkerView({
         requestLocation={updateLocation}
         cancel={onCancel}
         close={() => setTutorialVisible(false)}
-        image={image}
-        setImage={setImage}
         useDeviceLocation={useDeviceLocation}
         toggleDeviceLocation={toggleDeviceLocation}
         setLocation={manuallyUpdateMarkerLocation}

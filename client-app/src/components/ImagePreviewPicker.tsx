@@ -1,105 +1,35 @@
-import React, { useEffect, useState } from "react";
-import { Alert, Platform, View, Button, Image, StyleSheet } from "react-native";
-import * as ImagePicker from "expo-image-picker";
-import { ImageSource } from "types";
+import { usePhotoSelectionContext } from "photos/PhotoSelectionContext";
+import React from "react";
+import { Button, StyleSheet, View } from "react-native";
+import { useTailwind } from "tailwind-rn";
 import { colors } from "utils";
 
+import PhotoUploadThumbnail from "./PhotoUploadThumbnail";
+
 interface ImagePreviewPickerProps {
-  image: ImageSource | null;
-  setImage: (image: ImageSource | null) => void;
   disabled?: boolean;
-  imageHeight?: number;
 }
 
 export default function ImagePreviewPicker({
-  image,
-  setImage,
   disabled = false,
-  imageHeight = 150,
 }: ImagePreviewPickerProps) {
-  const [imageWidth, setImageWidth] = useState<number>(0);
-
-  useEffect(() => {
-    //TODO: this should also handle a maxWidth
-    if (image !== null) {
-      const widthByHeight = image.width / image.height;
-      const newWidth = widthByHeight * imageHeight;
-      if (newWidth !== imageWidth) {
-        setImageWidth(newWidth);
-      }
-    }
-  }, [image, imageHeight]);
-
-  async function pickImage() {
-    Alert.alert("Select Image", "How would you like to select the image?", [
-      {
-        text: "Camera Roll",
-        onPress: async () => {
-          if (Platform.OS !== "web") {
-            const { status } =
-              await ImagePicker.requestMediaLibraryPermissionsAsync();
-            if (status !== "granted") {
-              alert("Camera roll permissions are required to select an image.");
-            }
-          }
-          const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            exif: false,
-          });
-          if (!result.canceled) {
-            const { uri, width, height } = result;
-            setImage({ uri, width, height });
-          }
-        },
-      },
-      {
-        text: "Take Photo",
-        onPress: async () => {
-          const { status } = await ImagePicker.requestCameraPermissionsAsync();
-          if (status !== "granted") {
-            alert("Camera permissions are required to take a picture.");
-          }
-          const result = await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            exif: false,
-          });
-          if (!result.canceled) {
-            const image = result.assets.at(0);
-            if (image) {
-              const { uri, width, height } = image;
-              setImage({ uri, width, height });
-            }
-          }
-        },
-      },
-    ]);
-  }
+  const tailwind = useTailwind();
+  const { selectPhotos, photos } = usePhotoSelectionContext();
 
   return (
     <>
-      <View style={styles.thumbnailContainer}>
-        {image && (
-          <Image
-            source={image}
-            style={{ height: imageHeight, width: imageWidth }}
-          />
-        )}
+      <View style={tailwind("flex flex-row flex-wrap justify-evenly mt-4")}>
+        {photos &&
+          photos.map((i) => <PhotoUploadThumbnail key={i.uri} {...i} />)}
       </View>
+
       <View style={styles.imageButtonContainer}>
         <Button
-          title={`${!image ? "Add" : "Update"} Image`}
-          onPress={pickImage}
+          title={"Add Images"}
+          onPress={selectPhotos}
           color={colors.accent}
           disabled={disabled}
         />
-        {image && (
-          <Button
-            title="Clear Image"
-            onPress={() => setImage(null)}
-            color={colors.alert}
-            disabled={disabled}
-          />
-        )}
       </View>
     </>
   );
