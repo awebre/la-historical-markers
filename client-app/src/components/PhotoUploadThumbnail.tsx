@@ -1,12 +1,11 @@
-import classNames from "classnames";
-import { Image } from "expo-image";
 import { usePhotoSelectionContext } from "photos/PhotoSelectionContext";
 import { Alert, View } from "react-native";
 import { useTailwind } from "tailwind-rn";
 import { ImageSource } from "types";
 import { url } from "utils";
 
-import { FontAwesome } from "@expo/vector-icons";
+import IconBadge from "./IconBadge";
+import ImagePreview from "./ImagePreview";
 
 export interface PhotoUploadThumbnail extends ImageSource {}
 
@@ -16,23 +15,24 @@ export default function PhotoUploadThumbnail(props: PhotoUploadThumbnail) {
   const { uploadPhoto, removePhoto } = usePhotoSelectionContext();
 
   return (
-    <View
-      style={tailwind(
-        "relative w-36 h-36 m-2 border-brown border-4 rounded bg-gold"
-      )}
-    >
-      <Image
-        style={tailwind("flex-1")}
-        contentFit="cover"
-        source={props}
-        enableLiveTextInteraction={true}
-      />
+    <View style={tailwind("relative w-36 h-36 m-2 rounded-lg bg-gold")}>
+      <ImagePreview source={props} />
       {uploadState === "error" && (
-        <IconBadge icon="warning" onPress={handleError} />
+        <IconBadge
+          icon="warning"
+          className="top-[-12px] right-[-12px]"
+          onPress={handleError}
+        />
       )}
-      {uploadState === "uploading" && <IconBadge icon="refresh" />}
+      {uploadState === "uploading" && (
+        <IconBadge icon="refresh" className="top-3 left-3" />
+      )}
       {uploadState !== "uploading" && (
-        <IconBadge icon="trash" onPress={promptDelete} />
+        <IconBadge
+          icon="trash"
+          className="top-[-12px] right-[-12px]"
+          onPress={promptDelete}
+        />
       )}
     </View>
   );
@@ -64,35 +64,4 @@ export default function PhotoUploadThumbnail(props: PhotoUploadThumbnail) {
       removePhoto(props);
     }
   }
-}
-
-interface IconBadgeProps {
-  icon: "warning" | "refresh" | "trash";
-  onPress?: () => void;
-}
-
-function IconBadge({ icon, onPress }: IconBadgeProps) {
-  const tailwind = useTailwind();
-  return (
-    <View
-      style={tailwind(
-        classNames(
-          "absolute flex items-center justify-center w-8 h-8 rounded-full bg-yellow-400",
-          {
-            "top-[-12px] right-[-12px]": icon !== "warning",
-            "bg-yellow-400 bottom-3 left-3": icon === "warning",
-            "bg-gray-400": icon === "refresh",
-            "bg-red-400 ": icon === "trash",
-          }
-        )
-      )}
-    >
-      <FontAwesome
-        name={icon}
-        style={tailwind("text-white")}
-        size={16}
-        onPress={onPress}
-      />
-    </View>
-  );
 }
