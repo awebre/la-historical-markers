@@ -141,6 +141,7 @@ public class MarkersService : BaseSqlService
         return marker;
     }
 
+    [Obsolete("This should only be used by the legacy Azure Functions")]
     public async Task<EditMarkerResult> EditMarker(EditMarkerDto markerDto, string otp)
     {
         using var connection = GetConnection();
@@ -177,6 +178,7 @@ public class MarkersService : BaseSqlService
         return EditMarkerResult.Succes;
     }
 
+    [Obsolete("This should only be used by the legacy Azure Functions")]
     public async Task<IEnumerable<MarkerDto>> GetMarkersBySearchTerm(string search, UserLocationDto userLocation)
     {
         return (await QueryAsync<MarkerDto>(@"

@@ -1,15 +1,17 @@
 using FastEndpoints;
 using LaHistoricalMarkers.Core.Features.Markers;
 using LAHistoricalMarkers.Web.Endpoints.Configuration;
+using MediatR;
 
 namespace LAHistoricalMarkers.Web.Endpoints.Markers;
 
 public class GetMarkersTextSearch : PublicApiEndpoint<MarkerTextSearchRequest, IEnumerable<MarkerDto>>
 {
-    private readonly MarkersService markersService;
-    public GetMarkersTextSearch(MarkersService markersService)
+    private readonly IMediator mediator;
+
+    public GetMarkersTextSearch(IMediator mediator)
     {
-        this.markersService = markersService;
+        this.mediator = mediator;
     }
 
     public override void Configure()
@@ -20,14 +22,14 @@ public class GetMarkersTextSearch : PublicApiEndpoint<MarkerTextSearchRequest, I
 
     public override async Task<IEnumerable<MarkerDto>> ExecuteAsync(MarkerTextSearchRequest req, CancellationToken ct)
     {
-        var markers = await markersService.GetMarkersBySearchTerm(req.Search, req.UserLocation);
+        var markers = await mediator.Send(new GetMarkerTextSearchRequest(req.Search, req.UserLocation), ct);
         return markers;
     }
 }
 
 public class MarkerTextSearchRequest
 {
-    public string Search { get; set; }
+    public string? Search { get; set; }
 
     [QueryParam]
     public UserLocationDto? UserLocation { get; set; }
