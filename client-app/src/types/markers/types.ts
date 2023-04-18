@@ -14,7 +14,13 @@ export type MarkerDto = {
   createdTimestamp: Date;
   distance: number;
   type: MarkerType;
+  photos: MarkerPhotoDto[];
 } & Location;
+
+export interface MarkerPhotoDto {
+  fileGuid: string;
+  fileName: string;
+}
 
 export enum MarkerType {
   official,

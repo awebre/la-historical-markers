@@ -1,14 +1,16 @@
 using LaHistoricalMarkers.Core.Features.Markers;
 using LAHistoricalMarkers.Web.Endpoints.Configuration;
+using MediatR;
 
 namespace LAHistoricalMarkers.Web.Endpoints.Markers;
 
-public class GetMarkerById : PublicApiEndpoint<MarkerByIdRequest, MarkerDto>
+public class GetMarkerById : PublicApiEndpoint<GetMarkerByIdRequest, MarkerDto>
 {
-    private readonly MarkersService markersService;
-    public GetMarkerById(MarkersService markersService)
+    private readonly IMediator mediator;
+
+    public GetMarkerById(IMediator mediator)
     {
-        this.markersService = markersService;
+        this.mediator = mediator;
     }
 
     public override void Configure()
@@ -17,14 +19,8 @@ public class GetMarkerById : PublicApiEndpoint<MarkerByIdRequest, MarkerDto>
         base.Configure();
     }
 
-    public override async Task<MarkerDto> ExecuteAsync(MarkerByIdRequest req, CancellationToken ct)
+    public override async Task<MarkerDto> ExecuteAsync(GetMarkerByIdRequest req, CancellationToken ct)
     {
-        var marker = await markersService.GetMarkerById(req.Id);
-        return marker;
+        return await mediator.Send(req, ct);
     }
-}
-
-public class MarkerByIdRequest
-{
-    public int Id { get; set; }
 }

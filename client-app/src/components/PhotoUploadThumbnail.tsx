@@ -1,12 +1,9 @@
 import classNames from "classnames";
 import { Image } from "expo-image";
-import * as ImageManipulator from "expo-image-manipulator";
 import { usePhotoSelectionContext } from "photos/PhotoSelectionContext";
-import { useEffect } from "react";
 import { Alert, View } from "react-native";
 import { useTailwind } from "tailwind-rn";
 import { ImageSource } from "types";
-import { PostPhotoResponse } from "types/markers/types";
 import { url } from "utils";
 
 import { FontAwesome } from "@expo/vector-icons";

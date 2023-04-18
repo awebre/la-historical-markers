@@ -12,19 +12,19 @@ public class MarkersService : BaseSqlService
 {
     private readonly OtpAuthService authService;
 
-    public MarkersService(OtpAuthService authService, IConnectionStringProvider connectionProvider) : base(connectionProvider)
+    public MarkersService(OtpAuthService authService, IConnectionStringProvider connectionProvider) : base(
+        connectionProvider)
     {
         this.authService = authService;
     }
 
-    public async Task<IEnumerable<MarkerDto>> GetMarkersByRegion(RegionDto region, UserLocationDto userLocation, MarkerType[] typeFilters = null)
+    [Obsolete("This should only be used by the legacy Azure Functions")]
+    public async Task<IEnumerable<MarkerDto>> GetMarkersByRegion(RegionDto region, UserLocationDto userLocation,
+        MarkerType[] typeFilters = null)
     {
         //If no type filters are supplied then we assume that an older
         //client is querying us (one that isn't filter-aware)
-        if (typeFilters == null || !typeFilters.Any())
-        {
-            typeFilters = Enum.GetValues<MarkerType>();
-        }
+        if (typeFilters == null || !typeFilters.Any()) typeFilters = Enum.GetValues<MarkerType>();
 
         var latitude = region.Latitude;
         var longitude = region.Longitude;
@@ -71,10 +71,11 @@ public class MarkersService : BaseSqlService
                 rightLong,
                 userLatitude,
                 userLongitude,
-                typeFilters = typeFilters.Select(x => x.ToString()),
+                typeFilters = typeFilters.Select(x => x.ToString())
             })).AsList();
     }
 
+    [Obsolete("This should only be used by the legacy Azure Functions")]
     public async Task<PendingSubmissionDto> AddMarkerSubmission(MarkerSubmissionDto submission, string fileHandle)
     {
         var id = await QuerySingleAsync<int>(@"
@@ -104,7 +105,7 @@ public class MarkersService : BaseSqlService
                 latitude = submission.Latitude,
                 longitude = submission.Longitude,
                 imageFileName = fileHandle,
-                type = submission.Type.ToString(),
+                type = submission.Type.ToString()
             });
 
         return new PendingSubmissionDto
@@ -116,10 +117,11 @@ public class MarkersService : BaseSqlService
             Longitude = submission.Longitude,
             ImageFileName = fileHandle,
             DeepLinkBaseUrl = submission.DeepLinkBaseUrl,
-            Type = submission.Type.ToString(),
+            Type = submission.Type.ToString()
         };
     }
 
+    [Obsolete("This should only be used by the legacy Azure Functions")]
     public async Task<MarkerDto> GetMarkerById(int id)
     {
         var marker = await QuerySingleOrDefaultAsync<MarkerDto>(@"
@@ -169,7 +171,7 @@ public class MarkersService : BaseSqlService
                 latitude = markerDto.Latitude,
                 longitude = markerDto.Longitude,
                 type = markerDto.Type.ToString(),
-                isApproved = markerDto.IsApproved,
+                isApproved = markerDto.IsApproved
             }, transaction);
         transaction.Commit();
         return EditMarkerResult.Succes;
@@ -196,7 +198,7 @@ public class MarkersService : BaseSqlService
             {
                 search = $"%{search}%",
                 userLatitude = userLocation.Latitude,
-                userLongitude = userLocation.Longitude,
+                userLongitude = userLocation.Longitude
             })).ToList();
     }
 }

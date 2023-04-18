@@ -46,7 +46,8 @@
     "react-native-web": "^0.18.12",
     "swr": "^2.1.1",
     "tailwind-rn": "^4.2.0",
-    "expo-image": "~1.0.0"
+    "expo-image": "~1.0.0",
+    "react-native-pager-view": "6.1.2"
   },
   "devDependencies": {
     "@babel/core": "^7.21.3",
