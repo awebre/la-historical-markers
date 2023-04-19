@@ -48,7 +48,9 @@
     "swr": "^2.1.1",
     "tailwind-rn": "^4.2.0",
     "expo-image": "~1.0.0",
-    "react-native-pager-view": "6.1.2"
+    "react-native-pager-view": "6.1.2",
+    "expo-screen-orientation": "~5.1.1",
+    "expo-sensors": "~12.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.21.3",
