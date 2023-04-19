@@ -7,7 +7,8 @@
     "start": "react-native start",
     "test": "jest",
     "build:tailwind": "tailwindcss --input input.css --output tailwind.css --no-autoprefixer && tailwind-rn",
-    "dev:tailwind": "concurrently \"tailwindcss --input input.css --output tailwind.css --no-autoprefixer --watch\" \"tailwind-rn --watch\""
+    "dev:tailwind": "concurrently \"tailwindcss --input input.css --output tailwind.css --no-autoprefixer --watch\" \"tailwind-rn --watch\"",
+    "eas-build-pre-install": "npm config set legacy-peer-deps true"
   },
   "dependencies": {
     "@expo/html-elements": "^0.4.1",

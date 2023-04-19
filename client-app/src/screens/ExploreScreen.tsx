@@ -6,7 +6,6 @@ import {
 } from "components/markers/utils";
 import { MarkersSearchView, SubmitMarkerView } from "explore";
 import MarkerSearchBar from "explore/MarkerSearchBar";
-import { StatusBar } from "expo-status-bar";
 import { useDebounce, useLocation, useMarkers } from "hooks";
 import { PhotoSelectionProvider } from "photos";
 import React, { useEffect, useRef, useState } from "react";
@@ -92,7 +91,6 @@ export default function ExploreScreen() {
 
   return (
     <>
-      <StatusBar style="light" />
       {!selectedMarker && !isAdding && (
         <>
           <MarkerFilter filters={filters} setFilters={setFilters} />

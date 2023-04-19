@@ -30,7 +30,7 @@ export default function ImagePreview({ source, style }: ImagePreviewProps) {
         />
         <IconBadge
           icon="expand"
-          className="bg-gray-600 bottom-3 left-3 opacity-90"
+          className="bg-gray-600 top-3 right-3 opacity-90"
           onPress={() => setFullScreen(true)}
         />
       </View>

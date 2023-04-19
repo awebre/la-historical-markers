@@ -41,7 +41,7 @@ public class GetMarkerByIdRequestHandler : IRequestHandler<GetMarkerByIdRequest,
             ", new { id = request.Id });
 
         marker.Photos = (await connection.QueryAsync<MarkerPhotoDto>(@"
-SELECT [FileGuid] FROM [MarkerPhotos]
+SELECT [FileGuid], [MarkerId] FROM [MarkerPhotos]
 WHERE [MarkerId] = @markerId
 ", new { markerId = request.Id })).ToList();
 

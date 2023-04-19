@@ -1,27 +1,32 @@
+import {
+  Alert,
+  DismissKeyboard,
+  LoadingIndicator,
+  PhotoCarousel,
+} from "components";
+import { FormGroup, Label } from "components/forms";
+import LocationNavigationButton from "components/LocationNavigationButton";
+import MapWithBorder from "components/MapWithBorder";
+import { MarkerSelector } from "components/markers";
+import { useMarker } from "hooks";
+import queryString from "query-string";
 import React, { useEffect, useState } from "react";
 import {
-  StyleSheet,
-  View,
-  ScrollView,
-  Image,
-  Switch,
   Button,
-  KeyboardAvoidingView,
   Dimensions,
+  Image,
+  KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  View,
 } from "react-native";
-import { StackScreenProps } from "@react-navigation/stack";
-import queryString from "query-string";
-import { MarkerDto, MarkerType, RootParams } from "types";
-import { useMarker } from "hooks";
-import { FormGroup, Label } from "components/forms";
-import { colors, url } from "utils";
-import { Alert, DismissKeyboard, LoadingIndicator } from "components";
-import { MarkerSelector } from "components/markers";
-import { photosUrl } from "utils/urls";
 import { Marker } from "react-native-maps";
-import MapWithBorder from "components/MapWithBorder";
-import LocationNavigationButton from "components/LocationNavigationButton";
-import { StatusBar } from "expo-status-bar";
+import { MarkerDto, MarkerType, RootParams } from "types";
+import { colors, url } from "utils";
+import { photosUrl } from "utils/urls";
+
+import { StackScreenProps } from "@react-navigation/stack";
 
 type Props = StackScreenProps<RootParams, "Admin">;
 
@@ -47,7 +52,6 @@ export default function AdminScreen({ route, navigation }: Props) {
       });
 
       if (resp.ok) {
-        //TODO: navigate back
         navigation.goBack();
         return;
       }
@@ -73,7 +77,6 @@ export default function AdminScreen({ route, navigation }: Props) {
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="position">
       <DismissKeyboard>
         <>
-          <StatusBar style="light" />
           <ScrollView style={styles.scrollview}>
             <View style={styles.scrollContent}>
               {!!error && (
@@ -105,19 +108,20 @@ export default function AdminScreen({ route, navigation }: Props) {
                     style={styles.goButton}
                   />
 
-                  {markerDto?.imageFileName && (
-                    <Image
-                      source={{
-                        uri: `${photosUrl}/${markerDto.imageFileName}`,
-                      }}
-                      style={{
-                        width: "100%",
-                        aspectRatio: 1,
-                        resizeMode: "contain",
-                        marginBottom: 10,
-                      }}
+                  {
+                    <PhotoCarousel
+                      photos={
+                        markerDto.photos.length > 0
+                          ? markerDto.photos
+                          : [
+                              {
+                                fileGuid: markerDto.imageFileName ?? "",
+                                fileName: marker?.imageFileName ?? "",
+                              },
+                            ]
+                      }
                     />
-                  )}
+                  }
                   <MarkerSelector
                     type={markerDto?.type ?? MarkerType.official}
                     setType={(type) =>

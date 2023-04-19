@@ -1,12 +1,11 @@
+import { getMarkerColor } from "components/markers/utils";
+import { useSavedMarkers } from "hooks";
 import React, { useState } from "react";
 import { StyleSheet } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import { getMarkerColor } from "components/markers/utils";
-import { useSavedMarkers } from "hooks";
 import { SavedMarkerModal, SavedMarkerStats } from "saved-markers";
 import { SavedMarker, SavedMarkerCategory } from "types";
 import { Locations } from "utils";
-import { StatusBar } from "expo-status-bar";
 
 const initialRegion = {
   ...Locations.center,
@@ -23,8 +22,6 @@ export default function MyMarkersScreen() {
 
   return (
     <>
-      <StatusBar style="light" />
-
       {selectedMarker && (
         <SavedMarkerModal
           marker={selectedMarker}

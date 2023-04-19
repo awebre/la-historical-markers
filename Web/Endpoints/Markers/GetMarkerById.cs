@@ -15,7 +15,7 @@ public class GetMarkerById : PublicApiEndpoint<GetMarkerByIdRequest, MarkerDto>
 
     public override void Configure()
     {
-        Get("/markers/{id}");
+        Get("/markers/{Id}");
         base.Configure();
     }
 

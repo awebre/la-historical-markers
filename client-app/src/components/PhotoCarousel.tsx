@@ -35,22 +35,22 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
           ))}
         </PagerView>
       )}
-      <View style={tailwind("flex flex-row justify-center w-full")}>
+      <View
+        style={tailwind("flex flex-row items-center justify-center w-full")}
+      >
         {photos.map((photo, i) => (
           <View
             key={i}
             style={tailwind(
               classNames(
-                "flex items-center justify-center rounded-full w-6 h-6 m-2",
+                "flex items-center justify-center rounded-full w-2 h-2 m-2",
                 {
-                  "bg-gold": i !== selectedPhotoIndex,
-                  "bg-brown": i === selectedPhotoIndex,
+                  "bg-gold w-2 h-2": i !== selectedPhotoIndex,
+                  "bg-brown w-3 h-3": i === selectedPhotoIndex,
                 }
               )
             )}
-          >
-            <Text style={tailwind("text-white")}>{i + 1}</Text>
-          </View>
+          ></View>
         ))}
       </View>
     </>

@@ -1,15 +1,18 @@
-import React from "react";
-import { LinkingOptions, NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { FontAwesome5 } from "@expo/vector-icons";
 import * as Linking from "expo-linking";
-import { ExploreScreen, AdminScreen, MyMarkersScreen } from "screens";
-import { RootParams } from "types";
-import { colors, routes } from "utils";
+import React from "react";
+import { Platform } from "react-native";
 import { SavedMarkersProvider } from "saved-markers/SavedMarkersContext";
+import { AdminScreen, ExploreScreen, MyMarkersScreen } from "screens";
 import SettingScreen from "screens/SettingScreen";
 import { TailwindProvider } from "tailwind-rn";
+import { RootParams } from "types";
+import { colors, routes } from "utils";
+
+import { FontAwesome5 } from "@expo/vector-icons";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { LinkingOptions, NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+
 import utilities from "../tailwind.json";
 
 const Stack = createStackNavigator<RootParams>();
@@ -21,10 +24,14 @@ function Tabs() {
     <SavedMarkersProvider>
       <Tab.Navigator
         screenOptions={{
-          tabBarActiveTintColor: colors.primary,
+          tabBarActiveTintColor:
+            Platform.OS === "ios" ? colors.primary : colors.accent,
           tabBarStyle: [
             {
-              backgroundColor: colors.mediumBackground,
+              backgroundColor:
+                Platform.OS === "ios"
+                  ? colors.mediumBackground
+                  : colors.primaryDark,
             },
             null,
           ],
@@ -55,6 +62,7 @@ function Tabs() {
           name="More"
           component={SettingScreen}
           options={{
+            unmountOnBlur: true,
             tabBarLabel: "More",
             tabBarIcon: ({ color, size }) => (
               <FontAwesome5 name="ellipsis-h" color={color} size={size} />

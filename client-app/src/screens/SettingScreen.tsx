@@ -1,8 +1,14 @@
 import classnames from "classnames";
 import Constants from "expo-constants";
-import { StatusBar } from "expo-status-bar";
-import { useRef } from "react";
-import { KeyboardAvoidingView, Linking, Text, View } from "react-native";
+import { setStatusBarStyle } from "expo-status-bar";
+import { useEffect, useRef } from "react";
+import {
+  KeyboardAvoidingView,
+  Linking,
+  Platform,
+  Text,
+  View,
+} from "react-native";
 import Toast from "react-native-easy-toast";
 import { ScrollView } from "react-native-gesture-handler";
 import FeedbackForm from "settings/FeedbackForm";
@@ -16,11 +22,18 @@ const { websiteUrl, privacyPolicyUrl, githubUrl } =
 export default function SettingScreen({}) {
   const tailwind = useTailwind();
   const toast = useRef<Toast>(null);
+  useEffect(() => {
+    if (Platform.OS === "ios") {
+      setStatusBarStyle("dark");
+    }
+    return () => {
+      setStatusBarStyle("light");
+    };
+  }, []);
 
   return (
     <KeyboardAvoidingView behavior="position">
       <ScrollView style={tailwind("bg-brown-light h-full pt-8 px-5")}>
-        <StatusBar style="dark" />
         <Heading text="Links" />
         <LinkItem text="Our Website" url={websiteUrl} icon="laptop" />
         <LinkItem text="Source Code on GitHub" url={githubUrl} icon="github" />
@@ -50,7 +63,9 @@ interface LinkItemProps {
 }
 const LinkItem = ({ text, url, icon, color = "black" }: LinkItemProps) => {
   const tailwind = useTailwind();
-  const { color: effectiveColor }: any = tailwind(`text-${color}-500`);
+  const { color: effectiveColor }: any = tailwind(
+    classnames({ "text-red-500": color === "red" })
+  );
   return (
     <View
       style={tailwind("flex flex-row items-center justify-between mb-5")}

@@ -1,6 +1,6 @@
 import useSwr from "swr";
-import { url, fetcher } from "utils";
 import { LoadableMarker, MarkerDto } from "types";
+import { fetcher, url } from "utils";
 
 interface MarkerByIdRequest {
   id: number;
@@ -8,10 +8,8 @@ interface MarkerByIdRequest {
 
 export default function useMarkers(request: MarkerByIdRequest): LoadableMarker {
   const { id } = request;
-  const { data, error } = useSwr<MarkerDto, boolean>(
-    `${url}/api/markers/${id}`,
-    fetcher
-  );
+  const resp = useSwr<MarkerDto, boolean>(`${url}/api/markers/${id}`, fetcher);
+  const { data, error } = resp;
   return {
     marker: data,
     isLoading: !error && !data,

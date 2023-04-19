@@ -59,6 +59,11 @@
 			"top": 12
 		}
 	},
+	"right-3": {
+		"style": {
+			"right": 12
+		}
+	},
 	"z-10": {
 		"style": {
 			"zIndex": 10
@@ -215,6 +220,11 @@
 			"height": 48
 		}
 	},
+	"h-3": {
+		"style": {
+			"height": 12
+		}
+	},
 	"max-h-64": {
 		"style": {
 			"maxHeight": 256
@@ -258,6 +268,11 @@
 	"w-12": {
 		"style": {
 			"width": 48
+		}
+	},
+	"w-3": {
+		"style": {
+			"width": 12
 		}
 	},
 	"flex-1": {

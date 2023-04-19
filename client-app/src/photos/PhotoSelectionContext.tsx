@@ -110,7 +110,6 @@ export function PhotoSelectionProvider({
       );
 
       const filename = getFileName(png.uri);
-      console.log(`uploading png copy of: ${getFileName(image.uri)}`);
 
       const formData = new FormData();
       formData.append("file", {

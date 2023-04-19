@@ -11,7 +11,7 @@ export interface PhotoUploadThumbnail extends ImageSource {}
 
 export default function PhotoUploadThumbnail(props: PhotoUploadThumbnail) {
   const tailwind = useTailwind();
-  const { uri, guid, uploadState } = props;
+  const { guid, uploadState } = props;
   const { uploadPhoto, removePhoto } = usePhotoSelectionContext();
 
   return (

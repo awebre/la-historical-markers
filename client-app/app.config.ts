@@ -1,4 +1,5 @@
 import "dotenv/config";
+
 export default {
   name: "client-app",
   displayName: "LA Markers",
@@ -10,6 +11,10 @@ export default {
     orientation: "portrait",
     icon: "./assets/icon.png",
     scheme: "lahm",
+    androidStatusBar: {
+      barStyle: "light-content",
+      backgroundColor: "#734d26"
+    },
     updates: {
       enabled: false,
     },
