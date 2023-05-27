@@ -14,6 +14,7 @@ using LAHistoricalMarkers.Web.Security;
 using LAHistoricalMarkers.Web.Security.Policies;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,7 +41,11 @@ builder.Services.AddSingleton<NotificationSettings>(services =>
 builder.Services.AddScoped<ImageStorageService>(s =>
 {
     var storageSettings = s.GetService<StorageSettings>();
-    if (storageSettings is null) throw new Exception($"{nameof(StorageSettings)} must be populated via Configuration");
+    if (storageSettings is null)
+    {
+        throw new Exception($"{nameof(StorageSettings)} must be populated via Configuration");
+    }
+
     return new ImageStorageService(storageSettings);
 });
 
@@ -48,7 +53,11 @@ builder.Services.AddScoped<ImageStorageService>(s =>
 builder.Services.AddScoped<SendGridEmailService>(s =>
 {
     var config = s.GetService<IConfiguration>();
-    if (config is null) throw new Exception("IConfiguration was not registered");
+    if (config is null)
+    {
+        throw new Exception("IConfiguration was not registered");
+    }
+
     return new SendGridEmailService(config.GetSection("SendGrid").Value, config.GetSection("FromEmail").Value);
 });
 
@@ -59,7 +68,10 @@ builder.Services.AddSwaggerDoc(s =>
     s.EndpointFilter(e =>
     {
         //Locally, we want the ability to test all endpoints via Swagger
-        if (builder.Environment.IsEnvironment("local")) return true;
+        if (builder.Environment.IsEnvironment("local"))
+        {
+            return true;
+        }
 
         return e.EndpointTags?.Contains(EndpointTagNames.PublicApi) is true;
     });
@@ -85,4 +97,18 @@ app.UseFastEndpoints(c =>
     c.Endpoints.ShortNames = true;
 });
 app.UseSwaggerGen();
+
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/marker-photos"),
+    appBuilder => appBuilder.Use(FileSizeLimitMiddleware));
 app.Run();
+
+async Task FileSizeLimitMiddleware(HttpContext context, RequestDelegate next)
+{
+    var requestBodySizeFeature = context.Features.Get<IHttpMaxRequestBodySizeFeature>();
+    if (requestBodySizeFeature != null)
+    {
+        requestBodySizeFeature.MaxRequestBodySize = 200_000_000;
+    }
+
+    await next(context);
+}

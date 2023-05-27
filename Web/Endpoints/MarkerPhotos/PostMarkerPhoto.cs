@@ -17,20 +17,30 @@ public class PostMarkerPhoto : PublicApiEndpoint<PostPhotoRequest, PostPhotoResp
     public override void Configure()
     {
         Post("/marker-photos");
-        AllowFileUploads();
+        AllowFileUploads(true); //turns off buffering
         base.Configure();
     }
 
     public override async Task<PostPhotoResponse> ExecuteAsync(PostPhotoRequest req, CancellationToken ct)
     {
-        using var stream = new MemoryStream();
-        await req.File.CopyToAsync(stream, ct);
-        var bytes = stream.ToArray();
-        var result = await mediator.Send(new UploadPhotoRequest(bytes), ct);
-        return new PostPhotoResponse
+        var firstFormSection = await FormFileSectionsAsync(ct).FirstOrDefaultAsync(ct);
+        if (firstFormSection is not null)
         {
-            PhotoGuid = result
-        };
+            var tempHandle = Guid.NewGuid();
+            await using (var fs = File.Create(Path.Combine(Path.GetTempPath(), tempHandle.ToString()), 4096,
+                             FileOptions.DeleteOnClose))
+            {
+                await firstFormSection.Section.Body.CopyToAsync(fs, 1024 * 64, ct);
+                fs.Position = 0;
+                var result = await mediator.Send(new UploadPhotoRequest(fs), ct);
+                return new PostPhotoResponse
+                {
+                    PhotoGuid = result
+                };
+            }
+        }
+
+        return new PostPhotoResponse();
     }
 }
 

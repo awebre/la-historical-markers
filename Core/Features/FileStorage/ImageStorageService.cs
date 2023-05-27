@@ -25,13 +25,18 @@ public class ImageStorageService
 
     public async Task<string> UploadFileAndGetHandle(byte[] fileBytes)
     {
-        var fileHandle = $"{Guid.NewGuid()}.png";
         using var memoryStream = new MemoryStream(fileBytes);
 
+        return await UploadFileAndGetHandle(memoryStream);
+    }
+
+    public async Task<string> UploadFileAndGetHandle(Stream stream)
+    {
+        var fileHandle = $"{Guid.NewGuid()}.png";
         var blobClient = await GetBlobClient(fileHandle);
         var blobHeaders = new BlobHttpHeaders();
         blobHeaders.ContentType = "image/png";
-        await blobClient.UploadAsync(memoryStream, blobHeaders);
+        await blobClient.UploadAsync(stream, blobHeaders);
         return fileHandle;
     }
 

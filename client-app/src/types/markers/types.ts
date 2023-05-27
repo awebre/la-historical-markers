@@ -31,6 +31,7 @@ export interface MarkerPhotoUpload {
   uri: string;
   height: number;
   width: number;
+  fileSize?: number;
   guid?: string | undefined;
   uploadState: "pending" | "uploading" | "success" | "error"
 }
